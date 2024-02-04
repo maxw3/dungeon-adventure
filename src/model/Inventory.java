@@ -4,37 +4,43 @@ import java.util.ArrayList;
 
 public class Inventory {
 
-    private final ArrayList<AbstractItem> myItems;
-    private int mySize;
+    private final ArrayList<AbstractEquipment> myItems;
+
 
     public Inventory() {
         myItems = new ArrayList<>();
-        mySize = 0;
     }
 
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Inventory is size ").append(mySize).append(": ").append(myItems.toString());
-        return sb.toString();
+        return "Inventory is size " + myItems.size() + ": " + myItems;
     }
 
     public String getContents() {
         return myItems.toString();
     }
+    public int getSize() {
+        return myItems.size();
+    }
 
-    public AbstractItem getItem(final int theIndex) {
-        if (theIndex >= mySize) {
+    public AbstractEquipment getItem(final int theIndex) {
+        if (theIndex >= myItems.size()) {
             throw new IllegalArgumentException("The index is out of bounds: Is " + theIndex);
         }
         return myItems.get(theIndex);
     }
 
-    public void addItem(final AbstractItem theItem) {
+    public void addItem(final AbstractEquipment theItem) {
         myItems.add(theItem);
     }
 
-    /* public void useItem(final AbstractItem theItem) {
-         We cannot directly feed it an "AbstractItem" because not all AbstractItems
-         have an effect i.e. Pillars of OO.
-    } */
+    public void useItem(final AbstractEquipment theItem) {
+        if (theItem.getType().equals("CONSUMABLE")) {
+            ((AbstractConsumable) theItem).triggerEffect();
+        } /* else if (theItem.getType().equals("PERMANENT")){
+               example code here
+        } */
+        else {
+            throw new IllegalArgumentException("The Item has no active ability. Is not CONSUMABLE or PERMANENT");
+        }
+    }
 }
