@@ -1,21 +1,15 @@
 public class Floor {
 
+    private Room[][] myRooms;
     private short mySize;
-    private char[][] myFloorChars;
 
     Floor(){
-        mySize = 3;
+        mySize = 5;
+        myRooms = new Room[mySize][mySize];
 
-        myFloorChars = new char[2 * mySize + 1][2 * mySize + 1];
-
-        for(int row = 0; row < myFloorChars.length; row++){
-            for(int col = 0; col < myFloorChars.length; col++){
-                if(row == 0 || col == 0 ||
-                 row == myFloorChars.length - 1 || col == myFloorChars.length - 1){
-                    myFloorChars[row][col] = '*';
-                }else{
-                    myFloorChars[row][col] = ' ';
-                }
+        for(int row = 0; row < mySize; row++){
+            for(int col = 0; col < mySize; col++){
+                myRooms[row][col] = new Room();
             }
         }
     }
@@ -24,12 +18,60 @@ public class Floor {
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        for(int row = 0; row < myFloorChars.length; row++){
-            for(int col = 0; col < myFloorChars.length; col++){
-                sb.append(myFloorChars[row][col]);
+        for(int ra = 0; ra < mySize; ra++){
+            for(int room = 0; room < mySize; room++){
+                sb.append('*');
+                if(ra == 0){
+                    sb.append('*');
+                }else{
+                    if(myRooms[ra][room].getNorth()){
+                        sb.append('-');
+                    }else{
+                        sb.append('*');
+                    }
+                }
+                if(room == mySize - 1){
+                    sb.append('*');
+                }
             }
             sb.append('\n');
+            for(int room = 0; room < mySize; room++){
+                if(room == 0){
+                    sb.append('*');
+                }else{
+                    if(myRooms[ra][room].getWest()){
+                        sb.append('|');
+                    }else{
+                        sb.append('*');
+                    }
+                }
+                sb.append(' ');
+                if(room == mySize - 1){
+                    sb.append('*');
+                }
+                // if(ra[room].getEast()){
+                //     sb.append("|");
+                // }else{
+                //     sb.append("*");
+                // }
+            }
+            sb.append('\n');
+            // for(int room = 0; room < mySize; room++){
+            //     sb.append('*');
+            //     if(ra[room].getSouth()){
+            //         sb.append('-');
+            //     }else{
+            //         sb.append('*');
+            //     }
+            //     sb.append("*");
+            // }
+            //sb.append('\n');
         }
+
+        for(int c = 0; c < mySize * 2; c++){
+            sb.append('*');
+        }
+        sb.append('*');
 
         return sb.toString();
     }

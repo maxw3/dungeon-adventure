@@ -3,44 +3,79 @@ public class Room {
     private Item[] myItems;
     private DungeonCharacter[] myDungeonCharacters;
     
+    private boolean myNorth;
+    private boolean myEast;
+    private boolean mySouth;
+    private boolean myWest;
     private int myEvent;
     private boolean myExplored;
 
-    private char[][] myRoomChars; 
-
     Room(){
-        myItems = new Item[0];
-        myDungeonCharacters = new DungeonCharacter[0];
+        myItems = new Item[1];
+        myDungeonCharacters = new DungeonCharacter[1];
 
-        myRoomChars = new char[3][3];
-
-        myRoomChars[0][0] = '*';
-        myRoomChars[0][1] = '-';
-        myRoomChars[0][2] = '*';
-
-        myRoomChars[1][0] = '|';
-        myRoomChars[1][1] = ' ';
-        myRoomChars[1][2] = '|';
-
-        myRoomChars[2][0] = '*';
-        myRoomChars[2][1] = '-';
-        myRoomChars[2][2] = '*';
+        myNorth = true;
+        myEast = true;
+        mySouth = true;
+        myWest = true;
     }
 
-    public char[] getRow(int theRow){
-        return myRoomChars[theRow];
+    public boolean getNorth(){
+        return myNorth;
+    }
+
+    public boolean getWest(){
+        return myWest;
+    }
+
+    public boolean getEast(){
+        return myEast;
+    }
+
+    public boolean getSouth(){
+        return mySouth;
     }
 
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        for(char[] a: myRoomChars){
-            for(char c: a){
-                sb.append(c);
-            }
-            sb.append("\n");
+        // Print First Row
+        sb.append('*');
+        if(myNorth){
+            sb.append("-");
+        }else{
+            sb.append("*");
         }
+        sb.append("*\n");
+
+        if(myWest){
+            sb.append("|");
+        }else{
+            sb.append("*");
+        }
+
+        // Print Second Row
+        if(myItems.length > 1 || myDungeonCharacters.length > 1 || myItems.length + myDungeonCharacters.length > 1){
+            sb.append('m');
+        }else{
+            sb.append(' ');
+        }
+        if(myEast){
+            sb.append('|');
+        }else{
+            sb.append('*');
+        }
+        sb.append('\n');
+
+        // Print 3rd Row
+        sb.append('*');
+        if(mySouth){
+            sb.append('-');
+        }else{
+            sb.append('*');
+        }
+        sb.append("*\n");
 
         return sb.toString();
     }
