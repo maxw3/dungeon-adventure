@@ -1,10 +1,21 @@
 public class Floor {
 
     private Room[][] myRooms;
-    private short mySize;
+    private int mySize;
 
     Floor(){
-        mySize = 5;
+        mySize = 3;
+        myRooms = new Room[mySize][mySize];
+
+        for(int row = 0; row < mySize; row++){
+            for(int col = 0; col < mySize; col++){
+                myRooms[row][col] = new Room();
+            }
+        }
+    }
+
+    Floor(int theSize){
+        mySize = theSize;
         myRooms = new Room[mySize][mySize];
 
         for(int row = 0; row < mySize; row++){
@@ -74,5 +85,9 @@ public class Floor {
         sb.append('*');
 
         return sb.toString();
+    }
+
+    public int getSize(){
+        return mySize;
     }
 }
