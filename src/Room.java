@@ -1,7 +1,7 @@
 public class Room {
 
-    private Item[] myItems;
-    private DungeonCharacter[] myDungeonCharacters;
+    //private final Item[] myItems;
+    private final DungeonCharacter[] myDungeonCharacters;
     
     private boolean myNorth;
     private boolean myEast;
@@ -11,7 +11,7 @@ public class Room {
     private boolean myExplored;
 
     Room(){
-        myItems = new Item[1];
+        //myItems = new Item[1];
         myDungeonCharacters = new DungeonCharacter[1];
 
         myNorth = true;
@@ -56,7 +56,7 @@ public class Room {
         }
 
         // Print Second Row
-        if(myItems.length > 1 || myDungeonCharacters.length > 1 || myItems.length + myDungeonCharacters.length > 1){
+        if(myDungeonCharacters.length > 1){
             sb.append('m');
         }else{
             sb.append(' ');
