@@ -4,4 +4,7 @@ public final class MonsterFactory {
     public static DungeonCharacter createSkeleton(final int theFloor){
         return new Skeleton(theFloor);
     }
+    public static DungeonCharacter createDummy(){
+        return new Dummy();
+    }
 }

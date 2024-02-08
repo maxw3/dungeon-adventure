@@ -9,11 +9,9 @@ public abstract class DungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
+    private final Dummy myDummy = new Dummy();
 
     protected DungeonCharacter(){
-        this(1);
-    }
-    protected DungeonCharacter(final int theLevel){
         myMaxHP = -1;
         myHP = -1;
         myAttack = 0;
@@ -39,7 +37,7 @@ public abstract class DungeonCharacter {
     private void setCurrentHP(final int theHP){
         myHP = theHP;
     }
-    protected final void healOrDamage(final int theAmount){
+    protected void healOrDamage(final int theAmount){
         myHP += theAmount;
     }
     protected final void setAttack(final int theAttack){
@@ -126,7 +124,7 @@ public abstract class DungeonCharacter {
         output.append(NEW_LINE);
 
         output.append("Skill: ");
-        output.append(skill(this));
+        output.append(skill(myDummy));
         output.append(NEW_LINE);
 
         return output.toString();
