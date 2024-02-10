@@ -1,3 +1,8 @@
+import model.HealthPotion;
+import model.Pillar;
+
+import java.util.Random;
+
 public class Floor {
 
     private Room[][] myRooms;
@@ -12,6 +17,7 @@ public class Floor {
                 myRooms[row][col] = new Room();
             }
         }
+        fillFloor();
     }
 
     Floor(int theSize){
@@ -89,5 +95,24 @@ public class Floor {
 
     public int getSize(){
         return mySize;
+    }
+
+    private void fillFloor() {
+        Random rand = new Random();
+        for(int row = 0; row < mySize; row++) {
+            for(int col = 0; col < mySize; col++){
+                int choice = rand.nextInt(12);
+                if (choice >= 3 && choice <= 5) {
+                    myRooms[row][col].addCharacter(MonsterFactory.createSkeleton(0));
+                } else if (choice > 5 && choice <= 10) {
+                    myRooms[row][col].addItem(new HealthPotion("Health Potion", 1));
+                } else if (choice > 10) {
+                    // Add in Pits
+                }
+            }
+        }
+        int x = rand.nextInt(mySize);
+        int y = rand.nextInt(mySize);
+        myRooms[x][y].addItem(new Pillar("Encapsulation"));
     }
 }

@@ -1,4 +1,4 @@
-import model.AbstractEquipment;
+import model.Item;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ public class Room {
 
     //private final Item[] myItems;
     private final ArrayList<DungeonCharacter> myDungeonCharacters = new ArrayList<>();
-    private final ArrayList<AbstractEquipment> myEquipment = new ArrayList<>();
+    private final ArrayList<Item> myItems = new ArrayList<>();
     private boolean myNorth;
     private boolean myEast;
     private boolean mySouth;
@@ -85,8 +85,8 @@ public class Room {
         return myDungeonCharacters.toArray();
     }
 
-    public Object[] getEquipment() {
-        return myEquipment.toArray();
+    public Object[] getItem() {
+        return myItems.toArray();
     }
 
     /*default*/ void addCharacter(final DungeonCharacter theCharacter) {
@@ -96,10 +96,10 @@ public class Room {
         myDungeonCharacters.add(theCharacter);
     }
 
-    /*default*/ void addEquipment(final AbstractEquipment theEquipment) {
+    /*default*/ void addItem(final Item theEquipment) {
         if (theEquipment == null) {
-            throw new IllegalArgumentException("The equipment is null.");
+            throw new IllegalArgumentException("The item is null.");
         }
-        myEquipment.add(theEquipment);
+        myItems.add(theEquipment);
     }
 }
