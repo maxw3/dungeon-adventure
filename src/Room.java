@@ -1,8 +1,12 @@
+import model.AbstractEquipment;
+
+import java.util.ArrayList;
+
 public class Room {
 
     //private final Item[] myItems;
-    private final DungeonCharacter[] myDungeonCharacters;
-    
+    private final ArrayList<DungeonCharacter> myDungeonCharacters = new ArrayList<>();
+    private final ArrayList<AbstractEquipment> myEquipment = new ArrayList<>();
     private boolean myNorth;
     private boolean myEast;
     private boolean mySouth;
@@ -10,10 +14,7 @@ public class Room {
     private int myEvent;
     private boolean myExplored;
 
-    Room(){
-        //myItems = new Item[1];
-        myDungeonCharacters = new DungeonCharacter[1];
-
+    Room() {
         myNorth = true;
         myEast = true;
         mySouth = true;
@@ -56,7 +57,7 @@ public class Room {
         }
 
         // Print Second Row
-        if(myDungeonCharacters.length > 1){
+        if(myDungeonCharacters.size() > 1){
             sb.append('m');
         }else{
             sb.append(' ');
@@ -80,4 +81,25 @@ public class Room {
         return sb.toString();
     }
 
+    public Object[] getCharacters() {
+        return myDungeonCharacters.toArray();
+    }
+
+    public Object[] getEquipment() {
+        return myEquipment.toArray();
+    }
+
+    /*default*/ void addCharacter(final DungeonCharacter theCharacter) {
+        if (theCharacter == null) {
+            throw new IllegalArgumentException("The character is null.");
+        }
+        myDungeonCharacters.add(theCharacter);
+    }
+
+    /*default*/ void addEquipment(final AbstractEquipment theEquipment) {
+        if (theEquipment == null) {
+            throw new IllegalArgumentException("The equipment is null.");
+        }
+        myEquipment.add(theEquipment);
+    }
 }
