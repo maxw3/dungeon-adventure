@@ -5,11 +5,11 @@ public class Warrior extends Hero{
         setMaxHP(500);
         setAttack(50);
         setAtkSpd(1);
-        setMyHitChance(75);
+        setHitChance(75);
     }
 
     @Override
-    public final String skill(final DungeonCharacter theTarget){
+    public final void skill(final DungeonCharacter theTarget){
         increaseAttack(50);
         increaseHitChance(-25);
 
@@ -17,6 +17,12 @@ public class Warrior extends Hero{
 
         increaseAttack(-50);
         increaseHitChance(10);
+
+        super.skill(theTarget);
+    }
+
+    @Override
+    protected final String skillDescription(){
         return "Warrior performs a giant haphazard swing at the monster";
     }
 }

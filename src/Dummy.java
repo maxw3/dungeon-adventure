@@ -4,7 +4,7 @@ public class Dummy extends Monster{
 
         setMaxHP(1);
         setAtkSpd(0);
-        setMyHitChance(100);
+        setHitChance(100);
         setAttack(0);
     }
 
