@@ -2,12 +2,20 @@ public class Hero extends DungeonCharacter{
 
 
     protected Hero(String theName){
-        super(1);
+        super();
         myName = theName;
     }
 
     @Override
-    public String skill(final DungeonCharacter theTarget) {return null;}
+    public void skill(final DungeonCharacter theTarget) {
+        super.skill(theTarget);
+    }
+
+    @Override
+    protected String skillDescription() {
+        return null;
+    }
+
     protected final void levelUp(){
         multiplyMaxHP(1.1);
         multiplyAttack(1.2);
