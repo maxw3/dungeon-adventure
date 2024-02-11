@@ -1,3 +1,5 @@
+package model;
+
 public class Monster extends DungeonCharacter{
     protected static final double FLOOR_1_MODIFIER = 1.0;
     protected static final double FLOOR_2_MODIFIER = 1.25;
@@ -16,6 +18,6 @@ public class Monster extends DungeonCharacter{
     @Override
     public final String skill(final DungeonCharacter theTarget) {
         theTarget.healOrDamage((int) (myHP * myHealMultiplier));
-        return "Monster has a chance to heal itself after every round.";
+        return "model.Monster has a chance to heal itself after every round.";
     }
 }

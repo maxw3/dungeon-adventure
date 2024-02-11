@@ -1,3 +1,5 @@
+package model;
+
 public abstract class DungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
     protected static final int MIN_STAT = 0;

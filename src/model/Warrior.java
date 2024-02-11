@@ -1,3 +1,5 @@
+package model;
+
 public class Warrior extends Hero{
     private Warrior(){this("");}
     protected Warrior(String theName) {
@@ -17,6 +19,6 @@ public class Warrior extends Hero{
 
         increaseAttack(-50);
         increaseHitChance(10);
-        return "Warrior performs a giant haphazard swing at the monster";
+        return "model.Warrior performs a giant haphazard swing at the monster";
     }
 }

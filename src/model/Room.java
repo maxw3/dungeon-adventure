@@ -1,4 +1,6 @@
-import model.Item;
+package model;
+
+import enums.Direction;
 
 import java.util.ArrayList;
 
@@ -7,6 +9,7 @@ public class Room {
     //private final Item[] myItems;
     private final ArrayList<DungeonCharacter> myDungeonCharacters = new ArrayList<>();
     private final ArrayList<Item> myItems = new ArrayList<>();
+    private final int[] myPosition;
     private boolean myNorth;
     private boolean myEast;
     private boolean mySouth;
@@ -15,10 +18,18 @@ public class Room {
     private boolean myExplored;
 
     Room() {
-        myNorth = true;
-        myEast = true;
-        mySouth = true;
-        myWest = true;
+        this(new int[]{0, 0}, false, false, false, false);
+    }
+
+    Room(final int[] thePosition) {
+        this(thePosition, false, false, false, false);
+    }
+    Room(final int[] thePosition, final boolean theNorth, final boolean theEast, final boolean theSouth, final boolean theWest) {
+        myNorth = theNorth;
+        myEast = theEast;
+        mySouth = theSouth;
+        myWest = theWest;
+        myPosition = new int[]{thePosition[0], thePosition[1]};
     }
 
     public boolean getNorth(){
@@ -37,6 +48,9 @@ public class Room {
         return mySouth;
     }
 
+    public int[] getPosition() {
+        return myPosition;
+    }
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -96,10 +110,28 @@ public class Room {
         myDungeonCharacters.add(theCharacter);
     }
 
+    /*default*/ void setHallway(final boolean theState, final Direction theDirection) {
+        if (theDirection == null) {
+            throw new IllegalArgumentException("The direction is null.");
+        }
+        if (theDirection == Direction.NORTH) {
+            myNorth = theState;
+        } else if (theDirection == Direction.SOUTH) {
+            mySouth = theState;
+        } else if (theDirection == Direction.EAST) {
+            myEast = theState;
+        } else {
+            myWest = theState;
+        }
+    }
     /*default*/ void addItem(final Item theEquipment) {
         if (theEquipment == null) {
             throw new IllegalArgumentException("The item is null.");
         }
         myItems.add(theEquipment);
+    }
+
+    /*default*/ void setExplored(final boolean theState) {
+        myExplored = theState;
     }
 }
