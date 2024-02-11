@@ -8,11 +8,9 @@ public abstract class DungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
+    private final Dummy myDummy = new Dummy();
 
     protected DungeonCharacter(){
-        this(1);
-    }
-    protected DungeonCharacter(final int theLevel){
         myMaxHP = -1;
         myHP = -1;
         myAttack = 0;
@@ -38,7 +36,12 @@ public abstract class DungeonCharacter {
     private void setCurrentHP(final int theHP){
         myHP = theHP;
     }
-    protected final void healOrDamage(final int theAmount){
+
+    /**
+     * Changes the HP of the Character by a fixed amount.
+     * @param theAmount the amount that HP changes (positive is heal, negative is damage)
+     */
+    protected void healOrDamage(final int theAmount){
         myHP += theAmount;
     }
     protected final void setAttack(final int theAttack){
@@ -59,7 +62,7 @@ public abstract class DungeonCharacter {
     protected final void multiplyAtkSpd(final double theMultiplier){
         myAtkSpd *= theMultiplier;
     }
-    protected final void setMyHitChance(final int theHitChance){
+    protected final void setHitChance(final int theHitChance){
         myHitChance = theHitChance;
     }
     protected final void increaseHitChance(final int theChange){
@@ -91,15 +94,23 @@ public abstract class DungeonCharacter {
     protected final int getAttack(){
         return myAttack;
     }
-    public final void attack(final DungeonCharacter theTarget){
-        int roll =(int) (Math.random() * 100);
+    public final void attack(final DungeonCharacter theTarget) {
+        for (int i = 0; i < myAtkSpd; i++) {
+            int roll = roll();
 
-        if (roll <= getHitChance() && !theTarget.isBlocked()){
-            double multiplier = Math.random() + 0.5;
-            theTarget.healOrDamage((int)(getAttack() * multiplier * -1));
+            if (roll <= getHitChance() && !theTarget.isBlocked()) {
+                double multiplier = Math.random() + 0.5;
+                theTarget.healOrDamage((int) (getAttack() * multiplier * -1));
+            }
         }
     }
-    public abstract String skill(final DungeonCharacter theTarget);
+    public void skill(final DungeonCharacter theTarget){
+        skillDescription();
+    }
+    protected abstract String skillDescription();
+    protected final int roll(){
+        return (int) Math.random() * 100;
+    }
 
     public final String toString(){
         StringBuilder output = new StringBuilder("Name: ");
@@ -125,7 +136,7 @@ public abstract class DungeonCharacter {
         output.append(NEW_LINE);
 
         output.append("Skill: ");
-        output.append(skill(this));
+        output.append(skillDescription());
         output.append(NEW_LINE);
 
         return output.toString();
