@@ -22,10 +22,6 @@ public class Room {
         myWest = true;
     }
 
-    public void addDungeonCharacter(DungeonCharacter theCharacter){
-        myDungeonCharacters.add(theCharacter);
-    }
-
     public ArrayList<DungeonCharacter> getCharacters(){
         return myDungeonCharacters;
     }

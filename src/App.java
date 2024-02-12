@@ -1,4 +1,4 @@
-import java.util.Scanner;
+
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -6,16 +6,21 @@ public class App {
 
         Floor f = new Floor(6);
 
-        f.getRooms()[0][0].addDungeonCharacter(new Hero("Hero"));
+        Hero aHero = new Hero("Hero");
+
+        Room[][] rooms = f.getRooms();
+
+        int currX, currY;
+        currX = 0;
+        currY = 0;
+
+        rooms[currY][currX].getCharacters().add(aHero);
+
 
         System.out.println(f.toString());
 
-        Scanner scanner = new Scanner(System.in);
+        new Window();
 
-        char input;
-
-        while((input = (char)scanner.nextByte()) > 0) {
-            System.out.println("Inputing");
-        }
     }
+
 }
