@@ -28,7 +28,13 @@ public class Window extends JFrame implements KeyListener{
         myDisplayedFloor = new JTextArea();
         myDisplayedFloor.setBounds(0,0,800,800);
         myDisplayedFloor.setText(myFloor.toString());
-        myDisplayedFloor.setFont(new Font("Consolas", 1, 44));
+        
+        if(System.getProperty("os.name").startsWith("Mac")){
+            myDisplayedFloor.setFont(new Font("PT Mono", 1, 44));
+        }else if(System.getProperty("os.name").startsWith("Windows")){
+            myDisplayedFloor.setFont(new Font("Consolas", 1, 44));
+        }
+
         myDisplayedFloor.setEditable(false);
 
         myDisplayedFloor.addKeyListener(this);
