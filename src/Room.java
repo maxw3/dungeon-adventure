@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 
+import model.Item;
+
 public class Room {
 
-    //private final Item[] myItems;
+    private final ArrayList<Item> myItems;
     private final ArrayList<DungeonCharacter> myDungeonCharacters;
     
     private boolean myNorth;
@@ -13,13 +15,23 @@ public class Room {
     private boolean myExplored;
 
     Room(){
-        //myItems = new Item[1];
+        myItems = new ArrayList<Item>();
         myDungeonCharacters = new ArrayList<DungeonCharacter>();
 
         myNorth = true;
         myEast = true;
         mySouth = true;
         myWest = true;
+    }
+
+    Room(boolean theNorth, boolean theEast, boolean theSouth, boolean theWest){
+        myItems = new ArrayList<Item>();
+        myDungeonCharacters = new ArrayList<DungeonCharacter>();
+
+        myNorth = theNorth;
+        myEast = theEast;
+        mySouth = theSouth;
+        myWest = theWest;
     }
 
     public ArrayList<DungeonCharacter> getCharacters(){

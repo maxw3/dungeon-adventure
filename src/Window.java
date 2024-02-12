@@ -3,7 +3,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 public class Window extends JFrame implements KeyListener{
@@ -11,7 +10,7 @@ public class Window extends JFrame implements KeyListener{
     private final Hero myHero;
     private final Floor myFloor;
 
-    JTextArea floor;
+    private final JTextArea myDisplayedFloor;
 
     Window(){
         super();
@@ -26,14 +25,14 @@ public class Window extends JFrame implements KeyListener{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        floor = new JTextArea();
-        floor.setBounds(20,60,700,700);
-        floor.setText(myFloor.toString());
-        floor.setFont(new Font("Consolas", 1, 44));
-        floor.setEditable(false);
+        myDisplayedFloor = new JTextArea();
+        myDisplayedFloor.setBounds(20,60,700,700);
+        myDisplayedFloor.setText(myFloor.toString());
+        myDisplayedFloor.setFont(new Font("Consolas", 1, 44));
+        myDisplayedFloor.setEditable(false);
 
-        floor.addKeyListener(this);
-        add(floor);
+        myDisplayedFloor.addKeyListener(this);
+        add(myDisplayedFloor);
 
         setSize (800, 800);    
         setLayout (null);    
@@ -51,7 +50,7 @@ public class Window extends JFrame implements KeyListener{
             heroPos[1] = Math.min(heroPos[1] + 1, myFloor.getSize() - 1);
             myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
 
-            floor.setText(myFloor.toString());
+            myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 'a'){
             int[] heroPos = myHero.getPosition();
@@ -60,7 +59,7 @@ public class Window extends JFrame implements KeyListener{
             heroPos[1] = Math.max(heroPos[1] - 1, 0);
             myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
 
-            floor.setText(myFloor.toString());
+            myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 's'){
 
@@ -70,7 +69,7 @@ public class Window extends JFrame implements KeyListener{
             heroPos[0] = Math.min(heroPos[0] + 1, myFloor.getSize() - 1);
             myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
 
-            floor.setText(myFloor.toString());
+            myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 'w'){
             int[] heroPos = myHero.getPosition();
@@ -79,7 +78,7 @@ public class Window extends JFrame implements KeyListener{
             heroPos[0] = Math.max(heroPos[0] - 1, 0);
             myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
 
-            floor.setText(myFloor.toString());
+            myDisplayedFloor.setText(myFloor.toString());
         }
     }
 
