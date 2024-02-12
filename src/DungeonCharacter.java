@@ -8,6 +8,7 @@ public abstract class DungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
+    private final int[] myPosition;
     //private final Dummy myDummy = new Dummy();
 
     protected DungeonCharacter(){
@@ -16,6 +17,10 @@ public abstract class DungeonCharacter {
         myAttack = 0;
         myAtkSpd = 0;
         myBlockChance = 0;
+
+        myPosition = new int[2];
+        myPosition[0] = 0;
+        myPosition[1] = 0;
     }
 
     protected final void setMaxHP(final int theHP){
@@ -35,6 +40,11 @@ public abstract class DungeonCharacter {
     }
     private void setCurrentHP(final int theHP){
         myHP = theHP;
+    }
+
+    public final void setPosition(int[] thePosition){
+        myPosition[0] = thePosition[0];
+        myPosition[1] = thePosition[1];
     }
 
     /**
@@ -93,6 +103,9 @@ public abstract class DungeonCharacter {
     }
     protected final int getAttack(){
         return myAttack;
+    }
+    public final int[] getPosition(){
+        return myPosition;
     }
     public final void attack(final DungeonCharacter theTarget) {
         for (int i = 0; i < myAtkSpd; i++) {
