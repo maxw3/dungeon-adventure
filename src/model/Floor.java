@@ -66,23 +66,8 @@ public class Floor {
                 if(room == mySize - 1){
                     sb.append('*');
                 }
-                // if(ra[room].getEast()){
-                //     sb.append("|");
-                // }else{
-                //     sb.append("*");
-                // }
             }
             sb.append('\n');
-            // for(int room = 0; room < mySize; room++){
-            //     sb.append('*');
-            //     if(ra[room].getSouth()){
-            //         sb.append('-');
-            //     }else{
-            //         sb.append('*');
-            //     }
-            //     sb.append("*");
-            // }
-            //sb.append('\n');
         }
 
         for(int c = 0; c < mySize * 2; c++){
@@ -133,8 +118,8 @@ public class Floor {
             adjacentToMaze.remove(chosenRoom);
             addNeighbors(chosenRoom, adjacentToMaze, roomsPartOfMaze);
             boolean[] neighborExplored = checkNeighbors(roomsPartOfMaze, chosenRoom);
-            for (int selectDoor = 4; selectDoor > 0; selectDoor--) {
-                int selection = myRandom.nextInt(selectDoor);
+            while (true) {
+                int selection = myRandom.nextInt(4);
                 if (neighborExplored[selection]) {
                     if (selection == 0) {
                         chosenRoom.setHallway(true, Direction.NORTH);
@@ -145,10 +130,11 @@ public class Floor {
                     } else if (selection == 2) {
                         chosenRoom.setHallway(true, Direction.EAST);
                         myRooms[x + 1][y].setHallway(true, Direction.WEST);
-                    } else if (selection == 3) {
+                    } else {
                         chosenRoom.setHallway(true, Direction.WEST);
                         myRooms[x - 1][y].setHallway(true, Direction.EAST);
                     }
+                    break;
                 }
             }
         }

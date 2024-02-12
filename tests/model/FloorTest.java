@@ -8,7 +8,7 @@ class FloorTest {
 
     @Test
     void testToString() {
-        assertEquals("", new Floor(4));
+        assertEquals("", new Floor(3));
     }
 
     @Test
