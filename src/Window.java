@@ -42,7 +42,7 @@ public class Window extends JFrame implements KeyListener{
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if(e.getKeyChar() == 'd'){
+        if(e.getKeyChar() == 'd' || e.getKeyCode() == KeyEvent.VK_RIGHT){
 
             int[] heroPos = myHero.getPosition();
 

@@ -25,4 +25,4 @@ replay_pid*
 
 .vscode
 .DS_Store
-/.idea/
+.idea

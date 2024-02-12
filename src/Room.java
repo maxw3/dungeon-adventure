@@ -7,6 +7,8 @@ public class Room {
     private final ArrayList<Item> myItems;
     private final ArrayList<DungeonCharacter> myDungeonCharacters;
     
+    private Room myNorthRoom;
+
     private boolean myNorth;
     private boolean myEast;
     private boolean mySouth;
