@@ -16,6 +16,12 @@ public class Monster extends DungeonCharacter{
         myHealRate = theHealRate;
     }
 
+    public Monster(String theName) {
+        super();
+        myName = theName;
+        myHealMultiplier = 1.0;
+        myHealRate = 1.0;
+    }
     @Override
     public final void skill(final DungeonCharacter theTarget) {
         theTarget.healOrDamage((int) (myHP * myHealMultiplier));

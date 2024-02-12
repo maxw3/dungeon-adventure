@@ -56,7 +56,17 @@ public class Floor {
                         sb.append('*');
                     }
                 }
-                sb.append(' ');
+                boolean hasHero = false;
+                for(DungeonCharacter dc: myRooms[ra][room].getCharacters()){
+                    if(dc.getClass().getSimpleName() == "Hero"){
+                        hasHero = true;
+                    }
+                }
+                if(hasHero){
+                    sb.append('@');
+                }else{
+                    sb.append(' ');
+                }
                 if(room == mySize - 1){
                     sb.append('*');
                 }
@@ -89,5 +99,9 @@ public class Floor {
 
     public int getSize(){
         return mySize;
+    }
+
+    public Room[][] getRooms(){
+        return myRooms;
     }
 }

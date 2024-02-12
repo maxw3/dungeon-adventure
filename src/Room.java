@@ -1,7 +1,9 @@
+import java.util.ArrayList;
+
 public class Room {
 
     //private final Item[] myItems;
-    private final DungeonCharacter[] myDungeonCharacters;
+    private final ArrayList<DungeonCharacter> myDungeonCharacters;
     
     private boolean myNorth;
     private boolean myEast;
@@ -12,12 +14,20 @@ public class Room {
 
     Room(){
         //myItems = new Item[1];
-        myDungeonCharacters = new DungeonCharacter[1];
+        myDungeonCharacters = new ArrayList<DungeonCharacter>();
 
         myNorth = true;
         myEast = true;
         mySouth = true;
         myWest = true;
+    }
+
+    public void addDungeonCharacter(DungeonCharacter theCharacter){
+        myDungeonCharacters.add(theCharacter);
+    }
+
+    public ArrayList<DungeonCharacter> getCharacters(){
+        return myDungeonCharacters;
     }
 
     public boolean getNorth(){
@@ -56,7 +66,7 @@ public class Room {
         }
 
         // Print Second Row
-        if(myDungeonCharacters.length > 1){
+        if(myDungeonCharacters.size() > 1){
             sb.append('m');
         }else{
             sb.append(' ');

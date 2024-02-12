@@ -8,7 +8,7 @@ public abstract class DungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
-    private final Dummy myDummy = new Dummy();
+    //private final Dummy myDummy = new Dummy();
 
     protected DungeonCharacter(){
         myMaxHP = -1;
