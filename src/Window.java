@@ -18,10 +18,10 @@ public class Window extends JFrame implements KeyListener{
         myHero = new Hero("Hero");
         myFloor = new Floor(6);
 
-        Room[][] rooms = myFloor.getRooms();
+        //Room[][] rooms = myFloor.getRooms();
 
         int[] heroPos = myHero.getPosition();
-        rooms[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
+        myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -52,18 +52,18 @@ public class Window extends JFrame implements KeyListener{
 
             int[] heroPos = myHero.getPosition();
 
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().remove(myHero);
+            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
             heroPos[1] = Math.min(heroPos[1] + 1, myFloor.getSize() - 1);
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
+            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 'a'){
             int[] heroPos = myHero.getPosition();
 
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().remove(myHero);
+            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
             heroPos[1] = Math.max(heroPos[1] - 1, 0);
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
+            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
 
@@ -71,18 +71,18 @@ public class Window extends JFrame implements KeyListener{
 
             int[] heroPos = myHero.getPosition();
 
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().remove(myHero);
+            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
             heroPos[0] = Math.min(heroPos[0] + 1, myFloor.getSize() - 1);
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
+            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 'w'){
             int[] heroPos = myHero.getPosition();
 
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().remove(myHero);
+            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
             heroPos[0] = Math.max(heroPos[0] - 1, 0);
-            myFloor.getRooms()[heroPos[0]][heroPos[1]].getCharacters().add(myHero);
+            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
         }

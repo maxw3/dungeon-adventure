@@ -6,98 +6,99 @@ public class Room {
 
     private final ArrayList<Item> myItems;
     private final ArrayList<DungeonCharacter> myDungeonCharacters;
-    
-    private Room myNorthRoom;
 
-    private boolean myNorth;
-    private boolean myEast;
-    private boolean mySouth;
-    private boolean myWest;
-    private int myEvent;
-    private boolean myExplored;
+    private Room myNorthRoom = null;
+    private Room myEastRoom = null;
+    private Room mySouthRoom = null;
+    private Room myWestRoom = null;
 
     Room(){
         myItems = new ArrayList<Item>();
         myDungeonCharacters = new ArrayList<DungeonCharacter>();
-
-        myNorth = true;
-        myEast = true;
-        mySouth = true;
-        myWest = true;
     }
 
-    Room(boolean theNorth, boolean theEast, boolean theSouth, boolean theWest){
+    Room(Room theNorthRoom, Room theEastRoom, Room theSouthRoom, Room theWestRoom){
         myItems = new ArrayList<Item>();
         myDungeonCharacters = new ArrayList<DungeonCharacter>();
 
-        myNorth = theNorth;
-        myEast = theEast;
-        mySouth = theSouth;
-        myWest = theWest;
+        myNorthRoom = theNorthRoom;
+        myEastRoom = theEastRoom;
+        mySouthRoom = theSouthRoom;
+        myWestRoom = theWestRoom;
     }
 
     public ArrayList<DungeonCharacter> getCharacters(){
         return myDungeonCharacters;
     }
 
-    public boolean getNorth(){
-        return myNorth;
+    public void addCharacter(DungeonCharacter theCharacter){
+        myDungeonCharacters.add(theCharacter);
     }
 
-    public boolean getWest(){
-        return myWest;
+    public void removeCharacter(DungeonCharacter theCharacter){
+        myDungeonCharacters.remove(theCharacter);
     }
 
-    public boolean getEast(){
-        return myEast;
+    public void setRooms(Room theNorthRoom, Room theEastRoom, Room theSouthRoom, Room theWestRoom){
+        myNorthRoom = theNorthRoom;
+        myEastRoom = theEastRoom;
+        mySouthRoom = theSouthRoom;
+        myWestRoom = theWestRoom;
     }
 
-    public boolean getSouth(){
-        return mySouth;
+    public boolean canWalkNorth(){
+        boolean canWalk = false;
+
+        if(myNorthRoom != null){
+            canWalk = true;
+        }
+
+        return canWalk;
     }
 
-    @Override
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
+    public boolean canWalkEast(){
+        boolean canWalk = false;
 
-        // Print First Row
-        sb.append('*');
-        if(myNorth){
-            sb.append("-");
-        }else{
-            sb.append("*");
-        }
-        sb.append("*\n");
-
-        if(myWest){
-            sb.append("|");
-        }else{
-            sb.append("*");
+        if(myEastRoom != null){
+            canWalk = true;
         }
 
-        // Print Second Row
-        if(myDungeonCharacters.size() > 1){
-            sb.append('m');
-        }else{
-            sb.append(' ');
-        }
-        if(myEast){
-            sb.append('|');
-        }else{
-            sb.append('*');
-        }
-        sb.append('\n');
-
-        // Print 3rd Row
-        sb.append('*');
-        if(mySouth){
-            sb.append('-');
-        }else{
-            sb.append('*');
-        }
-        sb.append("*\n");
-
-        return sb.toString();
+        return canWalk;
     }
 
+    public boolean canWalkSouth(){
+        boolean canWalk = false;
+
+        if(mySouthRoom != null){
+            canWalk = true;
+        }
+
+        return canWalk;
+    }
+
+    public boolean canWalkWest(){
+        boolean canWalk = false;
+
+        if(myWestRoom != null){
+            canWalk = true;
+        }
+
+        return canWalk;
+    }
+
+    public void setNorthRoom(Room theNorthRoom){
+        myNorthRoom = theNorthRoom;
+    }
+
+    public void setEastRoom(Room theEastRoom) {
+        myEastRoom = theEastRoom;
+    }
+
+    public void setSouthRoom(Room theSouthRoom){
+        myNorthRoom = theSouthRoom;
+    }
+
+    public void setWestRoom(Room theWestRoom) {
+        myEastRoom = theWestRoom;
+    }
 }

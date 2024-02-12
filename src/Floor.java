@@ -1,63 +1,101 @@
-public class Floor {
+import java.util.Random;
 
-    private Room[][] myRooms;
+public class Floor {
+    
+    private final Room[][] myRooms;
     private int mySize;
+    private Random rand;
 
     Floor(){
-        mySize = 3;
+        mySize = 5;
         myRooms = new Room[mySize][mySize];
+
+        rand = new Random();
 
         for(int row = 0; row < mySize; row++){
             for(int col = 0; col < mySize; col++){
                 myRooms[row][col] = new Room();
             }
         }
+
+        setRandomDoors();
     }
 
     Floor(int theSize){
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
 
+        rand = new Random();
+
         for(int row = 0; row < mySize; row++){
             for(int col = 0; col < mySize; col++){
                 myRooms[row][col] = new Room();
             }
         }
+
+        setRandomDoors();
+    }
+
+    public void addCharacter(int theRoomX, int theRoomY, DungeonCharacter theCharacter){
+        myRooms[theRoomY][theRoomX].addCharacter(theCharacter);
+    }
+
+    public void removeCharacter(int theRoomX, int theRoomY, DungeonCharacter theCharacter){
+        myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
+    }
+
+    private void setRandomDoors(){
+        for(int row = 0; row < mySize; row++){
+            for(int col = 0; col < mySize; col++){
+                if(rand.nextFloat() < 0.5f && row - 1 >= 0){
+                    myRooms[row][col].setNorthRoom(myRooms[row - 1][col]);
+                    myRooms[row - 1][col].setSouthRoom(myRooms[row][col]);
+                }
+                if(rand.nextFloat() < 0.5f && col - 1 >= 0){
+                    myRooms[row][col].setWestRoom(myRooms[row][col - 1]);
+                    myRooms[row][col - 1].setEastRoom(myRooms[row][col]);
+                }
+                if(rand.nextFloat() < 0.5f && row + 1 < mySize){
+                    myRooms[row][col].setSouthRoom(myRooms[row + 1][col]);
+                    myRooms[row + 1][col].setNorthRoom(myRooms[row][col]);
+                }
+                if(rand.nextFloat() < 0.5f && col + 1 < mySize){
+                    myRooms[row][col].setEastRoom(myRooms[row][col + 1]);
+                    myRooms[row][col + 1].setWestRoom(myRooms[row][col]);
+                }
+            }
+        }
+    }
+
+    public int getSize(){
+        return mySize;
     }
 
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        for(int ra = 0; ra < mySize; ra++){
-            for(int room = 0; room < mySize; room++){
+        for(int row = 0; row < mySize; row++){
+            for(Room r: myRooms[row]){
                 sb.append('*');
-                if(ra == 0){
-                    sb.append('*');
+                if(r.canWalkNorth()){
+                    sb.append('-');
                 }else{
-                    if(myRooms[ra][room].getNorth()){
-                        sb.append('-');
-                    }else{
-                        sb.append('*');
-                    }
-                }
-                if(room == mySize - 1){
                     sb.append('*');
                 }
             }
-            sb.append('\n');
-            for(int room = 0; room < mySize; room++){
-                if(room == 0){
-                    sb.append('*');
+
+            // Print top-right-most corner
+            sb.append("*\n");
+
+            for(Room r: myRooms[row]){
+                if(r.canWalkWest()){
+                    sb.append('|');
                 }else{
-                    if(myRooms[ra][room].getWest()){
-                        sb.append('|');
-                    }else{
-                        sb.append('*');
-                    }
+                    sb.append('*');
                 }
                 boolean hasHero = false;
-                for(DungeonCharacter dc: myRooms[ra][room].getCharacters()){
+                for(DungeonCharacter dc: r.getCharacters()){
                     if(dc.getClass().getSimpleName() == "Hero"){
                         hasHero = true;
                     }
@@ -67,41 +105,28 @@ public class Floor {
                 }else{
                     sb.append(' ');
                 }
-                if(room == mySize - 1){
-                    sb.append('*');
-                }
-                // if(ra[room].getEast()){
-                //     sb.append("|");
-                // }else{
-                //     sb.append("*");
-                // }
             }
-            sb.append('\n');
-            // for(int room = 0; room < mySize; room++){
-            //     sb.append('*');
-            //     if(ra[room].getSouth()){
-            //         sb.append('-');
-            //     }else{
-            //         sb.append('*');
-            //     }
-            //     sb.append("*");
-            // }
-            //sb.append('\n');
-        }
 
-        for(int c = 0; c < mySize * 2; c++){
-            sb.append('*');
+            if(myRooms[row][mySize - 1].canWalkEast()){
+                sb.append('|');
+            }else{
+                sb.append('*');
+            }
+
+            sb.append('\n');
+
+            
         }
-        sb.append('*');
+        for(Room r: myRooms[mySize - 1]){
+            sb.append('*');
+            if(r.canWalkSouth()){
+                sb.append('-');
+            }else{
+                sb.append('*');
+            }
+        }
+        sb.append("*\n");
 
         return sb.toString();
-    }
-
-    public int getSize(){
-        return mySize;
-    }
-
-    public Room[][] getRooms(){
-        return myRooms;
     }
 }
