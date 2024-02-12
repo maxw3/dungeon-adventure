@@ -26,7 +26,7 @@ public class Window extends JFrame implements KeyListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         myDisplayedFloor = new JTextArea();
-        myDisplayedFloor.setBounds(20,60,700,700);
+        myDisplayedFloor.setBounds(0,0,800,800);
         myDisplayedFloor.setText(myFloor.toString());
         myDisplayedFloor.setFont(new Font("Consolas", 1, 44));
         myDisplayedFloor.setEditable(false);
