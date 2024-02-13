@@ -17,7 +17,7 @@ public class Room {
         myDungeonCharacters = new ArrayList<DungeonCharacter>();
     }
 
-    Room(Room theNorthRoom, Room theEastRoom, Room theSouthRoom, Room theWestRoom){
+    Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom){
         myItems = new ArrayList<Item>();
         myDungeonCharacters = new ArrayList<DungeonCharacter>();
 
@@ -27,26 +27,26 @@ public class Room {
         myWestRoom = theWestRoom;
     }
 
-    public ArrayList<DungeonCharacter> getCharacters(){
+    public final ArrayList<DungeonCharacter> getCharacters(){
         return myDungeonCharacters;
     }
 
-    public void addCharacter(DungeonCharacter theCharacter){
+    public final void addCharacter(final DungeonCharacter theCharacter){
         myDungeonCharacters.add(theCharacter);
     }
 
-    public void removeCharacter(DungeonCharacter theCharacter){
+    public final void removeCharacter(final DungeonCharacter theCharacter){
         myDungeonCharacters.remove(theCharacter);
     }
 
-    public void setRooms(Room theNorthRoom, Room theEastRoom, Room theSouthRoom, Room theWestRoom){
+    public final void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom){
         myNorthRoom = theNorthRoom;
         myEastRoom = theEastRoom;
         mySouthRoom = theSouthRoom;
         myWestRoom = theWestRoom;
     }
 
-    public boolean canWalkNorth(){
+    public final boolean canWalkNorth(){
         boolean canWalk = false;
 
         if(myNorthRoom != null){
@@ -56,7 +56,7 @@ public class Room {
         return canWalk;
     }
 
-    public boolean canWalkEast(){
+    public final boolean canWalkEast(){
         boolean canWalk = false;
 
         if(myEastRoom != null){
@@ -66,7 +66,7 @@ public class Room {
         return canWalk;
     }
 
-    public boolean canWalkSouth(){
+    public final boolean canWalkSouth(){
         boolean canWalk = false;
 
         if(mySouthRoom != null){
@@ -76,7 +76,7 @@ public class Room {
         return canWalk;
     }
 
-    public boolean canWalkWest(){
+    public final boolean canWalkWest(){
         boolean canWalk = false;
 
         if(myWestRoom != null){
@@ -86,19 +86,19 @@ public class Room {
         return canWalk;
     }
 
-    public void setNorthRoom(Room theNorthRoom){
+    public final void setNorthRoom(final Room theNorthRoom){
         myNorthRoom = theNorthRoom;
     }
 
-    public void setEastRoom(Room theEastRoom) {
+    public final void setEastRoom(final Room theEastRoom) {
         myEastRoom = theEastRoom;
     }
 
-    public void setSouthRoom(Room theSouthRoom){
+    public final void setSouthRoom(final Room theSouthRoom){
         mySouthRoom = theSouthRoom;
     }
 
-    public void setWestRoom(Room theWestRoom) {
+    public final void setWestRoom(final Room theWestRoom) {
         myWestRoom = theWestRoom;
     }
 }
