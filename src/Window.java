@@ -52,18 +52,18 @@ public class Window extends JFrame implements KeyListener{
 
             int[] heroPos = myHero.getPosition();
 
-            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.removeCharacter(heroPos[1], heroPos[0], myHero);
             heroPos[1] = Math.min(heroPos[1] + 1, myFloor.getSize() - 1);
-            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.addCharacter(heroPos[1], heroPos[0], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 'a'){
             int[] heroPos = myHero.getPosition();
 
-            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.removeCharacter(heroPos[1], heroPos[0], myHero);
             heroPos[1] = Math.max(heroPos[1] - 1, 0);
-            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.addCharacter(heroPos[1], heroPos[0], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
 
@@ -71,18 +71,18 @@ public class Window extends JFrame implements KeyListener{
 
             int[] heroPos = myHero.getPosition();
 
-            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.removeCharacter(heroPos[1], heroPos[0], myHero);
             heroPos[0] = Math.min(heroPos[0] + 1, myFloor.getSize() - 1);
-            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.addCharacter(heroPos[1], heroPos[0], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
 
         }else if(e.getKeyChar() == 'w'){
             int[] heroPos = myHero.getPosition();
 
-            myFloor.removeCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.removeCharacter(heroPos[1], heroPos[0], myHero);
             heroPos[0] = Math.max(heroPos[0] - 1, 0);
-            myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
+            myFloor.addCharacter(heroPos[1], heroPos[0], myHero);
 
             myDisplayedFloor.setText(myFloor.toString());
         }
