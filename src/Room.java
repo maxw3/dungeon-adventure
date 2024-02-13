@@ -95,10 +95,10 @@ public class Room {
     }
 
     public void setSouthRoom(Room theSouthRoom){
-        myNorthRoom = theSouthRoom;
+        mySouthRoom = theSouthRoom;
     }
 
     public void setWestRoom(Room theWestRoom) {
-        myEastRoom = theWestRoom;
+        myWestRoom = theWestRoom;
     }
 }

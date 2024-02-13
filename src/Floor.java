@@ -5,6 +5,7 @@ public class Floor {
     private final Room[][] myRooms;
     private int mySize;
     private Random rand;
+    private final float DOOR_CHANCE = 0.5f;
 
     Floor(){
         mySize = 5;
@@ -47,19 +48,19 @@ public class Floor {
     private void setRandomDoors(){
         for(int row = 0; row < mySize; row++){
             for(int col = 0; col < mySize; col++){
-                if(rand.nextFloat() < 0.5f && row - 1 >= 0){
+                if(rand.nextFloat() < DOOR_CHANCE && row - 1 >= 0){
                     myRooms[row][col].setNorthRoom(myRooms[row - 1][col]);
                     myRooms[row - 1][col].setSouthRoom(myRooms[row][col]);
                 }
-                if(rand.nextFloat() < 0.5f && col - 1 >= 0){
+                if(rand.nextFloat() < DOOR_CHANCE && col - 1 >= 0){
                     myRooms[row][col].setWestRoom(myRooms[row][col - 1]);
                     myRooms[row][col - 1].setEastRoom(myRooms[row][col]);
                 }
-                if(rand.nextFloat() < 0.5f && row + 1 < mySize){
+                if(rand.nextFloat() < DOOR_CHANCE && row + 1 < mySize){
                     myRooms[row][col].setSouthRoom(myRooms[row + 1][col]);
                     myRooms[row + 1][col].setNorthRoom(myRooms[row][col]);
                 }
-                if(rand.nextFloat() < 0.5f && col + 1 < mySize){
+                if(rand.nextFloat() < DOOR_CHANCE && col + 1 < mySize){
                     myRooms[row][col].setEastRoom(myRooms[row][col + 1]);
                     myRooms[row][col + 1].setWestRoom(myRooms[row][col]);
                 }

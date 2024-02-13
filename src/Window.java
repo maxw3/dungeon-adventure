@@ -16,9 +16,7 @@ public class Window extends JFrame implements KeyListener{
         super();
 
         myHero = new Hero("Hero");
-        myFloor = new Floor(6);
-
-        //Room[][] rooms = myFloor.getRooms();
+        myFloor = new Floor(7);
 
         int[] heroPos = myHero.getPosition();
         myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
