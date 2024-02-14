@@ -6,7 +6,7 @@ public class HealthPotion extends AbstractConsumable {
     }
 
     @Override
-    public void triggerEffect() {
-        // Change user health here.
+    public String toString(){
+        return "The Health Potion heals for 50% of the Hero's maximum Hit Points.";
     }
 }

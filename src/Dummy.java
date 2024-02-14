@@ -1,6 +1,6 @@
 public class Dummy extends Monster{
     public Dummy(){
-        super("Dummy");
+        super("Dummy", 0,0);
 
         setMaxHP(1);
         setAtkSpd(0);
