@@ -1,83 +1,104 @@
+import java.util.ArrayList;
+
+import model.Item;
+
 public class Room {
 
-    //private final Item[] myItems;
-    private final DungeonCharacter[] myDungeonCharacters;
-    
-    private boolean myNorth;
-    private boolean myEast;
-    private boolean mySouth;
-    private boolean myWest;
-    private int myEvent;
-    private boolean myExplored;
+    private final ArrayList<Item> myItems;
+    private final ArrayList<DungeonCharacter> myDungeonCharacters;
+
+    private Room myNorthRoom = null;
+    private Room myEastRoom = null;
+    private Room mySouthRoom = null;
+    private Room myWestRoom = null;
 
     Room(){
-        //myItems = new Item[1];
-        myDungeonCharacters = new DungeonCharacter[1];
-
-        myNorth = true;
-        myEast = true;
-        mySouth = true;
-        myWest = true;
+        myItems = new ArrayList<Item>();
+        myDungeonCharacters = new ArrayList<DungeonCharacter>();
     }
 
-    public boolean getNorth(){
-        return myNorth;
+    Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom){
+        myItems = new ArrayList<Item>();
+        myDungeonCharacters = new ArrayList<DungeonCharacter>();
+
+        myNorthRoom = theNorthRoom;
+        myEastRoom = theEastRoom;
+        mySouthRoom = theSouthRoom;
+        myWestRoom = theWestRoom;
     }
 
-    public boolean getWest(){
-        return myWest;
+    public final ArrayList<DungeonCharacter> getCharacters(){
+        return myDungeonCharacters;
     }
 
-    public boolean getEast(){
-        return myEast;
+    public final void addCharacter(final DungeonCharacter theCharacter){
+        myDungeonCharacters.add(theCharacter);
     }
 
-    public boolean getSouth(){
-        return mySouth;
+    public final void removeCharacter(final DungeonCharacter theCharacter){
+        myDungeonCharacters.remove(theCharacter);
     }
 
-    @Override
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
+    public final void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom){
+        myNorthRoom = theNorthRoom;
+        myEastRoom = theEastRoom;
+        mySouthRoom = theSouthRoom;
+        myWestRoom = theWestRoom;
+    }
 
-        // Print First Row
-        sb.append('*');
-        if(myNorth){
-            sb.append("-");
-        }else{
-            sb.append("*");
-        }
-        sb.append("*\n");
+    public final boolean canWalkNorth(){
+        boolean canWalk = false;
 
-        if(myWest){
-            sb.append("|");
-        }else{
-            sb.append("*");
+        if(myNorthRoom != null){
+            canWalk = true;
         }
 
-        // Print Second Row
-        if(myDungeonCharacters.length > 1){
-            sb.append('m');
-        }else{
-            sb.append(' ');
-        }
-        if(myEast){
-            sb.append('|');
-        }else{
-            sb.append('*');
-        }
-        sb.append('\n');
-
-        // Print 3rd Row
-        sb.append('*');
-        if(mySouth){
-            sb.append('-');
-        }else{
-            sb.append('*');
-        }
-        sb.append("*\n");
-
-        return sb.toString();
+        return canWalk;
     }
 
+    public final boolean canWalkEast(){
+        boolean canWalk = false;
+
+        if(myEastRoom != null){
+            canWalk = true;
+        }
+
+        return canWalk;
+    }
+
+    public final boolean canWalkSouth(){
+        boolean canWalk = false;
+
+        if(mySouthRoom != null){
+            canWalk = true;
+        }
+
+        return canWalk;
+    }
+
+    public final boolean canWalkWest(){
+        boolean canWalk = false;
+
+        if(myWestRoom != null){
+            canWalk = true;
+        }
+
+        return canWalk;
+    }
+
+    public final void setNorthRoom(final Room theNorthRoom){
+        myNorthRoom = theNorthRoom;
+    }
+
+    public final void setEastRoom(final Room theEastRoom) {
+        myEastRoom = theEastRoom;
+    }
+
+    public final void setSouthRoom(final Room theSouthRoom){
+        mySouthRoom = theSouthRoom;
+    }
+
+    public final void setWestRoom(final Room theWestRoom) {
+        myWestRoom = theWestRoom;
+    }
 }

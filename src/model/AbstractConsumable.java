@@ -15,12 +15,17 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     }
 
     @Override
+    public String getType() {
+        return MY_TYPE.name();
+    }
+
+    @Override
     public String toString() {
         return myQuantity + " " + getName();
     }
 
     public void setQuantity(final int theQuantity) {
-        if (myQuantity <= 0) {
+        if (theQuantity <= 0) {
             throw new IllegalArgumentException("The quantity is less than 0: Is " + theQuantity);
         }
         myQuantity = theQuantity;
