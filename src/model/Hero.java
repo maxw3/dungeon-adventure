@@ -1,3 +1,5 @@
+package model;
+
 import enums.Direction;
 
 public class Hero extends DungeonCharacter{

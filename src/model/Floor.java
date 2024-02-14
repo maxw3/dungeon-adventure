@@ -1,3 +1,5 @@
+package model;
+
 import java.util.Random;
 
 public class Floor {
@@ -96,7 +98,7 @@ public class Floor {
                 }
                 boolean hasHero = false;
                 for(DungeonCharacter dc: r.getCharacters()){
-                    if(dc.getClass().getSimpleName() == "Hero"){
+                    if(dc.getClass().getSimpleName() == "model.Hero"){
                         hasHero = true;
                     }
                 }

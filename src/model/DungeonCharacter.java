@@ -1,3 +1,5 @@
+package model;
+
 public abstract class DungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
     protected static final int MIN_STAT = 0;
@@ -9,7 +11,7 @@ public abstract class DungeonCharacter {
     protected int myHitChance;
     protected int myBlockChance;
     private final int[] myPosition;
-    //private final Dummy myDummy = new Dummy();
+    //private final model.Dummy myDummy = new model.Dummy();
 
     protected DungeonCharacter(){
         myMaxHP = -1;

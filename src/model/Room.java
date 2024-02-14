@@ -1,6 +1,6 @@
-import java.util.ArrayList;
+package model;
 
-import model.Item;
+import java.util.ArrayList;
 
 public class Room {
 
