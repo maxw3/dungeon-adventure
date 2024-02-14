@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3794e7e99d2fdb782489d76d80c93c4e550be425
 public abstract class DungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
     protected static final int MIN_STAT = 0;
@@ -142,4 +145,8 @@ public abstract class DungeonCharacter {
 
         return output.toString();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3794e7e99d2fdb782489d76d80c93c4e550be425
