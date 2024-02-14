@@ -1,5 +1,3 @@
-package model;
-
 public class Warrior extends Hero{
     private Warrior(){this("");}
     protected Warrior(String theName) {
@@ -25,6 +23,6 @@ public class Warrior extends Hero{
 
     @Override
     protected final String skillDescription(){
-        return "model.Warrior performs a giant haphazard swing at the monster";
+        return "Warrior performs a giant haphazard swing at the monster";
     }
 }

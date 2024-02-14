@@ -1,5 +1,3 @@
-package model;
-
 public class Dummy extends Monster{
     public Dummy(){
         super("Dummy");

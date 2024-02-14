@@ -1,5 +1,3 @@
-package model;
-
 public final class MonsterFactory {
     private MonsterFactory() { throw new IllegalStateException("Utility Class");}
 

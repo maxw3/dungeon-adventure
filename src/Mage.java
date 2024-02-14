@@ -1,5 +1,3 @@
-package model;
-
 public class Mage extends Hero{
     protected Mage(String theName) {
         super(theName);
@@ -18,6 +16,6 @@ public class Mage extends Hero{
 
     @Override
     protected final String skillDescription(){
-        return "model.Mage heals itself.";
+        return "Mage heals itself.";
     }
 }
