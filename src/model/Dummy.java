@@ -2,7 +2,7 @@ package model;
 
 public class Dummy extends Monster{
     public Dummy(){
-        super("model.Dummy");
+        super("Dummy");
 
         setMaxHP(1);
         setAtkSpd(0);
