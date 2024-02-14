@@ -1,4 +1,5 @@
-package model;
+import model.Floor;
+import model.Hero;
 
 import java.awt.Font;
 import java.awt.event.KeyEvent;
