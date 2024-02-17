@@ -1,6 +1,8 @@
+package model;
+
 public class Dummy extends Monster{
     public Dummy(){
-        super("Dummy", 0,0);
+        super("model.Dummy", 0,0);
 
         setMaxHP(1);
         setAtkSpd(0);
@@ -9,5 +11,5 @@ public class Dummy extends Monster{
     }
 
     @Override
-    final protected void healOrDamage(final int theChange){}
+    public final void healOrDamage(final int theChange){}
 }

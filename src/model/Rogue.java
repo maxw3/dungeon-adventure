@@ -1,3 +1,5 @@
+package model;
+
 public class Rogue extends Hero{
     protected Rogue(String theName) {
         super(theName);
@@ -22,6 +24,6 @@ System.out.println("Remember to set hit chance back after skill duration expires
 
     @Override
     protected final String skillDescription(){
-        return "Rogue gets haste and is able to attack faster and dodge more.";
+        return "model.Rogue gets haste and is able to attack faster and dodge more.";
     }
 }

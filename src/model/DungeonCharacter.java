@@ -1,3 +1,5 @@
+package model;
+
 public abstract class DungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
     protected static final int MIN_STAT = 0;
@@ -9,7 +11,7 @@ public abstract class DungeonCharacter {
     protected int myHitChance;
     protected int myBlockChance;
     private final int[] myPosition;
-    //private final Dummy myDummy = new Dummy();
+    //private final model.Dummy myDummy = new model.Dummy();
 
     protected DungeonCharacter(){
         myMaxHP = -1;
@@ -51,7 +53,7 @@ public abstract class DungeonCharacter {
      * Changes the HP of the Character by a fixed amount.
      * @param theAmount the amount that HP changes (positive is heal, negative is damage)
      */
-    protected void healOrDamage(final int theAmount){
+    public void healOrDamage(final int theAmount){
         myHP += theAmount;
     }
     protected final void setAttack(final int theAttack){
@@ -86,7 +88,7 @@ public abstract class DungeonCharacter {
         return true;
     }
 
-    protected final int getMaxHP() {
+    public final int getMaxHP() {
         return  myMaxHP;
     }
     protected final int getHP() {

@@ -7,6 +7,6 @@ public class HealthPotion extends AbstractConsumable {
 
     @Override
     public String toString(){
-        return "The Health Potion heals for 50% of the Hero's maximum Hit Points.";
+        return "The Health Potion heals for 50% of the model.Hero's maximum Hit Points.";
     }
 }
