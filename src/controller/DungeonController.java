@@ -38,7 +38,7 @@ public class DungeonController extends JPanel {
         //adds property change listeners to the main panel
 //        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
         //disables "window exit" when clicking the X on the window
-        myFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Window Listener
         myFrame.addWindowListener(new WindowAdapter() {
             /**
