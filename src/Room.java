@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 import model.Item;
 
@@ -6,20 +7,27 @@ public class Room {
 
     private final ArrayList<Item> myItems;
     private final ArrayList<DungeonCharacter> myDungeonCharacters;
+    private final int myRow;
+    private final int myCol;
 
     private Room myNorthRoom = null;
     private Room myEastRoom = null;
     private Room mySouthRoom = null;
     private Room myWestRoom = null;
 
-    Room(){
-        myItems = new ArrayList<Item>();
-        myDungeonCharacters = new ArrayList<DungeonCharacter>();
+    Room() {
+        this(0, 0);
     }
 
-    Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom){
+    Room(final int theRow, final int theCol) {
         myItems = new ArrayList<Item>();
         myDungeonCharacters = new ArrayList<DungeonCharacter>();
+        myRow = theRow;
+        myCol = theCol;
+    }
+
+    Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom, final int theRow, final int theCol){
+        this(theRow, theCol);
 
         myNorthRoom = theNorthRoom;
         myEastRoom = theEastRoom;
@@ -44,6 +52,13 @@ public class Room {
         myEastRoom = theEastRoom;
         mySouthRoom = theSouthRoom;
         myWestRoom = theWestRoom;
+    }
+
+    /*default*/ void addItem(final Item theEquipment) {
+        if (theEquipment == null) {
+            throw new IllegalArgumentException("The item is null.");
+        }
+        myItems.add(theEquipment);
     }
 
     public final boolean canWalkNorth(){
@@ -86,6 +101,13 @@ public class Room {
         return canWalk;
     }
 
+    public final int getRow() {
+        return myRow;
+    }
+    public final int getCol() {
+        return myCol;
+    }
+
     public final void setNorthRoom(final Room theNorthRoom){
         myNorthRoom = theNorthRoom;
     }
@@ -100,5 +122,20 @@ public class Room {
 
     public final void setWestRoom(final Room theWestRoom) {
         myWestRoom = theWestRoom;
+    }
+
+    @Override
+    public boolean equals(final Object theObject) {
+        if (!theObject.getClass().getSimpleName().equals("Room")) {
+            return false;
+        }
+        Room otherRoom = (Room)theObject;
+        return myDungeonCharacters.equals(otherRoom.myDungeonCharacters) && myItems.equals(otherRoom.myItems)
+                && myRow == otherRoom.myRow && myCol == otherRoom.myCol;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(myDungeonCharacters, myItems, myRow, myCol);
     }
 }
