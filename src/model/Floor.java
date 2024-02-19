@@ -4,6 +4,7 @@ import enums.Direction;
 import model.HealthPotion;
 import model.Pillar;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class Floor {
             }
         }
         fillFloor();
-        createMaze();
+        Room temp = createMaze();
     }
 
     public final void addCharacter(final int theRoomX, final int theRoomY, final DungeonCharacter theCharacter){
@@ -71,32 +72,32 @@ public class Floor {
     private void fillFloor() {
         for(int row = 0; row < mySize; row++) {
             for(int col = 0; col < mySize; col++){
-                int choice = RAND.nextInt(12);
-                if (choice >= 3 && choice <= 5) {
-                    myRooms[row][col].addCharacter(MonsterFactory.createSkeleton(1));
-                } else if (choice > 5 && choice <= 10) {
+                int choice = RAND.nextInt(100);
+                if (choice <= 30) {
+                    myRooms[row][col].addCharacter(MonsterFactory.createMonster(myFloorLevel));
+                } else if (choice <= 70) {
                     myRooms[row][col].addItem(new HealthPotion(1));
-                } else if (choice > 10) {
-                    // Add in Pits
+                } else if (choice <= 80) {
+                    myRooms[row][col].addItem(new Pit());
                 }
             }
         }
-        int x = RAND.nextInt(mySize);
-        int y = RAND.nextInt(mySize);
-        myRooms[x][y].addItem(new Pillar("Encapsulation"));
+
     }
 
-    private void createMaze() {
+    private Room createMaze() {
         final Set<Room> adjacentToMaze = new HashSet<>();
         final Set<Room> roomsPartOfMaze = new HashSet<>();
         int row = RAND.nextInt(mySize);
         int col = RAND.nextInt(mySize);
-        roomsPartOfMaze.add(myRooms[row][col]);
-        addNeighbors(myRooms[row][col], adjacentToMaze, roomsPartOfMaze);
+        Room startingRoom = myRooms[row][col];
+        Room chosenRoom = startingRoom;
+        roomsPartOfMaze.add(startingRoom);
+        addNeighbors(startingRoom, adjacentToMaze, roomsPartOfMaze);
         while (!adjacentToMaze.isEmpty()) {
             final Object[] workableRooms = adjacentToMaze.toArray();
             final int pick = RAND.nextInt(adjacentToMaze.size());
-            final Room chosenRoom = (Room)workableRooms[pick];
+            chosenRoom = (Room)workableRooms[pick];
             roomsPartOfMaze.add(chosenRoom);
             addNeighbors(chosenRoom, adjacentToMaze, roomsPartOfMaze);
             adjacentToMaze.remove(chosenRoom);
@@ -112,6 +113,20 @@ public class Floor {
                     }
                 }
             }
+        }
+        addPillar(chosenRoom);
+        return startingRoom;
+    }
+
+    private void addPillar(final Room theRoom) {
+        if (myFloorLevel == 0) {
+            theRoom.addItem(new Pillar("Encapsulation"));
+        } else if (myFloorLevel == 1) {
+            theRoom.addItem(new Pillar("Abstraction"));
+        } else if (myFloorLevel == 2) {
+            theRoom.addItem(new Pillar("Inheritance"));
+        } else if (myFloorLevel == 3) {
+            theRoom.addItem(new Pillar("Abstraction"));
         }
     }
 
@@ -261,5 +276,9 @@ public class Floor {
         sb.append("*\n");
 
         return sb.toString();
+    }
+
+    Room[][] getRooms() {
+        return Arrays.copyOf(myRooms, mySize);
     }
 }

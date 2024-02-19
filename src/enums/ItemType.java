@@ -4,5 +4,6 @@ public enum ItemType {
     EQUIPMENT,
     PILLAR,
     CONSUMABLE,
-    PERMANENT
+    PERMANENT,
+    PIT
 }
