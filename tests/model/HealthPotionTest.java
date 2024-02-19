@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HealthPotionTest {
 
-    HealthPotion myTestPotion = new HealthPotion("Health Potion", 2);
+    HealthPotion myTestPotion = new HealthPotion(2);
     @Test
     void testGetQuantity() {
         assertEquals(2, myTestPotion.getQuantity());
