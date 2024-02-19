@@ -1,3 +1,4 @@
+package model;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +16,7 @@ class FloorTest {
 
     @Test
     void testToString() {
-        assertEquals("", new Floor(7));
+        assertEquals("", new Floor(1, 7));
     }
 
     @Test
