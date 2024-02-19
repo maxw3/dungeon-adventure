@@ -1,190 +1,265 @@
 package model;
 
 import enums.Direction;
+import model.HealthPotion;
+import model.Pillar;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class Floor {
+    
+    private final float DOOR_CHANCE = 0.5f;
 
-    private Room[][] myRooms;
-    private int mySize;
-    private Random myRandom = new Random();
+    private final int mySize;
 
-    public Floor(){
-        mySize = 3;
-        myRooms = new Room[mySize][mySize];
+    private final Room[][] myRooms;
+    
+    private static final Random RAND = new Random();
+    private final int myFloorLevel;
+
+    Floor(){
+        this(1, 5);
     }
 
-    public Floor(int theSize){
+    Floor(final int theFloorLevel, final int theSize){
+        myFloorLevel = theFloorLevel;
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
 
         for(int row = 0; row < mySize; row++){
             for(int col = 0; col < mySize; col++){
-                myRooms[row][col] = new Room(new int[]{row, col});
+                myRooms[row][col] = new Room(row, col);
             }
         }
         fillFloor();
         createMaze();
-        int hold = 0;
     }
 
-    @Override
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-
-        for(int ra = 0; ra < mySize; ra++){
-            for(int room = 0; room < mySize; room++){
-                sb.append('*');
-                if(ra == 0){
-                    sb.append('*');
-                }else{
-                    if(myRooms[ra][room].getNorth()){
-                        sb.append('-');
-                    }else{
-                        sb.append('*');
-                    }
-                }
-                if(room == mySize - 1){
-                    sb.append('*');
-                }
-            }
-            sb.append('\n');
-            for(int room = 0; room < mySize; room++){
-                if(room == 0){
-                    sb.append('*');
-                }else{
-                    if(myRooms[ra][room].getWest()){
-                        sb.append('|');
-                    }else{
-                        sb.append('*');
-                    }
-                }
-                sb.append(' ');
-                if(room == mySize - 1){
-                    sb.append('*');
-                }
-            }
-            sb.append('\n');
-        }
-
-        for(int c = 0; c < mySize * 2; c++){
-            sb.append('*');
-        }
-        sb.append('*');
-
-        return sb.toString();
+    public final void addCharacter(final int theRoomX, final int theRoomY, final DungeonCharacter theCharacter){
+        myRooms[theRoomY][theRoomX].addCharacter(theCharacter);
     }
 
-    public int getSize(){
-        return mySize;
+    public final void removeCharacter(final int theRoomX, final int theRoomY, final DungeonCharacter theCharacter){
+        myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
+    }
+
+    private final void setRandomDoors(){
+        for(int row = 0; row < mySize; row++){
+            for(int col = 0; col < mySize; col++){
+                if(RAND.nextFloat() < DOOR_CHANCE && row - 1 >= 0){
+                    myRooms[row][col].setNorthRoom(myRooms[row - 1][col]);
+                    myRooms[row - 1][col].setSouthRoom(myRooms[row][col]);
+                }
+                if(RAND.nextFloat() < DOOR_CHANCE && col - 1 >= 0){
+                    myRooms[row][col].setWestRoom(myRooms[row][col - 1]);
+                    myRooms[row][col - 1].setEastRoom(myRooms[row][col]);
+                }
+                if(RAND.nextFloat() < DOOR_CHANCE && row + 1 < mySize){
+                    myRooms[row][col].setSouthRoom(myRooms[row + 1][col]);
+                    myRooms[row + 1][col].setNorthRoom(myRooms[row][col]);
+                }
+                if(RAND.nextFloat() < DOOR_CHANCE && col + 1 < mySize){
+                    myRooms[row][col].setEastRoom(myRooms[row][col + 1]);
+                    myRooms[row][col + 1].setWestRoom(myRooms[row][col]);
+                }
+            }
+        }
     }
 
     private void fillFloor() {
         for(int row = 0; row < mySize; row++) {
             for(int col = 0; col < mySize; col++){
-                int choice = myRandom.nextInt(12);
+                int choice = RAND.nextInt(12);
                 if (choice >= 3 && choice <= 5) {
                     myRooms[row][col].addCharacter(MonsterFactory.createSkeleton(1));
                 } else if (choice > 5 && choice <= 10) {
-                    myRooms[row][col].addItem(new HealthPotion("Health Potion", 1));
+                    myRooms[row][col].addItem(new HealthPotion(1));
                 } else if (choice > 10) {
                     // Add in Pits
                 }
             }
         }
-        int x = myRandom.nextInt(mySize);
-        int y = myRandom.nextInt(mySize);
+        int x = RAND.nextInt(mySize);
+        int y = RAND.nextInt(mySize);
         myRooms[x][y].addItem(new Pillar("Encapsulation"));
     }
 
     private void createMaze() {
         final Set<Room> adjacentToMaze = new HashSet<>();
         final Set<Room> roomsPartOfMaze = new HashSet<>();
-        int x = myRandom.nextInt(mySize);
-        int y = myRandom.nextInt(mySize);
-        roomsPartOfMaze.add(myRooms[x][y]);
-        addNeighbors(myRooms[x][y], adjacentToMaze, roomsPartOfMaze);
+        int row = RAND.nextInt(mySize);
+        int col = RAND.nextInt(mySize);
+        roomsPartOfMaze.add(myRooms[row][col]);
+        addNeighbors(myRooms[row][col], adjacentToMaze, roomsPartOfMaze);
         while (!adjacentToMaze.isEmpty()) {
             final Object[] workableRooms = adjacentToMaze.toArray();
-            final int pick = myRandom.nextInt(adjacentToMaze.size());
+            final int pick = RAND.nextInt(adjacentToMaze.size());
             final Room chosenRoom = (Room)workableRooms[pick];
-            int[] temp = chosenRoom.getPosition();
-            x = temp[0];
-            y = temp[1];
             roomsPartOfMaze.add(chosenRoom);
-            adjacentToMaze.remove(chosenRoom);
             addNeighbors(chosenRoom, adjacentToMaze, roomsPartOfMaze);
-            boolean[] neighborExplored = checkNeighbors(roomsPartOfMaze, chosenRoom);
-            while (true) {
-                int selection = myRandom.nextInt(4);
-                if (neighborExplored[selection]) {
-                    if (selection == 0) {
-                        chosenRoom.setHallway(true, Direction.NORTH);
-                        myRooms[x][y + 1].setHallway(true, Direction.SOUTH);
-                    } else if (selection == 1) {
-                        chosenRoom.setHallway(true, Direction.SOUTH);
-                        myRooms[x][y - 1].setHallway(true, Direction.NORTH);
-                    } else if (selection == 2) {
-                        chosenRoom.setHallway(true, Direction.EAST);
-                        myRooms[x + 1][y].setHallway(true, Direction.WEST);
-                    } else {
-                        chosenRoom.setHallway(true, Direction.WEST);
-                        myRooms[x - 1][y].setHallway(true, Direction.EAST);
+            adjacentToMaze.remove(chosenRoom);
+            Set<Direction> directionOfMazeNeighbor = neighborPartOfMaze(chosenRoom, roomsPartOfMaze);
+            boolean didAddDoor = false;
+            while (!didAddDoor) {
+                for (Direction d : directionOfMazeNeighbor) {
+                    int chance = RAND.nextInt(directionOfMazeNeighbor.size());
+                    if (chance == 0) {
+                        addDoor(chosenRoom, d);
+                        didAddDoor = true;
+                        break;
                     }
-                    break;
                 }
             }
         }
     }
 
-    private void addNeighbors (final Room theRoom, final Set<Room> theAdjacentRooms, final Set<Room> theRoomsInMaze) {
-        int[] position = theRoom.getPosition();
-        Room roomToAdd;
-        if (position[0] != 0) {
-            roomToAdd = myRooms[position[0] - 1][position[1]];
-            if (!theRoomsInMaze.contains(roomToAdd)) {
-                theAdjacentRooms.add(roomToAdd);
+    private void addNeighbors(final Room theRoom, final Set<Room> theAdjacentToMaze, final Set<Room> theRoomsPartOfMaze) {
+        Room neighbor;
+        int row = theRoom.getRow();
+        int col = theRoom.getCol();
+        if (row != 0) {
+            neighbor = myRooms[row - 1][col];
+            if (!theRoomsPartOfMaze.contains(neighbor)) {
+                theAdjacentToMaze.add(neighbor);
             }
         }
-        if (position[1] != 0) {
-            roomToAdd = myRooms[position[0]][position[1] - 1];
-            if (!theRoomsInMaze.contains(roomToAdd)) {
-                theAdjacentRooms.add(roomToAdd);
+        if (col != 0) {
+            neighbor = myRooms[row][col - 1];
+            if (!theRoomsPartOfMaze.contains(neighbor)) {
+                theAdjacentToMaze.add(neighbor);
             }
         }
-        if (position[0] != mySize - 1) {
-            roomToAdd = myRooms[position[0] + 1][position[1]];
-            if (!theRoomsInMaze.contains(roomToAdd)) {
-                theAdjacentRooms.add(roomToAdd);
+        if (row != mySize - 1) {
+            neighbor = myRooms[row + 1][col];
+            if (!theRoomsPartOfMaze.contains(neighbor)) {
+                theAdjacentToMaze.add(neighbor);
             }
         }
-        if (position[1] != mySize - 1) {
-            roomToAdd = myRooms[position[0]][position[1] + 1];
-            if (!theRoomsInMaze.contains(roomToAdd)) {
-                theAdjacentRooms.add(roomToAdd);
+        if (col != mySize - 1) {
+            neighbor = myRooms[row][col + 1];
+            if (!theRoomsPartOfMaze.contains(neighbor)) {
+                theAdjacentToMaze.add(neighbor);
             }
         }
     }
-    private boolean[] checkNeighbors(final Set<Room> theExistingMaze, final Room theRoom) {
-        boolean[] neighbors = new boolean[4];
-        int[] position = theRoom.getPosition();
-        int x = position[0];
-        int y = position[1];
-        if (x != 0) {
-            neighbors[3] = theExistingMaze.contains(myRooms[x - 1][y]); // Check West
+
+    private void addDoor(Room chosenRoom, Direction d) {
+        int row = chosenRoom.getRow();
+        int col = chosenRoom.getCol();
+        if (d == Direction.NORTH) {
+            Room mazeRoom = myRooms[row - 1][col];
+            chosenRoom.setNorthRoom(mazeRoom);
+            mazeRoom.setSouthRoom(chosenRoom);
+        } else if (d == Direction.SOUTH) {
+            Room mazeRoom = myRooms[row + 1][col];
+            chosenRoom.setSouthRoom(mazeRoom);
+            mazeRoom.setNorthRoom(chosenRoom);
+        } else if (d == Direction.WEST) {
+            Room mazeRoom = myRooms[row][col - 1];
+            chosenRoom.setWestRoom(mazeRoom);
+            mazeRoom.setEastRoom(chosenRoom);
+        } else if (d == Direction.EAST) {
+            Room mazeRoom = myRooms[row][col + 1];
+            chosenRoom.setEastRoom(mazeRoom);
+            mazeRoom.setWestRoom(chosenRoom);
         }
-        if (y != 0) {
-            neighbors[1] = theExistingMaze.contains(myRooms[x][y - 1]); // Check South
+
+    }
+
+    private Set<Direction> neighborPartOfMaze(Room theRoom, Set<Room> theRoomsPartOfMaze) {
+        Set<Direction> validNeighbors = new HashSet<>();
+        Room neighbor;
+        int row = theRoom.getRow();
+        int col = theRoom.getCol();
+        if (row != 0) {
+            neighbor = myRooms[row - 1][col];
+            if (theRoomsPartOfMaze.contains(neighbor)) {
+                validNeighbors.add(Direction.NORTH);
+            }
         }
-        if (x != mySize - 1) {
-            neighbors[2] = theExistingMaze.contains(myRooms[x + 1][y]); // Check East
+        if (col != 0) {
+            neighbor = myRooms[row][col - 1];
+            if (theRoomsPartOfMaze.contains(neighbor)) {
+                validNeighbors.add(Direction.WEST);
+            }
         }
-        if (y != mySize - 1) {
-            neighbors[0] = theExistingMaze.contains(myRooms[x][y + 1]); // Check North
+        if (row != mySize - 1) {
+            neighbor = myRooms[row + 1][col];
+            if (theRoomsPartOfMaze.contains(neighbor)) {
+                validNeighbors.add(Direction.SOUTH);
+            }
         }
-        return neighbors;
+        if (col != mySize - 1) {
+            neighbor = myRooms[row][col + 1];
+            if (theRoomsPartOfMaze.contains(neighbor)) {
+                validNeighbors.add(Direction.EAST);
+            }
+        }
+        return validNeighbors;
+    }
+
+    public final int getSize(){
+        return mySize;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        for(int row = 0; row < mySize; row++){
+            for(Room r: myRooms[row]){
+                sb.append('*');
+                if(r.canWalkNorth()){
+                    sb.append('-');
+                }else{
+                    sb.append('*');
+                }
+            }
+
+            // Print top-right-most corner
+            sb.append("*\n");
+
+            for(Room r: myRooms[row]){
+                if(r.canWalkWest()){
+                    sb.append('|');
+                }else{
+                    sb.append('*');
+                }
+                boolean hasHero = false;
+                for(DungeonCharacter dc: r.getCharacters()){
+                    if(dc.getClass().getSimpleName() == "model.Hero"){
+                        hasHero = true;
+                    }
+                }
+                if(hasHero){
+                    sb.append('@');
+                }else{
+                    sb.append(' ');
+                }
+            }
+
+            if(myRooms[row][mySize - 1].canWalkEast()){
+                sb.append('|');
+            }else{
+                sb.append('*');
+            }
+
+            sb.append('\n');
+
+            
+        }
+        for(Room r: myRooms[mySize - 1]){
+            sb.append('*');
+            if(r.canWalkSouth()){
+                sb.append('-');
+            }else{
+                sb.append('*');
+            }
+        }
+        sb.append("*\n");
+
+        return sb.toString();
     }
 }

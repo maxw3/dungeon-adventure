@@ -1,12 +1,12 @@
 package model;
 
 public class HealthPotion extends AbstractConsumable {
-    public HealthPotion(final String theName, final int theQuantity) {
-        super(theName, theQuantity);
+    public HealthPotion(final int theQuantity) {
+        super("Health Potion", theQuantity);
     }
 
     @Override
-    public void triggerEffect() {
-        // Change user health here.
+    public String toString(){
+        return "The Health Potion heals for 50% of the model.Hero's maximum Hit Points.";
     }
 }

@@ -4,33 +4,35 @@ import java.util.ArrayList;
 
 public class Inventory {
 
-    private final ArrayList<AbstractEquipment> myItems;
+    private final ArrayList<AbstractEquipment> myConsumableItems;
+    private final AbstractEquipment[] myPillars;
 
 
     public Inventory() {
-        myItems = new ArrayList<>();
+        myConsumableItems = new ArrayList<>();
+        myPillars = new AbstractEquipment[4];
     }
 
     public String toString() {
-        return "Inventory is size " + myItems.size() + ": " + myItems;
+        return "Inventory is size " + myConsumableItems.size() + ": " + myConsumableItems;
     }
 
     public String getContents() {
-        return myItems.toString();
+        return myConsumableItems.toString();
     }
     public int getSize() {
-        return myItems.size();
+        return myConsumableItems.size() + myPillars.length;
     }
 
     public AbstractEquipment getItem(final int theIndex) {
-        if (theIndex >= myItems.size()) {
+        if (theIndex >= myConsumableItems.size()) {
             throw new IllegalArgumentException("The index is out of bounds: Is " + theIndex);
         }
-        return myItems.get(theIndex);
+        return myConsumableItems.get(theIndex);
     }
 
     public void addItem(final AbstractEquipment theItem) {
-        myItems.add(theItem);
+        myConsumableItems.add(theItem);
     }
 
     public void useItem(final AbstractEquipment theItem) {

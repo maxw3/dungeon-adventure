@@ -5,12 +5,12 @@ public class Skeleton extends Monster{
         this(1);
     }
     public Skeleton(final int theFloor){
-        super("model.Skeleton");
+        super("model.Skeleton", 0.1, 0.1);
         double modifier = FLOOR_MODIFIERS[theFloor - 1];
 
         setMaxHP((int)(100 * modifier));
         setAtkSpd(1);
-        setMyHitChance((int)(100 - (50 / modifier)));
+        setHitChance((int)(100 - (50 / modifier)));
         setAttack((int)(50 * modifier));
     }
 }
