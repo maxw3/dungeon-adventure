@@ -1,9 +1,11 @@
+package model;
+
 import enums.Direction;
 
 public class Hero extends DungeonCharacter{
 
 
-    protected Hero(String theName){
+    public Hero(String theName){
         super();
         myName = theName;
     }

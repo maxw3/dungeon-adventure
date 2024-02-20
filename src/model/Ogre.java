@@ -1,9 +1,11 @@
+package model;
+
 public class Ogre extends Monster{
     public Ogre(){
         this(1);
     }
     public Ogre(final int theFloor){
-        super("Ogre", 0.25, 0.2);
+        super("model.Ogre", 0.25, 0.2);
         double modifier = FLOOR_MODIFIERS[theFloor - 1];
 
         setMaxHP((int)(250 * modifier));

@@ -1,3 +1,5 @@
+package model;
+
 import java.util.Random;
 
 public class Floor {
@@ -9,21 +11,14 @@ public class Floor {
     private final Room[][] myRooms;
     
     private static final Random RAND = new Random();
+    private final int myFloorLevel;
 
     Floor(){
-        mySize = 5;
-        myRooms = new Room[mySize][mySize];
-
-        for(int row = 0; row < mySize; row++){
-            for(int col = 0; col < mySize; col++){
-                myRooms[row][col] = new Room();
-            }
-        }
-
-        setRandomDoors();
+        this(1, 5);
     }
 
-    Floor(final int theSize){
+    public Floor(final int theFloorLevel, final int theSize){
+        myFloorLevel = theFloorLevel;
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
 
@@ -96,7 +91,7 @@ public class Floor {
                 }
                 boolean hasHero = false;
                 for(DungeonCharacter dc: r.getCharacters()){
-                    if(dc.getClass().getSimpleName() == "Hero"){
+                    if(dc.getClass().getSimpleName() == "model.Hero"){
                         hasHero = true;
                     }
                 }

@@ -1,9 +1,11 @@
+package model;
+
 public class Skeleton extends Monster{
     public Skeleton(){
         this(1);
     }
     public Skeleton(final int theFloor){
-        super("Skeleton", 0.1, 0.1);
+        super("model.Skeleton", 0.1, 0.1);
         double modifier = FLOOR_MODIFIERS[theFloor - 1];
 
         setMaxHP((int)(100 * modifier));

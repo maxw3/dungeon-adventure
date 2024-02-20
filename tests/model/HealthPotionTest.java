@@ -1,8 +1,8 @@
 package model;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
 
 class HealthPotionTest {
 
@@ -14,7 +14,7 @@ class HealthPotionTest {
 
     @Test
     void testToString() {
-        assertEquals("2 Health Potion", myTestPotion.toString());
+        assertEquals("The Health Potion heals for 50% of the model.Hero's maximum Hit Points.", myTestPotion.toString());
     }
 
     @Test

@@ -1,3 +1,6 @@
+import model.Floor;
+import model.Hero;
+
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -15,8 +18,8 @@ public class Window extends JFrame implements KeyListener{
     Window(){
         super();
 
-        myHero = new Hero("Hero");
-        myFloor = new Floor(7);
+        myHero = new Hero("model.Hero");
+        myFloor = new Floor(1,7);
 
         int[] heroPos = myHero.getPosition();
         myFloor.addCharacter(heroPos[0], heroPos[1], myHero);
