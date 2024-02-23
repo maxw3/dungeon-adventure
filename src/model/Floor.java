@@ -1,8 +1,6 @@
 package model;
 
 import enums.Direction;
-import model.HealthPotion;
-import model.Pillar;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,57 +9,57 @@ import java.util.Set;
 
 public class Floor {
     
-    private final float DOOR_CHANCE = 0.5f;
+    private static final float DOOR_CHANCE = 0.5f;
+    private static final Random RAND = new Random();
 
     private final int mySize;
 
     private final Room[][] myRooms;
-    
-    private static final Random RAND = new Random();
+
     private final int myFloorLevel;
 
-    Floor(){
+    Floor() {
         this(1, 5);
     }
 
-    Floor(final int theFloorLevel, final int theSize){
+    Floor(final int theFloorLevel, final int theSize) {
         myFloorLevel = theFloorLevel;
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
 
-        for(int row = 0; row < mySize; row++){
-            for(int col = 0; col < mySize; col++){
+        for (int row = 0; row < mySize; row++) {
+            for (int col = 0; col < mySize; col++) {
                 myRooms[row][col] = new Room(row, col);
             }
         }
         fillFloor();
-        Room temp = createMaze();
+        createMaze();
     }
 
-    public final void addCharacter(final int theRoomX, final int theRoomY, final DungeonCharacter theCharacter){
+    public final void addCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
         myRooms[theRoomY][theRoomX].addCharacter(theCharacter);
     }
 
-    public final void removeCharacter(final int theRoomX, final int theRoomY, final DungeonCharacter theCharacter){
+    public final void removeCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
         myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
     }
 
-    private final void setRandomDoors(){
-        for(int row = 0; row < mySize; row++){
-            for(int col = 0; col < mySize; col++){
-                if(RAND.nextFloat() < DOOR_CHANCE && row - 1 >= 0){
+    private void setRandomDoors() {
+        for (int row = 0; row < mySize; row++) {
+            for (int col = 0; col < mySize; col++) {
+                if (RAND.nextFloat() < DOOR_CHANCE && row - 1 >= 0) {
                     myRooms[row][col].setNorthRoom(myRooms[row - 1][col]);
                     myRooms[row - 1][col].setSouthRoom(myRooms[row][col]);
                 }
-                if(RAND.nextFloat() < DOOR_CHANCE && col - 1 >= 0){
+                if (RAND.nextFloat() < DOOR_CHANCE && col - 1 >= 0) {
                     myRooms[row][col].setWestRoom(myRooms[row][col - 1]);
                     myRooms[row][col - 1].setEastRoom(myRooms[row][col]);
                 }
-                if(RAND.nextFloat() < DOOR_CHANCE && row + 1 < mySize){
+                if (RAND.nextFloat() < DOOR_CHANCE && row + 1 < mySize) {
                     myRooms[row][col].setSouthRoom(myRooms[row + 1][col]);
                     myRooms[row + 1][col].setNorthRoom(myRooms[row][col]);
                 }
-                if(RAND.nextFloat() < DOOR_CHANCE && col + 1 < mySize){
+                if (RAND.nextFloat() < DOOR_CHANCE && col + 1 < mySize) {
                     myRooms[row][col].setEastRoom(myRooms[row][col + 1]);
                     myRooms[row][col + 1].setWestRoom(myRooms[row][col]);
                 }
@@ -70,9 +68,9 @@ public class Floor {
     }
 
     private void fillFloor() {
-        for(int row = 0; row < mySize; row++) {
-            for(int col = 0; col < mySize; col++){
-                int choice = RAND.nextInt(100);
+        for (int row = 0; row < mySize; row++) {
+            for (int col = 0; col < mySize; col++) {
+                final int choice = RAND.nextInt(100);
                 if (choice <= 30) {
                     myRooms[row][col].addCharacter(MonsterFactory.createMonster(myFloorLevel));
                 } else if (choice <= 70) {
@@ -88,9 +86,9 @@ public class Floor {
     private Room createMaze() {
         final Set<Room> adjacentToMaze = new HashSet<>();
         final Set<Room> roomsPartOfMaze = new HashSet<>();
-        int row = RAND.nextInt(mySize);
-        int col = RAND.nextInt(mySize);
-        Room startingRoom = myRooms[row][col];
+        final int row = RAND.nextInt(mySize);
+        final int col = RAND.nextInt(mySize);
+        final Room startingRoom = myRooms[row][col];
         Room chosenRoom = startingRoom;
         roomsPartOfMaze.add(startingRoom);
         addNeighbors(startingRoom, adjacentToMaze, roomsPartOfMaze);
@@ -101,11 +99,11 @@ public class Floor {
             roomsPartOfMaze.add(chosenRoom);
             addNeighbors(chosenRoom, adjacentToMaze, roomsPartOfMaze);
             adjacentToMaze.remove(chosenRoom);
-            Set<Direction> directionOfMazeNeighbor = neighborPartOfMaze(chosenRoom, roomsPartOfMaze);
+            final Set<Direction> directionOfMazeNeighbor = neighborPartOfMaze(chosenRoom, roomsPartOfMaze);
             boolean didAddDoor = false;
             while (!didAddDoor) {
                 for (Direction d : directionOfMazeNeighbor) {
-                    int chance = RAND.nextInt(directionOfMazeNeighbor.size());
+                    final int chance = RAND.nextInt(directionOfMazeNeighbor.size());
                     if (chance == 0) {
                         addDoor(chosenRoom, d);
                         didAddDoor = true;
@@ -122,7 +120,7 @@ public class Floor {
         if (myFloorLevel == 0) {
             theRoom.addItem(new Pillar("Encapsulation"));
         } else if (myFloorLevel == 1) {
-            theRoom.addItem(new Pillar("Abstraction"));
+            theRoom.addItem(new Pillar("Polymorphism"));
         } else if (myFloorLevel == 2) {
             theRoom.addItem(new Pillar("Inheritance"));
         } else if (myFloorLevel == 3) {
@@ -132,8 +130,8 @@ public class Floor {
 
     private void addNeighbors(final Room theRoom, final Set<Room> theAdjacentToMaze, final Set<Room> theRoomsPartOfMaze) {
         Room neighbor;
-        int row = theRoom.getRow();
-        int col = theRoom.getCol();
+        final int row = theRoom.getRow();
+        final int col = theRoom.getCol();
         if (row != 0) {
             neighbor = myRooms[row - 1][col];
             if (!theRoomsPartOfMaze.contains(neighbor)) {
@@ -160,34 +158,35 @@ public class Floor {
         }
     }
 
-    private void addDoor(Room chosenRoom, Direction d) {
-        int row = chosenRoom.getRow();
-        int col = chosenRoom.getCol();
-        if (d == Direction.NORTH) {
-            Room mazeRoom = myRooms[row - 1][col];
-            chosenRoom.setNorthRoom(mazeRoom);
-            mazeRoom.setSouthRoom(chosenRoom);
-        } else if (d == Direction.SOUTH) {
-            Room mazeRoom = myRooms[row + 1][col];
-            chosenRoom.setSouthRoom(mazeRoom);
-            mazeRoom.setNorthRoom(chosenRoom);
-        } else if (d == Direction.WEST) {
-            Room mazeRoom = myRooms[row][col - 1];
-            chosenRoom.setWestRoom(mazeRoom);
-            mazeRoom.setEastRoom(chosenRoom);
-        } else if (d == Direction.EAST) {
-            Room mazeRoom = myRooms[row][col + 1];
-            chosenRoom.setEastRoom(mazeRoom);
-            mazeRoom.setWestRoom(chosenRoom);
+    private void addDoor(final Room theChosenRoom, final Direction theDirection) {
+        final int row = theChosenRoom.getRow();
+        final int col = theChosenRoom.getCol();
+        final Room mazeRoom;
+        if (theDirection == Direction.NORTH) {
+            mazeRoom = myRooms[row - 1][col];
+            theChosenRoom.setNorthRoom(mazeRoom);
+            mazeRoom.setSouthRoom(theChosenRoom);
+        } else if (theDirection == Direction.SOUTH) {
+            mazeRoom = myRooms[row + 1][col];
+            theChosenRoom.setSouthRoom(mazeRoom);
+            mazeRoom.setNorthRoom(theChosenRoom);
+        } else if (theDirection == Direction.WEST) {
+            mazeRoom = myRooms[row][col - 1];
+            theChosenRoom.setWestRoom(mazeRoom);
+            mazeRoom.setEastRoom(theChosenRoom);
+        } else if (theDirection == Direction.EAST) {
+            mazeRoom = myRooms[row][col + 1];
+            theChosenRoom.setEastRoom(mazeRoom);
+            mazeRoom.setWestRoom(theChosenRoom);
         }
 
     }
 
-    private Set<Direction> neighborPartOfMaze(Room theRoom, Set<Room> theRoomsPartOfMaze) {
-        Set<Direction> validNeighbors = new HashSet<>();
+    private Set<Direction> neighborPartOfMaze(final Room theRoom, final Set<Room> theRoomsPartOfMaze) {
+        final Set<Direction> validNeighbors = new HashSet<>();
         Room neighbor;
-        int row = theRoom.getRow();
-        int col = theRoom.getCol();
+        final int row = theRoom.getRow();
+        final int col = theRoom.getCol();
         if (row != 0) {
             neighbor = myRooms[row - 1][col];
             if (theRoomsPartOfMaze.contains(neighbor)) {
@@ -215,20 +214,20 @@ public class Floor {
         return validNeighbors;
     }
 
-    public final int getSize(){
+    public final int getSize() {
         return mySize;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for(int row = 0; row < mySize; row++){
-            for(Room r: myRooms[row]){
+        for (int row = 0; row < mySize; row++) {
+            for (Room r: myRooms[row]) {
                 sb.append('*');
-                if(r.canWalkNorth()){
+                if (r.canWalkNorth()) {
                     sb.append('-');
-                }else{
+                } else {
                     sb.append('*');
                 }
             }
@@ -236,28 +235,28 @@ public class Floor {
             // Print top-right-most corner
             sb.append("*\n");
 
-            for(Room r: myRooms[row]){
-                if(r.canWalkWest()){
+            for (Room r: myRooms[row]) {
+                if (r.canWalkWest()) {
                     sb.append('|');
-                }else{
+                } else {
                     sb.append('*');
                 }
                 boolean hasHero = false;
-                for(DungeonCharacter dc: r.getCharacters()){
-                    if(dc.getClass().getSimpleName() == "model.Hero"){
+                for (AbstractDungeonCharacter dc: r.getCharacters()) {
+                    if (dc.getClass().getSimpleName() == "model.Hero") {
                         hasHero = true;
                     }
                 }
-                if(hasHero){
+                if (hasHero) {
                     sb.append('@');
-                }else{
+                } else {
                     sb.append(' ');
                 }
             }
 
-            if(myRooms[row][mySize - 1].canWalkEast()){
+            if (myRooms[row][mySize - 1].canWalkEast()) {
                 sb.append('|');
-            }else{
+            } else {
                 sb.append('*');
             }
 
@@ -265,11 +264,11 @@ public class Floor {
 
             
         }
-        for(Room r: myRooms[mySize - 1]){
+        for (Room r: myRooms[mySize - 1]) {
             sb.append('*');
-            if(r.canWalkSouth()){
+            if (r.canWalkSouth()) {
                 sb.append('-');
-            }else{
+            } else {
                 sb.append('*');
             }
         }

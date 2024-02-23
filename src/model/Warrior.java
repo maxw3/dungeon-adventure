@@ -11,7 +11,7 @@ public class Warrior extends Hero{
     }
 
     @Override
-    public final void skill(final DungeonCharacter theTarget){
+    public final void skill(final AbstractDungeonCharacter theTarget){
         increaseAttack(50);
         increaseHitChance(-25);
 

@@ -40,7 +40,7 @@ class FloorTest {
     void addCharacter() {
         Floor testFloor = new Floor(1, 7);
         Room[][] arrayOfRooms = testFloor.getRooms();
-        DungeonCharacter dummy = MonsterFactory.createDummy();
+        AbstractDungeonCharacter dummy = MonsterFactory.createDummy();
         testFloor.addCharacter(3, 3, dummy);
         assertTrue(arrayOfRooms[3][3].getCharacters().contains(dummy));
     }
@@ -49,7 +49,7 @@ class FloorTest {
     void removeCharacter() {
         Floor testFloor = new Floor(1, 7);
         Room[][] arrayOfRooms = testFloor.getRooms();
-        DungeonCharacter dummy = MonsterFactory.createDummy();
+        AbstractDungeonCharacter dummy = MonsterFactory.createDummy();
         testFloor.addCharacter(3, 3, dummy);
         testFloor.removeCharacter(3, 3, dummy);
         assertFalse(arrayOfRooms[3][3].getCharacters().contains(dummy));

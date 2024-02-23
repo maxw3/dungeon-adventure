@@ -10,7 +10,7 @@ public class Mage extends Hero{
     }
 
     @Override
-    public final void skill(final DungeonCharacter theTarget){
+    public final void skill(final AbstractDungeonCharacter theTarget){
         healOrDamage(myMaxHP/4);
 
         super.skill(theTarget);

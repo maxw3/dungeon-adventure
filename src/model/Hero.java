@@ -2,7 +2,7 @@ package model;
 
 import enums.Direction;
 
-public class Hero extends DungeonCharacter{
+public class Hero extends AbstractDungeonCharacter {
 
 
     protected Hero(String theName){
@@ -15,7 +15,7 @@ public class Hero extends DungeonCharacter{
     }
 
     @Override
-    public void skill(final DungeonCharacter theTarget) {
+    public void skill(final AbstractDungeonCharacter theTarget) {
         super.skill(theTarget);
     }
 

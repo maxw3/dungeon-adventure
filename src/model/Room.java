@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Room {
 
     private final ArrayList<Item> myItems;
-    private final ArrayList<DungeonCharacter> myDungeonCharacters;
+    private final ArrayList<AbstractDungeonCharacter> myDungeonCharacters;
     private final int myRow;
     private final int myCol;
 
@@ -21,7 +21,7 @@ public class Room {
 
     Room(final int theRow, final int theCol) {
         myItems = new ArrayList<Item>();
-        myDungeonCharacters = new ArrayList<DungeonCharacter>();
+        myDungeonCharacters = new ArrayList<AbstractDungeonCharacter>();
         myRow = theRow;
         myCol = theCol;
     }
@@ -35,15 +35,15 @@ public class Room {
         myWestRoom = theWestRoom;
     }
 
-    public final ArrayList<DungeonCharacter> getCharacters(){
+    public final ArrayList<AbstractDungeonCharacter> getCharacters(){
         return myDungeonCharacters;
     }
 
-    public final void addCharacter(final DungeonCharacter theCharacter){
+    public final void addCharacter(final AbstractDungeonCharacter theCharacter){
         myDungeonCharacters.add(theCharacter);
     }
 
-    public final void removeCharacter(final DungeonCharacter theCharacter){
+    public final void removeCharacter(final AbstractDungeonCharacter theCharacter){
         myDungeonCharacters.remove(theCharacter);
     }
 

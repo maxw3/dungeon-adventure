@@ -1,24 +1,23 @@
 package controller;
 
-import model.DungeonLogic;
-import model.HealthPotion;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import model.DungeonLogic;
+import model.HealthPotion;
+
 public class DungeonController extends JPanel {
+    public static JFrame myFrame;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
-
-    public static JFrame myFrame;
-    final DungeonLogic myDungeon;
+    private final DungeonLogic myDungeon;
 
     public DungeonController() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
@@ -34,7 +33,7 @@ public class DungeonController extends JPanel {
         //main panel
         //final DungeonView mainPanel = new DungeonView();
         //size of the main window
-        final Dimension frameSize = new Dimension(960,540);
+        final Dimension frameSize = new Dimension(960, 540);
         //adds property change listeners to the main panel
 //        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
         //disables "window exit" when clicking the X on the window
@@ -51,14 +50,13 @@ public class DungeonController extends JPanel {
              * @param theCloseEvent the event to be processed
              */
             @Override
-            public void windowClosing(WindowEvent theCloseEvent) {
-                String exitOptions[] = {"Yes","No"};
-                int PromptResult = JOptionPane.showOptionDialog(null,
-                    "Would you like to save progress before you exit?","Save on Exit",
-                    JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,
-                    null,exitOptions,exitOptions[1]);
-                if(PromptResult==JOptionPane.YES_OPTION)
-                {
+            public void windowClosing(final WindowEvent theCloseEvent) {
+                final String[] exitOptions = {"Yes", "No"};
+                final int promptResult = JOptionPane.showOptionDialog(null,
+                    "Would you like to save progress before you exit?", "Save on Exit",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, exitOptions, exitOptions[1]);
+                if (promptResult == JOptionPane.YES_OPTION)  {
 //                    DungeonLogic.save();
                 }
                 System.exit(0);
