@@ -30,7 +30,8 @@ public abstract class AbstractConsumable extends AbstractEquipment {
         }
         myQuantity = theQuantity;
     }
-    public void triggerEffect(){
+
+    public void triggerEffect() {
         myQuantity = myQuantity - 1;
     }
 }

@@ -1,12 +1,12 @@
 package model;
 
-public class Orc extends Monster{
+public class Orc extends Monster {
     public Orc(){
         this(1);
     }
-    public Orc(final int theFloor){
+    public Orc(final int theFloor) {
         super("model.Orc", 0.2, 0.25);
-        double modifier = FLOOR_MODIFIERS[theFloor - 1];
+        final double modifier = FLOOR_MODIFIERS[theFloor - 1];
 
         setMaxHP((int)(150 * modifier));
         setAtkSpd(1);
