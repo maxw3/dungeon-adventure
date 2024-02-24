@@ -5,12 +5,12 @@ import enums.Direction;
 public class Hero extends AbstractDungeonCharacter {
 
 
-    protected Hero(String theName){
+    protected Hero(final String theName) {
         super();
         myName = theName;
     }
 
-    public void move(Direction theDirection){
+    public void move(final Direction theDirection) {
         
     }
 
@@ -24,7 +24,7 @@ public class Hero extends AbstractDungeonCharacter {
         return null;
     }
 
-    protected final void levelUp(){
+    protected final void levelUp() {
         multiplyMaxHP(1.1);
         multiplyAttack(1.2);
     }

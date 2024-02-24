@@ -220,7 +220,7 @@ public class Floor {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         for (int row = 0; row < mySize; row++) {
             for (Room r: myRooms[row]) {
@@ -243,8 +243,9 @@ public class Floor {
                 }
                 boolean hasHero = false;
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    if (dc.getClass().getSimpleName() == "model.Hero") {
+                    if (dc.getClass().getSimpleName().equals("model.Hero")) {
                         hasHero = true;
+                        break;
                     }
                 }
                 if (hasHero) {

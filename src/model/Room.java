@@ -10,10 +10,10 @@ public class Room {
     private final int myRow;
     private final int myCol;
 
-    private Room myNorthRoom = null;
-    private Room myEastRoom = null;
-    private Room mySouthRoom = null;
-    private Room myWestRoom = null;
+    private Room myNorthRoom;
+    private Room myEastRoom;
+    private Room mySouthRoom;
+    private Room myWestRoom;
 
     Room() {
         this(0, 0);
@@ -26,7 +26,7 @@ public class Room {
         myCol = theCol;
     }
 
-    Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom, final int theRow, final int theCol){
+    Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom, final int theRow, final int theCol) {
         this(theRow, theCol);
 
         myNorthRoom = theNorthRoom;
@@ -35,19 +35,19 @@ public class Room {
         myWestRoom = theWestRoom;
     }
 
-    public final ArrayList<AbstractDungeonCharacter> getCharacters(){
+    public final ArrayList<AbstractDungeonCharacter> getCharacters() {
         return myDungeonCharacters;
     }
 
-    public final void addCharacter(final AbstractDungeonCharacter theCharacter){
+    public final void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
     }
 
-    public final void removeCharacter(final AbstractDungeonCharacter theCharacter){
+    public final void removeCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.remove(theCharacter);
     }
 
-    public final void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom){
+    public final void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom) {
         myNorthRoom = theNorthRoom;
         myEastRoom = theEastRoom;
         mySouthRoom = theSouthRoom;
@@ -61,44 +61,20 @@ public class Room {
         myItems.add(theEquipment);
     }
 
-    public final boolean canWalkNorth(){
-        boolean canWalk = false;
-
-        if(myNorthRoom != null){
-            canWalk = true;
-        }
-
-        return canWalk;
+    public final boolean canWalkNorth() {
+        return myNorthRoom != null;
     }
 
-    public final boolean canWalkEast(){
-        boolean canWalk = false;
-
-        if(myEastRoom != null){
-            canWalk = true;
-        }
-
-        return canWalk;
+    public final boolean canWalkEast() {
+        return myEastRoom != null;
     }
 
-    public final boolean canWalkSouth(){
-        boolean canWalk = false;
-
-        if(mySouthRoom != null){
-            canWalk = true;
-        }
-
-        return canWalk;
+    public final boolean canWalkSouth() {
+        return mySouthRoom != null;
     }
 
-    public final boolean canWalkWest(){
-        boolean canWalk = false;
-
-        if(myWestRoom != null){
-            canWalk = true;
-        }
-
-        return canWalk;
+    public final boolean canWalkWest() {
+        return myWestRoom != null;
     }
 
     public final int getRow() {
@@ -108,7 +84,7 @@ public class Room {
         return myCol;
     }
 
-    public final void setNorthRoom(final Room theNorthRoom){
+    public final void setNorthRoom(final Room theNorthRoom) {
         myNorthRoom = theNorthRoom;
     }
 
@@ -116,7 +92,7 @@ public class Room {
         myEastRoom = theEastRoom;
     }
 
-    public final void setSouthRoom(final Room theSouthRoom){
+    public final void setSouthRoom(final Room theSouthRoom) {
         mySouthRoom = theSouthRoom;
     }
 
@@ -129,7 +105,7 @@ public class Room {
         if (!theObject.getClass().getSimpleName().equals("Room")) {
             return false;
         }
-        Room otherRoom = (Room)theObject;
+        final Room otherRoom = (Room)theObject;
         return myDungeonCharacters.equals(otherRoom.myDungeonCharacters) && myItems.equals(otherRoom.myItems)
                 && myRow == otherRoom.myRow && myCol == otherRoom.myCol;
     }

@@ -1,8 +1,8 @@
 package model;
 
-public class Warrior extends Hero{
-    private Warrior(){this("");}
-    protected Warrior(String theName) {
+public class Warrior extends Hero {
+    private Warrior() { this(""); }
+    protected Warrior(final String theName) {
         super(theName);
         setMaxHP(500);
         setAttack(50);
@@ -11,7 +11,7 @@ public class Warrior extends Hero{
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget){
+    public final void skill(final AbstractDungeonCharacter theTarget) {
         increaseAttack(50);
         increaseHitChance(-25);
 
@@ -24,7 +24,7 @@ public class Warrior extends Hero{
     }
 
     @Override
-    protected final String skillDescription(){
+    protected final String skillDescription() {
         return "model.Warrior performs a giant haphazard swing at the monster";
     }
 }

@@ -21,8 +21,34 @@ public abstract class AbstractDungeonCharacter {
         myBlockChance = 0;
 
         myPosition = new int[2];
-        myPosition[0] = 0;
-        myPosition[1] = 0;
+    }
+
+    /**
+     * Changes the HP of the Character by a fixed amount.
+     * @param theAmount the amount that HP changes (positive is heal, negative is damage)
+     */
+    public void healOrDamage(final int theAmount) {
+        myHP += theAmount;
+    }
+
+    public final void attack(final AbstractDungeonCharacter theTarget) {
+        for (int i = 0; i < myAtkSpd; i++) {
+            final int roll = roll();
+
+            if (roll <= getHitChance() && !theTarget.isBlocked()) {
+                final double multiplier = Math.random() + 0.5;
+                theTarget.healOrDamage((int) (getAttack() * multiplier * -1));
+            }
+        }
+    }
+
+    public void skill(final AbstractDungeonCharacter theTarget) {
+        skillDescription();
+    }
+
+    public final void setPosition(final int[] thePosition) {
+        myPosition[0] = thePosition[0];
+        myPosition[1] = thePosition[1];
     }
 
     protected final void setMaxHP(final int theHP) {
@@ -40,22 +66,7 @@ public abstract class AbstractDungeonCharacter {
         myMaxHP *= theMultiplier;
         setCurrentHP((int)(myMaxHP * hPRatio));
     }
-    private void setCurrentHP(final int theHP) {
-        myHP = theHP;
-    }
 
-    public final void setPosition(final int[] thePosition) {
-        myPosition[0] = thePosition[0];
-        myPosition[1] = thePosition[1];
-    }
-
-    /**
-     * Changes the HP of the Character by a fixed amount.
-     * @param theAmount the amount that HP changes (positive is heal, negative is damage)
-     */
-    public void healOrDamage(final int theAmount) {
-        myHP += theAmount;
-    }
     protected final void setAttack(final int theAttack) {
         myAttack = theAttack;
     }
@@ -80,48 +91,9 @@ public abstract class AbstractDungeonCharacter {
     protected final void increaseHitChance(final int theChange) {
         myHitChance += theChange;
     }
-    public final boolean isBlocked() {
-        int roll = (int)(Math.random() * 100);
-        return roll <= getBlockChance();
-    }
 
-    public final int getMaxHP() {
-        return  myMaxHP;
-    }
-    protected final int getHP() {
-        return myHP;
-    }
-    protected final int getBlockChance() {
-        return myBlockChance;
-    }
-    protected final int getAtkSpd() {
-        return myAtkSpd;
-    }
-    protected final int getHitChance() {
-        return myHitChance;
-    }
-    protected final int getAttack() {
-        return myAttack;
-    }
-    public final int[] getPosition() {
-        return myPosition;
-    }
-    public final void attack(final AbstractDungeonCharacter theTarget) {
-        for (int i = 0; i < myAtkSpd; i++) {
-            final int roll = roll();
-
-            if (roll <= getHitChance() && !theTarget.isBlocked()) {
-                final double multiplier = Math.random() + 0.5;
-                theTarget.healOrDamage((int) (getAttack() * multiplier * -1));
-            }
-        }
-    }
-    public void skill(final AbstractDungeonCharacter theTarget) {
-        skillDescription();
-    }
-    protected abstract String skillDescription();
-    protected final int roll() {
-        return (int)(Math.random() * 100);
+    private void setCurrentHP(final int theHP) {
+        myHP = theHP;
     }
 
     public final String toString() {
@@ -152,5 +124,39 @@ public abstract class AbstractDungeonCharacter {
         output.append(NEW_LINE);
 
         return output.toString();
+    }
+
+    public final boolean isBlocked() {
+        int roll = (int)(Math.random() * 100);
+        return roll <= getBlockChance();
+    }
+
+    public final int[] getPosition() {
+        return myPosition;
+    }
+
+    public final int getMaxHP() {
+        return  myMaxHP;
+    }
+    protected final int getHP() {
+        return myHP;
+    }
+    protected final int getBlockChance() {
+        return myBlockChance;
+    }
+    protected final int getAtkSpd() {
+        return myAtkSpd;
+    }
+    protected final int getHitChance() {
+        return myHitChance;
+    }
+    protected final int getAttack() {
+        return myAttack;
+    }
+
+    protected abstract String skillDescription();
+
+    protected final int roll() {
+        return (int)(Math.random() * 100);
     }
 }

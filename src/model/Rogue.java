@@ -1,7 +1,7 @@
 package model;
 
-public class Rogue extends Hero{
-    protected Rogue(String theName) {
+public class Rogue extends Hero {
+    protected Rogue(final String theName) {
         super(theName);
         setMaxHP(350);
         setAttack(30);
@@ -10,10 +10,10 @@ public class Rogue extends Hero{
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget){
+    public final void skill(final AbstractDungeonCharacter theTarget) {
         multiplyAtkSpd(1.5);
         theTarget.increaseHitChance(-20);
-System.out.println("Remember to set hit chance back after skill duration expires.");
+        System.out.println("Remember to set hit chance back after skill duration expires.");
 
         attack(theTarget);
 
@@ -23,7 +23,7 @@ System.out.println("Remember to set hit chance back after skill duration expires
     }
 
     @Override
-    protected final String skillDescription(){
+    protected final String skillDescription() {
         return "model.Rogue gets haste and is able to attack faster and dodge more.";
     }
 }
