@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import model.DungeonLogic;
 import model.HealthPotion;
 
+import view.DungeonView;
+
 public class DungeonController extends JPanel {
     public static JFrame myFrame;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
@@ -31,11 +33,11 @@ public class DungeonController extends JPanel {
         //main frame
         myFrame = new JFrame("Dungeon Adventure");
         //main panel
-        //final DungeonView mainPanel = new DungeonView();
+        final DungeonView mainPanel = new DungeonView();
         //size of the main window
         final Dimension frameSize = new Dimension(960, 540);
         //adds property change listeners to the main panel
-//        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
         //disables "window exit" when clicking the X on the window
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Window Listener
