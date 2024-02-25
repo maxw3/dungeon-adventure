@@ -74,7 +74,7 @@ public class Floor {
                 if (choice <= 30) {
                     myRooms[row][col].addCharacter(MonsterFactory.createMonster(myFloorLevel));
                 } else if (choice <= 70) {
-                    myRooms[row][col].addItem(new HealthPotion(1));
+                    myRooms[row][col].addItem(new HealthPotion());
                 } else if (choice <= 80) {
                     myRooms[row][col].addItem(new Pit());
                 }
