@@ -8,4 +8,8 @@ public final class Pillar extends AbstractEquipment {
     public Pillar (final String theName){
         super(theName);
     }
+    @Override
+    public String getType() {
+        return MY_TYPE.name();
+    }
 }
