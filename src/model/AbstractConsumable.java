@@ -10,7 +10,7 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     }
     public AbstractConsumable(final String theName, final int theQuantity) {
         super(theName);
-        setQuantity(theQuantity);
+        myQuantity = theQuantity;
     }
 
     public int getQuantity() {
@@ -28,8 +28,8 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     }
 
     public void triggerEffect() {
-        if (theQuantity <= 0) {
-            throw new IllegalArgumentException("The quantity is less than 0: Is " + theQuantity);
+        if (myQuantity <= 0) {
+            throw new IllegalArgumentException("The quantity is less than 0: Is " + myQuantity);
         }
         myQuantity--;
     }

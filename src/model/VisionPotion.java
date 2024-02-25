@@ -1,7 +1,7 @@
 package model;
 
 public class VisionPotion extends AbstractConsumable {
-    public VisionPotion(final int theQuantity) {
+    public VisionPotion() {
         super("Vision Potion");
     }
 

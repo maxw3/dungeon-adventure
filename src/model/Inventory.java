@@ -1,30 +1,26 @@
 package model;
 
-import java.util.ArrayList;
-
 public class Inventory {
-    private final String myNewLine = System.lineSeparator()
-    private final AbstractEquipment[] myConsumableItems;
+    private final String myNewLine = System.lineSeparator();
+    private final AbstractConsumable[] myConsumableItems;
     private final AbstractEquipment[] myPillars;
 
 
     public Inventory() {
-        myConsumableItems = new AbstractEquipment[2];
-        myConsumableItems[0] = new HealthPotion;
-        myConsumableItems[1] = new VisionPotion;
+        myConsumableItems = new AbstractConsumable[2];
+        myConsumableItems[0] = new HealthPotion();
+        myConsumableItems[1] = new VisionPotion();
         myPillars = new AbstractEquipment[4];
     }
 
     public String toString() {
-        int size = myConsumableItems[0].getQuantity + myConsumableItems[1].getQuantity;
-
         StringBuilder output = new StringBuilder();
         output.append("You have ");
-        output.append(myConsumableItems[0].getQuantity);
+        output.append(myConsumableItems[0].getQuantity());
         output.append(" health potions and ");
-        output.append(myConsumableItems[1].getQuantity);
+        output.append(myConsumableItems[1].getQuantity());
         output.append(" vision potions for a total of ");
-        output.append(size);
+        output.append(getSize());
         output.append(" items.");
 
         output.append(myNewLine);
@@ -51,26 +47,16 @@ public class Inventory {
         }
     }
 
-    public String getContents() {
-        return myConsumableItems.toString();
-    }
     public int getSize() {
-        return myConsumableItems.size() + myPillars.length;
-    }
-
-    public AbstractEquipment getItem(final int theIndex) {
-        if (theIndex >= myConsumableItems.size()) {
-            throw new IllegalArgumentException("The index is out of bounds: Is " + theIndex);
-        }
-        return myConsumableItems.get(theIndex);
+        return myConsumableItems[0].getQuantity() + myConsumableItems[1].getQuantity();
     }
 
     public void addItem(final AbstractEquipment theItem) {
         if (theItem.getType().equals("CONSUMABLE")) {
-            if (theItem.getName() = "Health Potion"){
-                (AbstractComsumable) myConsumableItems[0].add();
-            } else if (theItem.getName() = "Vision Potion"){
-                (AbstractComsumable) myConsumableItems[1].add();
+            if (theItem.getName().equals("Health Potion")) {
+                myConsumableItems[0].add();
+            } else if (theItem.getName().equals("Vision Potion")){
+                myConsumableItems[1].add();
             } else {
                 throw new IllegalArgumentException("Invalid Consumable to add to inventory.");
             }
