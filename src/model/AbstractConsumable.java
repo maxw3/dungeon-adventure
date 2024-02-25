@@ -5,6 +5,9 @@ import enums.ItemType;
 public abstract class AbstractConsumable extends AbstractEquipment {
     private static final ItemType MY_TYPE = ItemType.CONSUMABLE;
     private int myQuantity;
+    public AbstractConsumable(final String theName) {
+        this(theName, 0);
+    }
     public AbstractConsumable(final String theName, final int theQuantity) {
         super(theName);
         setQuantity(theQuantity);
@@ -24,14 +27,13 @@ public abstract class AbstractConsumable extends AbstractEquipment {
         return myQuantity + " " + getName();
     }
 
-    public void setQuantity(final int theQuantity) {
+    public void triggerEffect() {
         if (theQuantity <= 0) {
             throw new IllegalArgumentException("The quantity is less than 0: Is " + theQuantity);
         }
-        myQuantity = theQuantity;
+        myQuantity--;
     }
-
-    public void triggerEffect() {
-        myQuantity = myQuantity - 1;
+    public final void add(){
+        myQuantity++;
     }
 }

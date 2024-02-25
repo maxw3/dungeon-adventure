@@ -8,7 +8,7 @@ public abstract class AbstractEquipment implements Item {
     private final String myName;
 
     public AbstractEquipment(final String theName) {
-        if (theName == null) {
+        if (theName == null) {git
             throw new IllegalArgumentException("The name is null.");
         }
         myName = theName;

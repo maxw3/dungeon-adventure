@@ -2,7 +2,7 @@ package model;
 
 public class HealthPotion extends AbstractConsumable {
     public HealthPotion(final int theQuantity) {
-        super("Health Potion", theQuantity);
+        super("Health Potion");
     }
 
     @Override
