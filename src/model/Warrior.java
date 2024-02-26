@@ -24,7 +24,7 @@ public class Warrior extends Hero {
     }
 
     @Override
-    protected final String skillDescription() {
+    public final String skillDescription() {
         return "model.Warrior performs a giant haphazard swing at the monster";
     }
 }

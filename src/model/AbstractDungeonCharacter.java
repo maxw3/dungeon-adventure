@@ -16,9 +16,9 @@ public abstract class AbstractDungeonCharacter {
     protected AbstractDungeonCharacter() {
         myMaxHP = -1;
         myHP = -1;
-        myAttack = 0;
-        myAtkSpd = 0;
-        myBlockChance = 0;
+        myAttack = MIN_STAT;
+        myAtkSpd = MIN_STAT;
+        myBlockChance = MIN_STAT;
 
         myPosition = new int[2];
     }
@@ -138,23 +138,23 @@ public abstract class AbstractDungeonCharacter {
     public final int getMaxHP() {
         return  myMaxHP;
     }
-    protected final int getHP() {
+    public final int getHP() {
         return myHP;
     }
-    protected final int getBlockChance() {
+    public final int getBlockChance() {
         return myBlockChance;
     }
-    protected final int getAtkSpd() {
+    public final int getAtkSpd() {
         return myAtkSpd;
     }
-    protected final int getHitChance() {
+    public final int getHitChance() {
         return myHitChance;
     }
-    protected final int getAttack() {
+    public final int getAttack() {
         return myAttack;
     }
 
-    protected abstract String skillDescription();
+    public abstract String skillDescription();
 
     protected final int roll() {
         return (int)(Math.random() * 100);

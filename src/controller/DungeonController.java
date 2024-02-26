@@ -10,17 +10,23 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import model.DungeonLogic;
-import model.HealthPotion;
+import enums.Direction;
+import model.*;
+
+import view.DungeonView;
 
 public class DungeonController extends JPanel {
     public static JFrame myFrame;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
     private final DungeonLogic myDungeon;
+    private final Hero myHero;
+    private final Inventory myInventory;
 
     public DungeonController() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
+        myHero = myDungeon.getHero();
+        myInventory = myDungeon.getInventory();
     }
 
     public static void main(final String[] theArgs){
@@ -31,11 +37,11 @@ public class DungeonController extends JPanel {
         //main frame
         myFrame = new JFrame("Dungeon Adventure");
         //main panel
-        //final DungeonView mainPanel = new DungeonView();
+        final DungeonView mainPanel = new DungeonView();
         //size of the main window
         final Dimension frameSize = new Dimension(960, 540);
         //adds property change listeners to the main panel
-//        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
         //disables "window exit" when clicking the X on the window
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Window Listener
@@ -64,7 +70,7 @@ public class DungeonController extends JPanel {
         });
 
         //sets the content pane of the frame
-//        myFrame.setContentPane(mainPanel);
+        myFrame.setContentPane(mainPanel);
         //sets the size of the window
         myFrame.setSize(frameSize);
         //sets the location of the window
@@ -75,14 +81,63 @@ public class DungeonController extends JPanel {
     }
 
     /**
-     * Helper method for the Use Hitpoint Potion Buttons.
+     * Helper method for the Use Hit Point Potion Buttons.
      */
     private void drinkPotion() {
+        myHero.healOrDamage(myHero.getMaxHP()/2);
+        myInventory.useItem(new HealthPotion());
+    }
+
+    public void fight (final Monster theMonster){
+        if (checkGameStatus()) {
+            while (myHero.getHP() > 0 && theMonster.getHP() > 0) {
+//            prompt user for what action they want to do for their turn
+//            listen to key press or button click
+//            if attack
+                myHero.attack(theMonster);
+//            if skill
+                myHero.skill(theMonster);
+//            if drink potion
+                drinkPotion();
+
+                if (theMonster.getHP() > 0) {
+                    theMonster.attack(myDungeon.getHero());
+                    theMonster.skill(theMonster);
+                }
+            }
+            if(myHero.getHP() <= 0){
+                endGame(false);
+            } else {
+                //won the fight
+                //get drop item of monster if available
+                //make the room empty and traversable
+            }
+        }
+    }
+
+    /**
+     * Ends the current game making it unable to be saved or loaded to.
+     *
+     * @param theState  how the game ended.
+     *                  True means the Hero has successfully cleared the game.
+     *                  False means the Hero has died
+     */
+    public void endGame(final boolean theState){
+        if (theState) { //beat the game
+            JOptionPane.showMessageDialog(null, "Congratulations! You beat the game!");
+            //show the stats window
+            //show credits page
+        } else{
+            JOptionPane.showMessageDialog(null, "You have unfortunately met your end.");
+            //start new game prompt
+        }
+    }
+    private boolean checkGameStatus(){
         if (myDungeon.getGameActive()) {
-            myDungeon.getHero().healOrDamage(myDungeon.getHero().getMaxHP()/2);
-            myDungeon.getInventory().useItem(new HealthPotion());
+            return true;
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+            return false;
         }
     }
 

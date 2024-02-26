@@ -20,12 +20,13 @@ public class Hero extends AbstractDungeonCharacter {
     }
 
     @Override
-    protected String skillDescription() {
+    public String skillDescription() {
         return null;
     }
 
     protected final void levelUp() {
         multiplyMaxHP(1.1);
         multiplyAttack(1.2);
+        myHP = myMaxHP;
     }
 }

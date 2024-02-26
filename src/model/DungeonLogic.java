@@ -1,5 +1,6 @@
 package model;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public final class DungeonLogic {
@@ -49,5 +50,23 @@ public final class DungeonLogic {
     }
     public Inventory getInventory() {
         return myInventory;
+    }
+
+    /**
+     * adds a property change listener to the listener provided
+     *
+     * @param theListener   The listener (Frame, Panel, etc)
+     */
+    public void addPropertyChangeListener(PropertyChangeListener theListener) {
+        myChanges.addPropertyChangeListener(theListener);
+    }
+
+    /**
+     * removes a property change listener to the listener provided
+     *
+     * @param theListener   The listener (Frame, Panel, etc)
+     */
+    public void removePropertyChangeListener(PropertyChangeListener theListener) {
+        myChanges.removePropertyChangeListener(theListener);
     }
 }
