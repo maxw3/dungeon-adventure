@@ -10,8 +10,8 @@ public class VisionPotion extends AbstractConsumable {
     @Override
     public void triggerEffect() {
         super.triggerEffect();
-        Room room = DungeonLogic.MY_INSTANCE.getCurrentRoom();
-        Set<Room> neighbors = DungeonLogic.MY_INSTANCE.getNeighbors(room);
+        final Room room = DungeonLogic.MY_INSTANCE.getCurrentRoom();
+        final Set<Room> neighbors = DungeonLogic.MY_INSTANCE.getNeighbors(room);
         for (final Room r : neighbors) {
             DungeonLogic.MY_INSTANCE.reveal(r);
         }

@@ -40,6 +40,10 @@ public class Room {
         return myDungeonCharacters;
     }
 
+    public final ArrayList<Item> getItems() {
+        return myItems;
+    }
+
     public final boolean isExplored() {
         return myExplored;
     }
@@ -53,6 +57,10 @@ public class Room {
 
     public final void removeCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.remove(theCharacter);
+    }
+
+    public final void removeItem(final Item theItem) {
+        myItems.remove(theItem);
     }
 
     public final void emptyRoom() {
