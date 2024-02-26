@@ -14,6 +14,7 @@ public class Room {
     private Room myEastRoom;
     private Room mySouthRoom;
     private Room myWestRoom;
+    private boolean myExplored;
 
     Room() {
         this(0, 0);
@@ -39,6 +40,13 @@ public class Room {
         return myDungeonCharacters;
     }
 
+    public final boolean isExplored() {
+        return myExplored;
+    }
+
+    public final void setExplored(final boolean theState) {
+        myExplored = theState;
+    }
     public final void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
     }
@@ -81,6 +89,23 @@ public class Room {
     public final boolean canWalkWest() {
         return myWestRoom != null;
     }
+
+    public final Room getNorth() {
+        return myNorthRoom;
+    }
+
+    public final Room getEast() {
+        return myEastRoom;
+    }
+
+    public final Room getSouth() {
+        return mySouthRoom;
+    }
+
+    public final Room getWest() {
+        return myWestRoom;
+    }
+
 
     public final int getRow() {
         return myRow;

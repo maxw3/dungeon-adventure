@@ -89,7 +89,7 @@ public class Floor {
                 }
                 boolean hasHero = false;
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    if (dc.getClass().getSimpleName().equals("model.Hero")) {
+                    if (dc instanceof Hero) {
                         hasHero = true;
                         break;
                     }

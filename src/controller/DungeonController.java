@@ -78,8 +78,13 @@ public class DungeonController extends JPanel {
      * Helper method for the Use Hitpoint Potion Buttons.
      */
     private void drinkPotion() {
+//        if (myDungeon.getGameActive()) {
+//            myDungeon.getHero().healOrDamage(myDungeon.getHero().getMaxHP() / 2);
+//            myDungeon.getInventory().useItem(new HealthPotion(1));
+//        } else {
+//            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+//        }
         if (myDungeon.getGameActive()) {
-            myDungeon.getHero().healOrDamage(myDungeon.getHero().getMaxHP()/2);
             myDungeon.getInventory().useItem(new HealthPotion(1));
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");

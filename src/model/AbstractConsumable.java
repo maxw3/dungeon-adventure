@@ -32,6 +32,9 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     }
 
     public void triggerEffect() {
+        if (myQuantity <= 0) {
+            throw new IllegalStateException("triggerEffect was called on an item with insufficient quantity!" + myQuantity);
+        }
         myQuantity = myQuantity - 1;
     }
 }

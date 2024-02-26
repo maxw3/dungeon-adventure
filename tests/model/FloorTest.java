@@ -64,7 +64,42 @@ class FloorTest {
      */
     @Test
     void testToString() {
-        assertEquals("", new Floor(1, 7));
+        Floor testFloor = new Floor(1, 2);
+        boolean doesMatch = false;
+        if (("""
+                *****
+                * * *
+                *-*-*
+                * | *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("""
+                *****
+                * | *
+                *-*-*
+                * * *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("""
+                *****
+                * | *
+                ***-*
+                * | *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("""
+                *****
+                * | *
+                *-***
+                * | *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        }
+        assertTrue(doesMatch);
     }
 
     @Test

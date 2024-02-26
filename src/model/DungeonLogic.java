@@ -1,9 +1,11 @@
 package model;
 
 import java.beans.PropertyChangeSupport;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class DungeonLogic {
-    private static final DungeonLogic MY_INSTANCE = new DungeonLogic();
+    public static final DungeonLogic MY_INSTANCE = new DungeonLogic();
     private static final int DUNGEON_SIZE = 5;
     private final PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
@@ -31,8 +33,8 @@ public final class DungeonLogic {
         myInventory = new Inventory();
         final Room startingRoom = myFloor.getStartingRoom();
         startingRoom.addCharacter(myHero);
-        myHeroCol = startingRoom.getCol();
-        myHeroRow = startingRoom.getRow();
+        myHeroCol = myHero.getPosition()[1];
+        myHeroRow = myHero.getPosition()[0];
         myCurrentRoom = startingRoom;
     }
 
@@ -48,6 +50,27 @@ public final class DungeonLogic {
     }
     public Inventory getInventory() {
         return myInventory;
+    }
+
+    public Room getCurrentRoom() {
+        return myCurrentRoom;
+    }
+
+    public Set<Room> getNeighbors(final Room theRoom) {
+        final Set<Room> set = new HashSet<Room>();
+        if (theRoom.canWalkNorth()) {
+            set.add(theRoom.getNorth());
+        }
+        if (theRoom.canWalkSouth()) {
+            set.add(theRoom.getSouth());
+        }
+        if (theRoom.canWalkWest()) {
+            set.add(theRoom.getWest());
+        }
+        if (theRoom.canWalkEast()) {
+            set.add(theRoom.getEast());
+        }
+        return set;
     }
 
     public boolean startCombat() {
@@ -68,6 +91,20 @@ public final class DungeonLogic {
         return false;
     }
 
+    public boolean endCombat() {
+        if (myGameActive && myCombatStatus) {
+            myCombatStatus = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void reveal(final Room theRoom) {
+        if (theRoom == null) {
+            throw new IllegalArgumentException("The Room is null.");
+        }
+        theRoom.setExplored(true);
+    }
 
     private boolean outOfBounds(final int thePosition) {
         return thePosition < 0 || thePosition >= DUNGEON_SIZE;
