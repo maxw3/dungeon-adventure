@@ -47,6 +47,11 @@ public class Room {
         myDungeonCharacters.remove(theCharacter);
     }
 
+    public final void emptyRoom() {
+        myItems.clear();
+        myDungeonCharacters.clear();
+    }
+
     public final void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom) {
         myNorthRoom = theNorthRoom;
         myEastRoom = theEastRoom;

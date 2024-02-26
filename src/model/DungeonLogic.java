@@ -12,8 +12,12 @@ public final class DungeonLogic {
     private Floor myFloor;
     private Inventory myInventory;
     private boolean myGameActive;
+    private boolean myCombatStatus;
     private String mySaveState;
     private int myFloorLevel;
+    private int myHeroRow;
+    private int myHeroCol;
+    private Room myCurrentRoom;
 
     private DungeonLogic() {
         startGame();
@@ -25,16 +29,11 @@ public final class DungeonLogic {
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
         createCharacter();
         myInventory = new Inventory();
-
-    }
-
-    private void createCharacter() {
-        //Ask for Hero Class and Name
-        myHero = new Warrior("Hero Name");
-    }
-
-    private void setGameActive(final boolean theState) {
-        myGameActive = theState;
+        final Room startingRoom = myFloor.getStartingRoom();
+        startingRoom.addCharacter(myHero);
+        myHeroCol = startingRoom.getCol();
+        myHeroRow = startingRoom.getRow();
+        myCurrentRoom = startingRoom;
     }
 
     public boolean getGameActive() {
@@ -49,5 +48,36 @@ public final class DungeonLogic {
     }
     public Inventory getInventory() {
         return myInventory;
+    }
+
+    public boolean startCombat() {
+        if (myGameActive && !myCombatStatus && !outOfBounds(myHeroCol) && !outOfBounds(myHeroRow)) {
+            myCurrentRoom = myFloor.getRoom(myHeroRow, myHeroCol);
+            boolean isMonster = false;
+            for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
+                if (c instanceof Monster) {
+                    isMonster = true;
+                    break;
+                }
+            }
+            if (isMonster) {
+                myCombatStatus = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private boolean outOfBounds(final int thePosition) {
+        return thePosition < 0 || thePosition >= DUNGEON_SIZE;
+    }
+    private void createCharacter() {
+        //Ask for Hero Class and Name
+        myHero = new Warrior("Hero Name");
+    }
+
+    private void setGameActive(final boolean theState) {
+        myGameActive = theState;
     }
 }
