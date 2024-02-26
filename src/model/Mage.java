@@ -17,7 +17,7 @@ public class Mage extends Hero {
     }
 
     @Override
-    protected final String skillDescription() {
+    public final String skillDescription() {
         return "model.Mage heals itself.";
     }
 }

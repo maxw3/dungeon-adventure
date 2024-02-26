@@ -16,9 +16,9 @@ public class Inventory {
     public String toString() {
         StringBuilder output = new StringBuilder();
         output.append("You have ");
-        output.append(myConsumableItems[0].getQuantity());
+        output.append(getHPPotionAmount());
         output.append(" health potions and ");
-        output.append(myConsumableItems[1].getQuantity());
+        output.append(getVisionPotionAmount());
         output.append(" vision potions for a total of ");
         output.append(getSize());
         output.append(" items.");
@@ -91,5 +91,11 @@ public class Inventory {
         else {
             throw new IllegalArgumentException("The Item has no active ability. Is not CONSUMABLE or PERMANENT");
         }
+    }
+    public int getHPPotionAmount(){
+        return myConsumableItems[0].getQuantity();
+    }
+    public int getVisionPotionAmount(){
+        return myConsumableItems[1].getQuantity();
     }
 }

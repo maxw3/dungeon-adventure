@@ -32,9 +32,9 @@ import java.beans.PropertyChangeListener;
 public final class DungeonView extends JPanel implements PropertyChangeListener{
     private final static String NEWLINE = System.lineSeparator();
     /** Font for buttons on the main frame */
-    private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 40);
+    private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);
     /** Font for labels on the main frame */
-    private static final Font FONT = new Font("Arial", Font.PLAIN, 20);
+    private static final Font FONT = new Font("Arial", Font.PLAIN, 15);
 
     private JMenuBar myMenu;
     private JMenu myFile;
@@ -54,6 +54,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
     private JButton myEast;
     private JButton myHPPotion;
     private JButton myVisionPotion;
+    private JButton myAttack;
+    private JButton mySkill;
+    private JButton myFlee;
     private JLabel myName;
     private JLabel myHPPotionAmount;
     private JLabel myVisionPotionAmount;
@@ -66,17 +69,22 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
 
     public DungeonView() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
+
         myBackgroundColor = Color.gray;
+
         setMenuBar();
         DungeonController.myFrame.setJMenuBar(myMenu);
+
         myPanel = new JPanel();
         GridBagLayout theLayout = new GridBagLayout();
         GridBagConstraints theConstraints = new GridBagConstraints();
         myPanel.setLayout(theLayout);
 
+        setFightPanel();
+
 //        myPanel.add(myRoomPanel);
 //        myPanel.add(myMovePanel);
-//        myPanel.add(myFightPanel);
+        myPanel.add(myFightPanel);
 //        myPanel.add(myInventoryPanel);
 
 //        addListeners();
@@ -121,6 +129,44 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
 
         myMenu.add(myFile);
         myMenu.add(myHelp);
+    }
+
+    private void setFightPanel(){
+        Color color = Color.LIGHT_GRAY.darker();
+        Border border = BorderFactory.createLineBorder(Color.DARK_GRAY,2);
+        myFightPanel = new JPanel();
+        myFightPanel.setBackground(color);
+        myFightPanel.setLayout(new GridLayout(4,1,0,5));
+
+        myHPPotion = new JButton("Health Potion");
+        myHPPotion.setBackground(color);
+        myHPPotion.setFont(BUTTON_FONT);
+        myHPPotionAmount = new JLabel(
+            String.valueOf(myDungeon.getInventory().getHPPotionAmount()));
+        myHPPotion.setBackground(color);
+        myHPPotionAmount.setOpaque(false);
+        myHPPotionAmount.setFont(FONT);
+        JPanel hp = new JPanel();
+        hp.setLayout(new BoxLayout(hp, BoxLayout.X_AXIS));
+        hp.setBorder(border);
+        hp.setBackground(color);
+        myAttack = new JButton("Attack");
+        myAttack.setBackground(color);
+        myAttack.setBorder(border);
+        myAttack.setFont(BUTTON_FONT);
+        mySkill = new JButton("Use Skill");
+        mySkill.setBackground(color);
+        mySkill.setBorder(border);
+        mySkill.setFont(BUTTON_FONT);
+        myFlee = new JButton("FLEE!");
+        myFlee.setFont(BUTTON_FONT);
+
+        myFightPanel.add(myAttack);
+        myFightPanel.add(mySkill);
+        hp.add(myHPPotion);
+        hp.add(myHPPotionAmount);
+        myFightPanel.add(hp);
+        myFightPanel.add(myFlee);
     }
 
     /**
@@ -176,7 +222,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
     }
 
     private void traverse (final Direction theDir){
-        //talk to the controller to move the Hero
+        //fire propertychange to controller to make the hero move.
     }
 
     /**

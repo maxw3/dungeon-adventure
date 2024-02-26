@@ -23,7 +23,7 @@ public class Rogue extends Hero {
     }
 
     @Override
-    protected final String skillDescription() {
+    public final String skillDescription() {
         return "model.Rogue gets haste and is able to attack faster and dodge more.";
     }
 }
