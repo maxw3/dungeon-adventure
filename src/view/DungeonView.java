@@ -3,9 +3,12 @@ package view;
 import controller.DungeonController;
 import model.*;
 import enums.Direction;
+
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -13,6 +16,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 import java.awt.Color;
@@ -52,6 +56,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
     private JButton myWest;
     private JButton mySouth;
     private JButton myEast;
+    
     private JButton myHPPotion;
     private JButton myVisionPotion;
     private JButton myAttack;
@@ -65,12 +70,18 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
     private JPanel myInventoryPanel;
     private JPanel myRoomPanel;
     private JPanel myFightPanel;
+    private JTextArea myMap;
+    
     final DungeonLogic myDungeon;
 
     public DungeonView() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
 
         myBackgroundColor = Color.gray;
+
+        myMap = new JTextArea(myDungeon.getFloorString());
+        myMap.setFont(new Font("Consolas", 1, 32));
+        myMap.setBackground(getBackground());
 
         setMenuBar();
         DungeonController.myFrame.setJMenuBar(myMenu);
@@ -82,16 +93,88 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
 
         setFightPanel();
 
+        setMovementPanel();
+
+        myPanel.add(myMap);
+
 //        myPanel.add(myRoomPanel);
-//        myPanel.add(myMovePanel);
+        myPanel.add(myMovePanel);
         myPanel.add(myFightPanel);
 //        myPanel.add(myInventoryPanel);
 
 //        addListeners();
 
         add(myPanel);
+        myMap.setEditable(false);
+
+        addListeners();
 
     }
+
+    private void setMovementPanel(){
+        myMovePanel = new JPanel();
+
+        myNorth = new JButton("^");
+
+        myEast = new JButton(">");
+
+        mySouth = new JButton("v");
+
+        myWest = new JButton("<");
+
+        myMovePanel.setLayout(new GridLayout(3,3));
+
+        myMovePanel.add(new JLabel());
+        myMovePanel.add(myNorth);
+        myMovePanel.add(new JLabel());
+
+        myMovePanel.add(myWest, 3);
+        myMovePanel.add(new JLabel());
+        myMovePanel.add(myEast, 5);
+
+        myMovePanel.add(new JLabel());
+        myMovePanel.add(mySouth, 7);
+        myMovePanel.add(new JLabel());
+
+        myMovePanel.setPreferredSize(new Dimension(150,150));
+
+        KeyStroke northKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, 0);
+        KeyStroke eastKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_D, 0);
+        KeyStroke southKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, 0);
+        KeyStroke westKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_A, 0);
+
+
+        myMovePanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(northKeyStroke, "^");
+        myMovePanel.getActionMap().put("^", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                myNorth.doClick();
+            }
+        });
+
+        myMovePanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(eastKeyStroke, ">");
+        myMovePanel.getActionMap().put(">", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                myEast.doClick();
+            }
+        });
+
+        myMovePanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(southKeyStroke, "v");
+        myMovePanel.getActionMap().put("v", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                mySouth.doClick();
+            }
+        });
+
+        myMovePanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(westKeyStroke, "<");
+        myMovePanel.getActionMap().put("<", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                myWest.doClick();
+            }
+        });
+
+        myMovePanel.setVisible(true);
+    }
+
     private void setMenuBar() {
         myMenu = new JMenuBar();
 
@@ -222,7 +305,16 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
     }
 
     private void traverse (final Direction theDir){
-        //fire propertychange to controller to make the hero move.
+        if(theDir == Direction.NORTH){
+            myDungeon.moveUp();
+        }else if(theDir == Direction.EAST){
+            myDungeon.moveRight();
+        }else if(theDir == Direction.SOUTH){
+            myDungeon.moveDown();
+        }else if(theDir == Direction.WEST){
+            myDungeon.moveLeft();
+        }
+        myMap.setText(myDungeon.getFloorString());
     }
 
     /**

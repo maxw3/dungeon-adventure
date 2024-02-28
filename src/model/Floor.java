@@ -241,13 +241,17 @@ public class Floor {
                 } else {
                     sb.append('*');
                 }
+
                 boolean hasHero = false;
+                
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    if (dc.getClass().getSimpleName().equals("model.Hero")) {
+                    System.out.println();
+                    if (dc instanceof Hero) {
                         hasHero = true;
                         break;
                     }
                 }
+
                 if (hasHero) {
                     sb.append('@');
                 } else {

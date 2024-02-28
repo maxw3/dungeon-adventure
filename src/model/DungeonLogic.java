@@ -27,6 +27,8 @@ public final class DungeonLogic {
         createCharacter();
         myInventory = new Inventory();
 
+        myFloor.addCharacter(0, 0, myHero);
+
     }
 
     private void createCharacter() {
@@ -52,6 +54,10 @@ public final class DungeonLogic {
         return myInventory;
     }
 
+    public String getFloorString(){
+        return myFloor.toString();
+    }
+
     /**
      * adds a property change listener to the listener provided
      *
@@ -68,5 +74,33 @@ public final class DungeonLogic {
      */
     public void removePropertyChangeListener(PropertyChangeListener theListener) {
         myChanges.removePropertyChangeListener(theListener);
+    }
+
+    public void moveUp() {
+        int[] position = myHero.getPosition();
+        myFloor.removeCharacter(position[1], position[0], myHero);
+        position[0] = Math.max(position[0] - 1, 0);
+        myFloor.addCharacter(position[1], position[0], myHero);
+    }
+
+    public void moveRight(){
+        int[] position = myHero.getPosition();
+        myFloor.removeCharacter(position[1], position[0], myHero);
+        position[1] = Math.min(position[1] + 1, myFloor.getSize() - 1);
+        myFloor.addCharacter(position[1], position[0], myHero);
+    }
+
+    public void moveDown() {
+        int[] position = myHero.getPosition();
+        myFloor.removeCharacter(position[1], position[0], myHero);
+        position[0] = Math.min(position[0] + 1, myFloor.getSize() - 1);
+        myFloor.addCharacter(position[1], position[0], myHero);
+    }
+
+    public void moveLeft() {
+        int[] position = myHero.getPosition();
+        myFloor.removeCharacter(position[1], position[0], myHero);
+        position[1] = Math.max(position[1] - 1, 0);
+        myFloor.addCharacter(position[1], position[0], myHero);
     }
 }
