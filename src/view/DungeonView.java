@@ -105,6 +105,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
 //        addListeners();
 
         add(myPanel);
+        myMap.setCursor(null);
+        myMap.setFocusable(false);
         myMap.setEditable(false);
 
         addListeners();
