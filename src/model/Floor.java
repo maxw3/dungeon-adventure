@@ -243,18 +243,32 @@ public class Floor {
                 }
 
                 boolean hasHero = false;
-                
+                boolean hasMonster = false;
+                boolean hasItem = false;
+
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    System.out.println();
                     if (dc instanceof Hero) {
                         hasHero = true;
+                    }
+                    if (dc instanceof Monster){
+                        hasMonster = true;
+                    }
+                }
+
+                for(Item i: r.getItems()){
+                    if(i instanceof Item){
+                        hasItem = true;
                         break;
                     }
                 }
 
                 if (hasHero) {
                     sb.append('@');
-                } else {
+                } else if (hasMonster){
+                    sb.append('M');
+                } else if (hasItem){
+                    sb.append('\'');
+                }else {
                     sb.append(' ');
                 }
             }

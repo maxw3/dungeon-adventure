@@ -39,6 +39,10 @@ public class Room {
         return myDungeonCharacters;
     }
 
+    public final ArrayList<Item> getItems(){
+        return myItems;
+    }
+
     public final void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
     }
