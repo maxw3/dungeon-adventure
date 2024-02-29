@@ -78,29 +78,52 @@ public final class DungeonLogic {
 
     public void moveUp() {
         int[] position = myHero.getPosition();
-        myFloor.removeCharacter(position[1], position[0], myHero);
-        position[0] = Math.max(position[0] - 1, 0);
-        myFloor.addCharacter(position[1], position[0], myHero);
+
+        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
+
+        if(currentRoom.canWalkNorth() != null){
+            // currentRoom.removeCharacter(myHero);
+            // currentRoom.canWalkNorth().addCharacter(myHero);
+            myFloor.removeCharacter(position[1], position[0], myHero);
+            position[0] = Math.max(position[0] - 1, 0);
+            myFloor.addCharacter(position[1], position[0], myHero);
+        }
+
     }
 
     public void moveRight(){
         int[] position = myHero.getPosition();
-        myFloor.removeCharacter(position[1], position[0], myHero);
-        position[1] = Math.min(position[1] + 1, myFloor.getSize() - 1);
-        myFloor.addCharacter(position[1], position[0], myHero);
+
+        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
+
+        if(currentRoom.canWalkEast() != null){
+            myFloor.removeCharacter(position[1], position[0], myHero);
+            position[1] = Math.min(position[1] + 1, myFloor.getSize() - 1);
+            myFloor.addCharacter(position[1], position[0], myHero);
+        }
     }
 
     public void moveDown() {
         int[] position = myHero.getPosition();
-        myFloor.removeCharacter(position[1], position[0], myHero);
-        position[0] = Math.min(position[0] + 1, myFloor.getSize() - 1);
-        myFloor.addCharacter(position[1], position[0], myHero);
+
+        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
+
+        if(currentRoom.canWalkSouth() != null){
+            myFloor.removeCharacter(position[1], position[0], myHero);
+            position[0] = Math.min(position[0] + 1, myFloor.getSize() - 1);
+            myFloor.addCharacter(position[1], position[0], myHero);
+        }
     }
 
     public void moveLeft() {
         int[] position = myHero.getPosition();
-        myFloor.removeCharacter(position[1], position[0], myHero);
-        position[1] = Math.max(position[1] - 1, 0);
-        myFloor.addCharacter(position[1], position[0], myHero);
+
+        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
+
+        if(currentRoom.canWalkWest() != null){
+            myFloor.removeCharacter(position[1], position[0], myHero);
+            position[1] = Math.max(position[1] - 1, 0);
+            myFloor.addCharacter(position[1], position[0], myHero);
+        }
     }
 }

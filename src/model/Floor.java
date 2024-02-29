@@ -225,7 +225,7 @@ public class Floor {
         for (int row = 0; row < mySize; row++) {
             for (Room r: myRooms[row]) {
                 sb.append('*');
-                if (r.canWalkNorth()) {
+                if (r.canWalkNorth() != null) {
                     sb.append('-');
                 } else {
                     sb.append('*');
@@ -236,7 +236,7 @@ public class Floor {
             sb.append("*\n");
 
             for (Room r: myRooms[row]) {
-                if (r.canWalkWest()) {
+                if (r.canWalkWest() != null) {
                     sb.append('|');
                 } else {
                     sb.append('*');
@@ -259,7 +259,7 @@ public class Floor {
                 }
             }
 
-            if (myRooms[row][mySize - 1].canWalkEast()) {
+            if (myRooms[row][mySize - 1].canWalkEast() != null) {
                 sb.append('|');
             } else {
                 sb.append('*');
@@ -271,7 +271,7 @@ public class Floor {
         }
         for (Room r: myRooms[mySize - 1]) {
             sb.append('*');
-            if (r.canWalkSouth()) {
+            if (r.canWalkSouth() != null) {
                 sb.append('-');
             } else {
                 sb.append('*');
