@@ -39,6 +39,10 @@ public class Room {
         return myDungeonCharacters;
     }
 
+    public final ArrayList<Item> getItems(){
+        return myItems;
+    }
+
     public final void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
     }
@@ -61,20 +65,20 @@ public class Room {
         myItems.add(theEquipment);
     }
 
-    public final boolean canWalkNorth() {
-        return myNorthRoom != null;
+    public final Room canWalkNorth() {
+        return myNorthRoom;
     }
 
-    public final boolean canWalkEast() {
-        return myEastRoom != null;
+    public final Room canWalkEast() {
+        return myEastRoom;
     }
 
-    public final boolean canWalkSouth() {
-        return mySouthRoom != null;
+    public final Room canWalkSouth() {
+        return mySouthRoom;
     }
 
-    public final boolean canWalkWest() {
-        return myWestRoom != null;
+    public final Room canWalkWest() {
+        return myWestRoom;
     }
 
     public final int getRow() {

@@ -225,7 +225,7 @@ public class Floor {
         for (int row = 0; row < mySize; row++) {
             for (Room r: myRooms[row]) {
                 sb.append('*');
-                if (r.canWalkNorth()) {
+                if (r.canWalkNorth() != null) {
                     sb.append('-');
                 } else {
                     sb.append('*');
@@ -236,26 +236,44 @@ public class Floor {
             sb.append("*\n");
 
             for (Room r: myRooms[row]) {
-                if (r.canWalkWest()) {
+                if (r.canWalkWest() != null) {
                     sb.append('|');
                 } else {
                     sb.append('*');
                 }
+
                 boolean hasHero = false;
+                boolean hasMonster = false;
+                boolean hasItem = false;
+
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    if (dc.getClass().getSimpleName().equals("model.Hero")) {
+                    if (dc instanceof Hero) {
                         hasHero = true;
+                    }
+                    if (dc instanceof Monster){
+                        hasMonster = true;
+                    }
+                }
+
+                for(Item i: r.getItems()){
+                    if(i instanceof Item){
+                        hasItem = true;
                         break;
                     }
                 }
+
                 if (hasHero) {
                     sb.append('@');
-                } else {
+                } else if (hasMonster){
+                    sb.append('M');
+                } else if (hasItem){
+                    sb.append('\'');
+                }else {
                     sb.append(' ');
                 }
             }
 
-            if (myRooms[row][mySize - 1].canWalkEast()) {
+            if (myRooms[row][mySize - 1].canWalkEast() != null) {
                 sb.append('|');
             } else {
                 sb.append('*');
@@ -267,7 +285,7 @@ public class Floor {
         }
         for (Room r: myRooms[mySize - 1]) {
             sb.append('*');
-            if (r.canWalkSouth()) {
+            if (r.canWalkSouth() != null) {
                 sb.append('-');
             } else {
                 sb.append('*');
