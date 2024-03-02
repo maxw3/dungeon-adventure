@@ -7,6 +7,9 @@ public class VisionPotion extends AbstractConsumable {
         super("Vision Potion");
     }
 
+    public VisionPotion(final String theName, final int theQuantity) {
+        super("Vision Potion", theQuantity);
+    }
     @Override
     public void triggerEffect() {
         super.triggerEffect();

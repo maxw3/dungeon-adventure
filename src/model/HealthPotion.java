@@ -5,6 +5,9 @@ public class HealthPotion extends AbstractConsumable {
         super("Health Potion");
     }
 
+    public HealthPotion(final int theQuantity) {
+        super("Health Potion", theQuantity);
+    }
     @Override
     public void triggerEffect() {
         super.triggerEffect();
