@@ -23,6 +23,16 @@ public abstract class AbstractDungeonCharacter {
         myPosition = new int[2];
     }
 
+    protected AbstractDungeonCharacter(final int theRow, final int theCol) {
+        myMaxHP = -1;
+        myHP = -1;
+        myAttack = 0;
+        myAtkSpd = 0;
+        myBlockChance = 0;
+
+        myPosition = new int[]{theRow, theCol};
+    }
+
     /**
      * Changes the HP of the Character by a fixed amount.
      * @param theAmount the amount that HP changes (positive is heal, negative is damage)

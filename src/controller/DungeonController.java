@@ -94,8 +94,11 @@ public class DungeonController extends JPanel {
      * Helper method for the Use Hit Point Potion Buttons.
      */
     private void drinkPotion() {
-        myHero.healOrDamage(myHero.getMaxHP()/2);
-        myInventory.useItem(new HealthPotion());
+        if (myDungeon.getGameActive()) {
+            myDungeon.getInventory().useItem(new HealthPotion(1));
+        } else {
+            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+        }
     }
 
     public void fight (final Monster theMonster){
@@ -142,9 +145,10 @@ public class DungeonController extends JPanel {
             //start new game prompt
         }
     }
-    
+
     private boolean checkGameStatus(){
         if (myDungeon.getGameActive()) {
+            myDungeon.getInventory().useItem(new HealthPotion(1));
             return true;
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
