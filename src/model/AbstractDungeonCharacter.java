@@ -2,7 +2,7 @@ package model;
 
 public abstract class AbstractDungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
-    protected static final int MIN_STAT = 0;
+    public static final int MIN_STAT = 0;
     protected String myName;
     protected int myHP;
     protected int myMaxHP;
@@ -10,17 +10,21 @@ public abstract class AbstractDungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
-    private final int[] myPosition;
+
     //private final model.Dummy myDummy = new model.Dummy();
 
-    protected AbstractDungeonCharacter() {
-        myMaxHP = -1;
-        myHP = -1;
-        myAttack = MIN_STAT;
-        myAtkSpd = MIN_STAT;
-        myBlockChance = MIN_STAT;
-
-        myPosition = new int[2];
+    private AbstractDungeonCharacter(){
+        throw new IllegalCallerException("private Constructor");
+    }
+    protected AbstractDungeonCharacter(final String theName, final int theHP, final int theAttack,
+                                       final int theAtkSpd, final int theHitChance, final int theBlockChance) {
+        myName = theName;
+        myMaxHP = theHP;
+        myHP = myMaxHP;
+        myAttack = theAttack;
+        myAtkSpd = theAtkSpd;
+        myHitChance = theHitChance;
+        myBlockChance = theBlockChance;
     }
 
     protected AbstractDungeonCharacter(final int theRow, final int theCol) {
@@ -56,48 +60,43 @@ public abstract class AbstractDungeonCharacter {
         skillDescription();
     }
 
-    public final void setPosition(final int[] thePosition) {
-        myPosition[0] = thePosition[0];
-        myPosition[1] = thePosition[1];
-    }
-
-    protected final void setMaxHP(final int theHP) {
-        final double hPRatio = (double)myHP / myMaxHP;
-        myMaxHP = theHP;
-        setCurrentHP((int)(myMaxHP * hPRatio));
-    }
-    protected final void increaseMaxHP(final int theChange) {
-        final double hPRatio = (double)myHP / myMaxHP;
-        myMaxHP += theChange;
-        setCurrentHP((int)(myMaxHP * hPRatio));
-    }
+//    protected final void setMaxHP(final int theHP) {
+//        final double hPRatio = (double)myHP / myMaxHP;
+//        myMaxHP = theHP;
+//        setCurrentHP((int)(myMaxHP * hPRatio));
+//    }
+//    protected final void increaseMaxHP(final int theChange) {
+//        final double hPRatio = (double)myHP / myMaxHP;
+//        myMaxHP += theChange;
+//        setCurrentHP((int)(myMaxHP * hPRatio));
+//    }
     protected final void multiplyMaxHP(final double theMultiplier) {
         final double hPRatio = (double)myHP / myMaxHP;
         myMaxHP *= theMultiplier;
         setCurrentHP((int)(myMaxHP * hPRatio));
     }
 
-    protected final void setAttack(final int theAttack) {
-        myAttack = theAttack;
-    }
+//    protected final void setAttack(final int theAttack) {
+//        myAttack = theAttack;
+//    }
     protected final void increaseAttack(final int theChange) {
         myAttack += theChange;
     }
     protected final void multiplyAttack(final double theMultiplier) {
         myAttack *= theMultiplier;
     }
-    protected final void setAtkSpd(final int theAtkSpd) {
-        myAtkSpd = theAtkSpd;
-    }
-    protected final void increaseAtkSpd(final int theChange) {
-        myAtkSpd += theChange;
-    }
+//    protected final void setAtkSpd(final int theAtkSpd) {
+//        myAtkSpd = theAtkSpd;
+//    }
+//    protected final void increaseAtkSpd(final int theChange) {
+//        myAtkSpd += theChange;
+//    }
     protected final void multiplyAtkSpd(final double theMultiplier) {
         myAtkSpd *= theMultiplier;
     }
-    protected final void setHitChance(final int theHitChance) {
-        myHitChance = theHitChance;
-    }
+//    protected final void setHitChance(final int theHitChance) {
+//        myHitChance = theHitChance;
+//    }
     protected final void increaseHitChance(final int theChange) {
         myHitChance += theChange;
     }
@@ -139,10 +138,6 @@ public abstract class AbstractDungeonCharacter {
     public final boolean isBlocked() {
         int roll = (int)(Math.random() * 100);
         return roll <= getBlockChance();
-    }
-
-    public final int[] getPosition() {
-        return myPosition;
     }
 
     public final int getMaxHP() {

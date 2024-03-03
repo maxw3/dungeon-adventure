@@ -3,11 +3,7 @@ package model;
 public class Warrior extends Hero {
     private Warrior() { this(""); }
     protected Warrior(final String theName) {
-        super(theName);
-        setMaxHP(500);
-        setAttack(50);
-        setAtkSpd(1);
-        setHitChance(75);
+        super(theName, 500, 50, 1, 75, 50);
     }
 
     @Override
