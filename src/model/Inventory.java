@@ -11,6 +11,10 @@ public class Inventory {
 
     public Inventory() {
         myConsumableItems = new ArrayList<>();
+        myPillars.add(null);
+        myPillars.add(null);
+        myPillars.add(null);
+        myPillars.add(null);
     }
 
     public String toString() {

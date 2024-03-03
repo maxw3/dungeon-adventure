@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -15,7 +17,7 @@ import model.*;
 
 import view.DungeonView;
 
-public class DungeonController extends JPanel {
+public class DungeonController extends JPanel implements PropertyChangeListener {
 
     public static JFrame myFrame;
     private static final DungeonController MY_INSTANCE = new DungeonController();
@@ -31,7 +33,7 @@ public class DungeonController extends JPanel {
         myInventory = myDungeon.getInventory();
     }
 
-    public static void main(final String[] theArgs){
+    public static void main(final String[] theArgs) {
         EventQueue.invokeLater(() -> createAndShowGUI());
     }
 
@@ -48,6 +50,7 @@ public class DungeonController extends JPanel {
 
         // Adds property change listeners to the main panel
         DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(MY_INSTANCE);
 
         // Sets the Content Pane of the frame to the Main Panel
         myFrame.setContentPane(mainPanel);
@@ -125,6 +128,7 @@ public class DungeonController extends JPanel {
                 //won the fight
                 //get drop item of monster if available
                 //make the room empty and traversable
+                myDungeon.collect();
             }
         }
     }
@@ -156,4 +160,25 @@ public class DungeonController extends JPanel {
         }
     }
 
+    /**
+     * This method gets called when a bound property is changed.
+     *
+     * @param theEvent A PropertyChangeEvent object describing the event source
+     *            and the property that has changed.
+     */
+    @Override
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        final String s = theEvent.getPropertyName();
+        if ("COMBAT STATUS".equals(s)) {
+            if (theEvent.getNewValue().equals(true)) {
+                for (AbstractDungeonCharacter c : myDungeon.getCurrentRoom().getCharacters()) {
+                    if (c instanceof Monster) {
+                        myDungeon.getCurrentRoom().removeCharacter(c);
+                        fight((Monster)c);
+                        myDungeon.endCombat();
+                    }
+                }
+            }
+        }
+    }
 }

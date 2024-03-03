@@ -33,7 +33,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public final class DungeonView extends JPanel implements PropertyChangeListener{
+public final class DungeonView extends JPanel implements PropertyChangeListener {
     private final static String NEWLINE = System.lineSeparator();
     /** Font for buttons on the main frame */
     private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);

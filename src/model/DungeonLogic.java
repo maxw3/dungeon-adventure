@@ -3,6 +3,7 @@ package model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class DungeonLogic {
@@ -86,7 +87,6 @@ public final class DungeonLogic {
 
     public boolean startCombat() {
         if (myGameActive && !myCombatStatus && !outOfBounds(myHeroCol) && !outOfBounds(myHeroRow)) {
-            myCurrentRoom = myFloor.getRoom(myHeroRow, myHeroCol);
             boolean isMonster = false;
             for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
                 if (c instanceof Monster) {
@@ -148,7 +148,10 @@ public final class DungeonLogic {
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getNorth().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getNorth();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
             reveal(myCurrentRoom);
+            applyEffects();
         }
     }
 
@@ -157,7 +160,10 @@ public final class DungeonLogic {
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getEast().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getEast();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
             reveal(myCurrentRoom);
+            applyEffects();
         }
     }
 
@@ -166,7 +172,10 @@ public final class DungeonLogic {
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getSouth().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getSouth();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
             reveal(myCurrentRoom);
+            applyEffects();
         }
     }
 
@@ -175,7 +184,34 @@ public final class DungeonLogic {
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getWest().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getWest();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
             reveal(myCurrentRoom);
+            applyEffects();
+        }
+    }
+
+    private void applyEffects() {
+        final boolean previous = myCombatStatus;
+        startCombat();
+        if (!myCombatStatus) {
+            collect();
+        }
+        myChanges.firePropertyChange("COMBAT STATUS", previous, myCombatStatus);
+    }
+
+    public void collect() {
+        final List<Item> items = myCurrentRoom.getItems();
+
+        for (int pos = 0; pos < items.size(); pos++) {
+            final Item i = items.get(pos);
+            if (i.getType().equals("PIT")) {
+                ((Pit)i).activate(myHero);
+                myCurrentRoom.removeItem(i);
+            } else if (i.getType().equals("CONSUMABLE") || i.getType().equals("PILLAR")) {
+                myInventory.addItem((AbstractConsumable) i);
+                myCurrentRoom.removeItem(i);
+            }
         }
     }
 }

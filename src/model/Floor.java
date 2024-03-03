@@ -258,7 +258,7 @@ public class Floor {
                         break;
                     }
                 }
-                if (r.isExplored()) {
+//                if (r.isExplored()) {
                     if (hasHero) {
                         sb.append('@');
                     } else if (hasMonster) {
@@ -268,9 +268,9 @@ public class Floor {
                     } else {
                         sb.append(' ');
                     }
-                } else {
-                    sb.append('?');
-                }
+//                } else {
+//                    sb.append('?');
+//                }
             }
 
             if (myRooms[row][mySize - 1].canWalkEast()) {
