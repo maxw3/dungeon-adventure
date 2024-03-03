@@ -69,16 +69,16 @@ public final class DungeonLogic {
 
     public Set<Room> getNeighbors(final Room theRoom) {
         final Set<Room> set = new HashSet<Room>();
-        if (theRoom.canWalkNorth() != null) {
+        if (theRoom.canWalkNorth()) {
             set.add(theRoom.getNorth());
         }
-        if (theRoom.canWalkSouth() != null) {
+        if (theRoom.canWalkSouth()) {
             set.add(theRoom.getSouth());
         }
-        if (theRoom.canWalkWest() != null) {
+        if (theRoom.canWalkWest()) {
             set.add(theRoom.getWest());
         }
-        if (theRoom.canWalkEast() != null) {
+        if (theRoom.canWalkEast()) {
             set.add(theRoom.getEast());
         }
         return set;
@@ -144,37 +144,37 @@ public final class DungeonLogic {
     }
 
     public void moveUp() {
-        if (myCurrentRoom.canWalkNorth() != null) {
+        if (myCurrentRoom.canWalkNorth()) {
             myCurrentRoom.removeCharacter(myHero);
-            myCurrentRoom.canWalkNorth().addCharacter(myHero);
-            myCurrentRoom = myCurrentRoom.canWalkNorth();
+            myCurrentRoom.getNorth().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getNorth();
             reveal(myCurrentRoom);
         }
     }
 
     public void moveRight() {
-        if (myCurrentRoom.canWalkEast() != null) {
+        if (myCurrentRoom.canWalkEast()) {
             myCurrentRoom.removeCharacter(myHero);
-            myCurrentRoom.canWalkEast().addCharacter(myHero);
-            myCurrentRoom = myCurrentRoom.canWalkEast();
+            myCurrentRoom.getEast().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getEast();
             reveal(myCurrentRoom);
         }
     }
 
     public void moveDown() {
-        if (myCurrentRoom.canWalkSouth() != null) {
+        if (myCurrentRoom.canWalkSouth()) {
             myCurrentRoom.removeCharacter(myHero);
-            myCurrentRoom.canWalkSouth().addCharacter(myHero);
-            myCurrentRoom = myCurrentRoom.canWalkSouth();
+            myCurrentRoom.getSouth().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getSouth();
             reveal(myCurrentRoom);
         }
     }
 
     public void moveLeft() {
-        if (myCurrentRoom.canWalkWest() != null) {
+        if (myCurrentRoom.canWalkWest()) {
             myCurrentRoom.removeCharacter(myHero);
-            myCurrentRoom.canWalkWest().addCharacter(myHero);
-            myCurrentRoom = myCurrentRoom.canWalkWest();
+            myCurrentRoom.getWest().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getWest();
             reveal(myCurrentRoom);
         }
     }
