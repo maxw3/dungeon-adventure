@@ -18,6 +18,7 @@ import view.DungeonView;
 public class DungeonController extends JPanel {
 
     public static JFrame myFrame;
+    private static final DungeonController MY_INSTANCE = new DungeonController();
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
     private final DungeonLogic myDungeon;
@@ -72,7 +73,7 @@ public class DungeonController extends JPanel {
                     "Would you like to save progress before you exit?", "Save on Exit",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, exitOptions, exitOptions[1]);
-                if (promptResult == JOptionPane.YES_OPTION)  {
+                if (promptResult == JOptionPane.YES_OPTION) {
 //                    DungeonLogic.save();
                 }
                 System.exit(0);
@@ -101,7 +102,7 @@ public class DungeonController extends JPanel {
         }
     }
 
-    public void fight (final Monster theMonster){
+    public void fight (final Monster theMonster) {
         if (checkGameStatus()) {
             while (myHero.getHP() > 0 && theMonster.getHP() > 0) {
 //            prompt user for what action they want to do for their turn
@@ -118,7 +119,7 @@ public class DungeonController extends JPanel {
                     theMonster.skill(theMonster);
                 }
             }
-            if(myHero.getHP() <= 0){
+            if (myHero.getHP() <= 0) {
                 endGame(false);
             } else {
                 //won the fight
@@ -135,20 +136,19 @@ public class DungeonController extends JPanel {
      *                  True means the Hero has successfully cleared the game.
      *                  False means the Hero has died
      */
-    public void endGame(final boolean theState){
+    public void endGame(final boolean theState) {
         if (theState) { //beat the game
             JOptionPane.showMessageDialog(null, "Congratulations! You beat the game!");
             //show the stats window
             //show credits page
-        } else{
+        } else {
             JOptionPane.showMessageDialog(null, "You have unfortunately met your end.");
             //start new game prompt
         }
     }
 
-    private boolean checkGameStatus(){
+    private boolean checkGameStatus() {
         if (myDungeon.getGameActive()) {
-            myDungeon.getInventory().useItem(new HealthPotion(1));
             return true;
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");

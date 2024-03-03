@@ -306,14 +306,14 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
         });
     }
 
-    private void traverse (final Direction theDir){
-        if(theDir == Direction.NORTH){
+    private void traverse(final Direction theDir) {
+        if (theDir == Direction.NORTH) {
             myDungeon.moveUp();
-        }else if(theDir == Direction.EAST){
+        } else if (theDir == Direction.EAST) {
             myDungeon.moveRight();
-        }else if(theDir == Direction.SOUTH){
+        } else if (theDir == Direction.SOUTH) {
             myDungeon.moveDown();
-        }else if(theDir == Direction.WEST){
+        } else if (theDir == Direction.WEST) {
             myDungeon.moveLeft();
         }
         myMap.setText(myDungeon.getFloorString());

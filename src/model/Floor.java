@@ -258,15 +258,18 @@ public class Floor {
                         break;
                     }
                 }
-
-                if (hasHero) {
-                    sb.append('@');
-                } else if (hasMonster){
-                    sb.append('M');
-                } else if (hasItem){
-                    sb.append('\'');
-                }else {
-                    sb.append(' ');
+                if (r.isExplored()) {
+                    if (hasHero) {
+                        sb.append('@');
+                    } else if (hasMonster) {
+                        sb.append('M');
+                    } else if (hasItem) {
+                        sb.append('\'');
+                    } else {
+                        sb.append(' ');
+                    }
+                } else {
+                    sb.append('e');
                 }
             }
 
