@@ -1,19 +1,16 @@
 package model;
 
 public class Rogue extends Hero {
+    private Rogue(){this("");}
     protected Rogue(final String theName) {
-        super(theName);
-        setMaxHP(350);
-        setAttack(30);
-        setAtkSpd(2);
-        setHitChance(85);
+        super(theName, 350, 30, 2, 85, 25);
     }
 
     @Override
     public final void skill(final AbstractDungeonCharacter theTarget) {
         multiplyAtkSpd(1.5);
         theTarget.increaseHitChance(-20);
-        System.out.println("Remember to set hit chance back after skill duration expires.");
+System.out.println("Remember to set hit chance back after skill duration expires.");
 
         attack(theTarget);
 
