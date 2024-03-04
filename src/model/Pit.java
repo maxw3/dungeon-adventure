@@ -17,7 +17,9 @@ public class Pit implements Item {
         return MY_TYPE.name();
     }
 
-    public void activate(final AbstractDungeonCharacter theCharacter) {
-        theCharacter.healOrDamage(-(RANDOM.nextInt(20) + 1));
+    public int activate(final AbstractDungeonCharacter theCharacter) {
+        final int damage = -(RANDOM.nextInt(20) + 1);
+        theCharacter.healOrDamage(damage);
+        return damage;
     }
 }

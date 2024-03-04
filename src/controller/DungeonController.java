@@ -111,14 +111,16 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
 //            prompt user for what action they want to do for their turn
 //            listen to key press or button click
 //            if attack
-                myHero.attack(theMonster);
+//                myHero.attack(theMonster);
 //            if skill
-                myHero.skill(theMonster);
+//                myHero.skill(theMonster);
 //            if drink potion
-                drinkPotion();
+//                drinkPotion();
 
+                // Temporarily makes both sides attack each other
                 if (theMonster.getHP() > 0) {
                     theMonster.attack(myDungeon.getHero());
+                    myHero.attack(theMonster);
                     theMonster.skill(theMonster);
                 }
             }
@@ -179,6 +181,9 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                     }
                 }
             }
+        } else if ("COMPLETED FLOOR".equals(s)) {
+            // Prompt view to offer to save game
+            myDungeon.changeFloor();
         }
     }
 }

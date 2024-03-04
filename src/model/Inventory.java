@@ -60,7 +60,7 @@ public class Inventory {
         return null;
     }
     public int getSize() {
-        return myConsumableItems.size() + myPillars.size();
+        return myConsumableItems.size();
     }
 
     public AbstractEquipment getItem(final int theIndex) {

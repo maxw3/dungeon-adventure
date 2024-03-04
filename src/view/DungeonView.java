@@ -71,6 +71,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private JPanel myRoomPanel;
     private JPanel myFightPanel;
     private JTextArea myMap;
+    private JTextArea myMessages;
     
     final DungeonLogic myDungeon;
 
@@ -82,6 +83,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myMap = new JTextArea(myDungeon.getFloorString());
         myMap.setFont(new Font("Consolas", 1, 32));
         myMap.setBackground(getBackground());
+
+        myMessages = new JTextArea("Welcome to Dungeon Adventure!" + NEWLINE);
+        myMessages.setEditable(false);
 
         setMenuBar();
         DungeonController.myFrame.setJMenuBar(myMenu);
@@ -101,7 +105,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myPanel.add(myMovePanel);
         myPanel.add(myFightPanel);
 //        myPanel.add(myInventoryPanel);
-
+        myPanel.add(myMessages);
 //        addListeners();
 
         add(myPanel);
@@ -289,7 +293,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         });
 
         //listener for rules button
-        myRules.addActionListener(theEvent ->{
+        myRules.addActionListener(theEvent -> {
             JOptionPane.showMessageDialog(null,"Try to complete the dungeon"
                     + NEWLINE + "Every room except the starting room contains an event." + NEWLINE +
                     "The possible events are a monster fight, trap trigger, an item to collect, or a boss monster." + NEWLINE +
@@ -326,10 +330,15 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
      *          and the property that has changed.
      */
     @Override
-    public void propertyChange(PropertyChangeEvent theEvent) {
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        final String s = theEvent.getPropertyName();
         //update Inventory UI
         //update map
         //Hero hp falls to 0
         //Monster hp falls to 0
+        if ("MESSAGE".equals(s)) {
+            String t = theEvent.getNewValue().toString();
+            myMessages.setText(t);
+        }
     }
 }

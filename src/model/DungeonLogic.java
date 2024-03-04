@@ -12,6 +12,7 @@ public final class DungeonLogic {
     private final PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
 
+    private final StringBuilder myMessages = new StringBuilder();
     private Hero myHero;
     private Floor myFloor;
     private Inventory myInventory;
@@ -27,6 +28,20 @@ public final class DungeonLogic {
         startGame();
     }
 
+    private DungeonLogic(final Hero theHero, final Inventory theInventory) {
+        myFloorLevel = 1;
+        setGameActive(true);
+        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
+        myHero = theHero;
+        myInventory = theInventory;
+        final Room startingRoom = myFloor.getStartingRoom();
+        startingRoom.addCharacter(myHero);
+        myHeroCol = myHero.getPosition()[1];
+        myHeroRow = myHero.getPosition()[0];
+        myCurrentRoom = startingRoom;
+        reveal(myCurrentRoom);
+    }
+
     private void startGame() {
         myFloorLevel = 1;
         setGameActive(true);
@@ -35,8 +50,19 @@ public final class DungeonLogic {
         myInventory = new Inventory();
         final Room startingRoom = myFloor.getStartingRoom();
         startingRoom.addCharacter(myHero);
-        myHeroCol = myHero.getPosition()[1];
-        myHeroRow = myHero.getPosition()[0];
+        myHeroCol = startingRoom.getCol();
+        myHeroRow = startingRoom.getRow();
+        myCurrentRoom = startingRoom;
+        reveal(myCurrentRoom);
+    }
+
+    public void changeFloor() {
+        myFloorLevel++;
+        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
+        final Room startingRoom = myFloor.getStartingRoom();
+        startingRoom.addCharacter(myHero);
+        myHeroCol = startingRoom.getCol();
+        myHeroRow = startingRoom.getRow();
         myCurrentRoom = startingRoom;
         reveal(myCurrentRoom);
     }
@@ -91,6 +117,9 @@ public final class DungeonLogic {
             for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
                 if (c instanceof Monster) {
                     isMonster = true;
+                    myMessages.append("You've encountered a ").append(c.getClass().getSimpleName()).append("!\n");
+                    trimMessage();
+                    myChanges.firePropertyChange("MESSAGE", null, myMessages);
                     break;
                 }
             }
@@ -130,7 +159,7 @@ public final class DungeonLogic {
      *
      * @param theListener   The listener (Frame, Panel, etc)
      */
-    public void addPropertyChangeListener(PropertyChangeListener theListener) {
+    public void addPropertyChangeListener(final PropertyChangeListener theListener) {
         myChanges.addPropertyChangeListener(theListener);
     }
 
@@ -139,7 +168,7 @@ public final class DungeonLogic {
      *
      * @param theListener   The listener (Frame, Panel, etc)
      */
-    public void removePropertyChangeListener(PropertyChangeListener theListener) {
+    public void removePropertyChangeListener(final PropertyChangeListener theListener) {
         myChanges.removePropertyChangeListener(theListener);
     }
 
@@ -206,12 +235,34 @@ public final class DungeonLogic {
         for (int pos = 0; pos < items.size(); pos++) {
             final Item i = items.get(pos);
             if (i.getType().equals("PIT")) {
-                ((Pit)i).activate(myHero);
+                final int damage = ((Pit)i).activate(myHero);
                 myCurrentRoom.removeItem(i);
-            } else if (i.getType().equals("CONSUMABLE") || i.getType().equals("PILLAR")) {
-                myInventory.addItem((AbstractConsumable) i);
+                myMessages.append("You activated a pit, and took ").append(damage).append(" damage! \n");
+                trimMessage();
+                myChanges.firePropertyChange("MESSAGE", null, myMessages);
+            } else if (i.getType().equals("CONSUMABLE")) {
+                final AbstractConsumable consumable = (AbstractConsumable)i;
+                myInventory.addItem(consumable);
                 myCurrentRoom.removeItem(i);
+                myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ').append(consumable.getName()).append("s! \n");
+                trimMessage();
+                myChanges.firePropertyChange("MESSAGE", null, myMessages);
+            } else if (i.getType().equals("PILLAR")) {
+                final Pillar pillar = (Pillar)i;
+                myInventory.addItem(pillar);
+                myCurrentRoom.removeItem(i);
+                myMessages.append("You acquired the ").append(pillar.getName()).append(" pillar of OO! \n");
+                trimMessage();
+                myChanges.firePropertyChange("MESSAGE", null, myMessages);
+                myChanges.firePropertyChange("COMPLETED FLOOR", false, true);
             }
         }
     }
+
+    private void trimMessage() {
+        if (myMessages.length() > 300) {
+            myMessages.delete(0, 50);
+        }
+    }
+
 }
