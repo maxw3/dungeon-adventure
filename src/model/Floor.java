@@ -2,6 +2,7 @@ package model;
 
 import enums.Direction;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -18,11 +19,11 @@ public class Floor {
 
     private final int myFloorLevel;
 
-    Floor() {
+    Floor() throws SQLException {
         this(1, 5);
     }
 
-    Floor(final int theFloorLevel, final int theSize) {
+    Floor(final int theFloorLevel, final int theSize) throws SQLException {
         myFloorLevel = theFloorLevel;
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
@@ -67,7 +68,7 @@ public class Floor {
         }
     }
 
-    private void fillFloor() {
+    private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
             for (int col = 0; col < mySize; col++) {
                 final int choice = RAND.nextInt(100);

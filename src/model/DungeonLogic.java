@@ -2,9 +2,19 @@ package model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.sql.SQLException;
 
 public final class DungeonLogic {
-    private static final DungeonLogic MY_INSTANCE = new DungeonLogic();
+    private static final DungeonLogic MY_INSTANCE;
+
+    static {
+        try {
+            MY_INSTANCE = new DungeonLogic();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final int DUNGEON_SIZE = 5;
     private final PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
@@ -16,11 +26,11 @@ public final class DungeonLogic {
     private String mySaveState;
     private int myFloorLevel;
 
-    private DungeonLogic() {
+    private DungeonLogic() throws SQLException {
         startGame();
     }
 
-    private void startGame() {
+    private void startGame() throws SQLException {
         myFloorLevel = 1;
         setGameActive(true);
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);

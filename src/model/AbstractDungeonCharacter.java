@@ -50,45 +50,21 @@ public abstract class AbstractDungeonCharacter {
         skillDescription();
     }
 
-//    protected final void setMaxHP(final int theHP) {
-//        final double hPRatio = (double)myHP / myMaxHP;
-//        myMaxHP = theHP;
-//        setCurrentHP((int)(myMaxHP * hPRatio));
-//    }
-//    protected final void increaseMaxHP(final int theChange) {
-//        final double hPRatio = (double)myHP / myMaxHP;
-//        myMaxHP += theChange;
-//        setCurrentHP((int)(myMaxHP * hPRatio));
-//    }
-    protected final void multiplyMaxHP(final double theMultiplier) {
+    protected final void setMaxHP(final int theHP) {
         final double hPRatio = (double)myHP / myMaxHP;
-        myMaxHP *= theMultiplier;
+        myMaxHP = theHP;
         setCurrentHP((int)(myMaxHP * hPRatio));
     }
 
-//    protected final void setAttack(final int theAttack) {
-//        myAttack = theAttack;
-//    }
-    protected final void increaseAttack(final int theChange) {
-        myAttack += theChange;
+    protected final void setAttack(final int theAttack) {
+        myAttack = theAttack;
     }
-    protected final void multiplyAttack(final double theMultiplier) {
-        myAttack *= theMultiplier;
+    protected final void setAtkSpd(final int theAtkSpd) {
+        myAtkSpd = theAtkSpd;
     }
-//    protected final void setAtkSpd(final int theAtkSpd) {
-//        myAtkSpd = theAtkSpd;
-//    }
-//    protected final void increaseAtkSpd(final int theChange) {
-//        myAtkSpd += theChange;
-//    }
-    protected final void multiplyAtkSpd(final double theMultiplier) {
-        myAtkSpd *= theMultiplier;
-    }
-//    protected final void setHitChance(final int theHitChance) {
-//        myHitChance = theHitChance;
-//    }
-    protected final void increaseHitChance(final int theChange) {
-        myHitChance += theChange;
+
+    protected final void setHitChance(final int theHitChance) {
+        myHitChance = theHitChance;
     }
 
     private void setCurrentHP(final int theHP) {

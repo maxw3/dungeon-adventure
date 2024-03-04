@@ -1,5 +1,11 @@
 package model;
 
+import org.sqlite.SQLiteDataSource;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Random;
 
 public final class MonsterFactory {
@@ -16,10 +22,12 @@ public final class MonsterFactory {
     private MonsterFactory() { throw new IllegalStateException("Utility Class"); }
 
     public static AbstractDungeonCharacter createSkeleton(final int theFloor) {
-        modifier = FLOOR_MODIFIERS[theFloor - 1];
-        return new Monster("Skeleton",(int)(100 * modifier),(int)(50 * modifier),
-            1,(int)(100 - (50 / modifier)),0,
-            0.1,0.1);
+        String query = "SELECT * FROM character WHERE CharName = 'Skeleton'";
+        return createMonsterFromQuery(query, theFloor);
+//        modifier = FLOOR_MODIFIERS[theFloor - 1];
+//        return new Monster("Skeleton",(int)(100 * modifier),(int)(50 * modifier),
+//            1,(int)(100 - (50 / modifier)),0,
+//            0.1,0.1);
     }
     public static AbstractDungeonCharacter createGremlin(final int theFloor) {
         modifier = FLOOR_MODIFIERS[theFloor - 1];
@@ -45,7 +53,8 @@ public final class MonsterFactory {
             1,(int)(100 - (60 / modifier)),0,
             0.1,0.5);
     }
-    public static AbstractDungeonCharacter createMonster(final int theFloor) {
+    public static AbstractDungeonCharacter createMonster(final int theFloor)
+        throws SQLException {
         final int choice = RANDOM.nextInt(NUM_OF_MONSTER_TYPES);
         if (choice == 0) {
             return createSkeleton(theFloor);
@@ -64,5 +73,43 @@ public final class MonsterFactory {
             AbstractDungeonCharacter.MIN_STAT, AbstractDungeonCharacter.MIN_STAT,
             AbstractDungeonCharacter.MIN_STAT,AbstractDungeonCharacter.MIN_STAT,
             AbstractDungeonCharacter.MIN_STAT);
+    }
+
+    private static Monster createMonsterFromQuery(final String theQuery, final int theFloor) {
+        SQLiteDataSource ds = null;
+        try {
+            ds = new SQLiteDataSource();
+            ds.setUrl("jdbc:sqlite:dungeonData.sqlite");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        try (Connection conn = ds.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(theQuery);
+            return new Monster(rs.getString("CharName"),
+
+                (int) (rs.getInt("MaxHP")
+                    * rs.getDouble("HPMultiplier") * theFloor),
+
+                (int) (rs.getInt("Attack")
+                    * rs.getDouble("AttackMultiplier") * theFloor),
+
+                rs.getInt("AttackSpeed"),
+
+                (int) (100 - (rs.getInt("HitChance")
+                    / (rs.getDouble("HitChanceMultiplier") * theFloor))),
+
+                rs.getInt("BlockChance"), rs.getDouble("HealMultiplier"),
+
+                rs.getDouble("HealRate")
+                    * rs.getDouble("HealRateMultiplier") * theFloor);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return null;
     }
 }
