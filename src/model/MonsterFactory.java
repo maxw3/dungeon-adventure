@@ -4,7 +4,6 @@ import org.sqlite.SQLiteDataSource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
@@ -53,8 +52,7 @@ public final class MonsterFactory {
             1,(int)(100 - (60 / modifier)),0,
             0.1,0.5);
     }
-    public static AbstractDungeonCharacter createMonster(final int theFloor)
-        throws SQLException {
+    public static AbstractDungeonCharacter createMonster(final int theFloor) {
         final int choice = RANDOM.nextInt(NUM_OF_MONSTER_TYPES);
         if (choice == 0) {
             return createSkeleton(theFloor);
@@ -91,20 +89,20 @@ public final class MonsterFactory {
             return new Monster(rs.getString("CharName"),
 
                 (int) (rs.getInt("MaxHP")
-                    * rs.getDouble("HPMultiplier") * theFloor),
+                    * Math.pow(rs.getDouble("HPMultiplier"), theFloor)),
 
                 (int) (rs.getInt("Attack")
-                    * rs.getDouble("AttackMultiplier") * theFloor),
+                    * Math.pow(rs.getDouble("AttackMultiplier"), theFloor)),
 
                 rs.getInt("AttackSpeed"),
 
-                (int) (100 - (rs.getInt("HitChance")
-                    / (rs.getDouble("HitChanceMultiplier") * theFloor))),
+                (int) (100 - rs.getInt("HitChance")
+                    / Math.pow(rs.getDouble("HitChanceMultiplier"), theFloor)),
 
                 rs.getInt("BlockChance"), rs.getDouble("HealMultiplier"),
 
                 rs.getDouble("HealRate")
-                    * rs.getDouble("HealRateMultiplier") * theFloor);
+                    * Math.pow(rs.getDouble("HealRateMultiplier"), theFloor));
 
         } catch (Exception e) {
             e.printStackTrace();
