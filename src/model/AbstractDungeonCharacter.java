@@ -2,7 +2,6 @@ package model;
 
 public abstract class AbstractDungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
-    public static final int MIN_STAT = 0;
     protected String myName;
     protected int myHP;
     protected int myMaxHP;
@@ -46,9 +45,7 @@ public abstract class AbstractDungeonCharacter {
         }
     }
 
-    public void skill(final AbstractDungeonCharacter theTarget) {
-        skillDescription();
-    }
+    public abstract void skill(final AbstractDungeonCharacter theTarget);
 
     protected final void setMaxHP(final int theHP) {
         final double hPRatio = (double)myHP / myMaxHP;
@@ -63,7 +60,7 @@ public abstract class AbstractDungeonCharacter {
         myAtkSpd = theAtkSpd;
     }
 
-    protected final void setHitChance(final int theHitChance) {
+    public final void setHitChance(final int theHitChance) {
         myHitChance = theHitChance;
     }
 
@@ -106,24 +103,13 @@ public abstract class AbstractDungeonCharacter {
         return roll <= getBlockChance();
     }
 
-    public final int getMaxHP() {
-        return  myMaxHP;
-    }
-    public final int getHP() {
-        return myHP;
-    }
-    public final int getBlockChance() {
-        return myBlockChance;
-    }
-    public final int getAtkSpd() {
-        return myAtkSpd;
-    }
-    public final int getHitChance() {
-        return myHitChance;
-    }
-    public final int getAttack() {
-        return myAttack;
-    }
+    public final String getName() { return myName; }
+    public final int getMaxHP() { return  myMaxHP;}
+    public final int getHP() { return myHP; }
+    public final int getBlockChance() { return myBlockChance; }
+    public final int getAtkSpd() { return myAtkSpd; }
+    public final int getHitChance() { return myHitChance; }
+    public final int getAttack() { return myAttack; }
 
     public abstract String skillDescription();
 

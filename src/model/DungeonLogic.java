@@ -23,11 +23,15 @@ public final class DungeonLogic {
     private Floor myFloor;
     private Inventory myInventory;
     private boolean myGameActive;
-    private String mySaveState;
+    private static String mySaveState;
     private int myFloorLevel;
 
     private DungeonLogic() throws SQLException {
         startGame();
+    }
+
+    public static String save() {
+        return mySaveState;
     }
 
     private void startGame() throws SQLException {
