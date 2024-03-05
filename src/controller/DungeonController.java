@@ -5,14 +5,18 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import enums.Direction;
 import model.*;
 
+import org.sqlite.SQLiteDataSource;
 import view.DungeonView;
 
 public class DungeonController extends JPanel {
@@ -23,6 +27,31 @@ public class DungeonController extends JPanel {
     private final DungeonLogic myDungeon;
     private final Hero myHero;
     private final Inventory myInventory;
+    public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
+    static {
+        try {
+            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Connection CONNECTION;
+    static {
+        try {
+            CONNECTION = DATA_SOURCE.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static final Statement STATEMENT;
+    static {
+        try {
+            STATEMENT = CONNECTION.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public DungeonController() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
@@ -31,7 +60,7 @@ public class DungeonController extends JPanel {
     }
 
     public static void main(final String[] theArgs){
-        EventQueue.invokeLater(() -> createAndShowGUI());
+        EventQueue.invokeLater(DungeonController::createAndShowGUI);
     }
 
     public static void createAndShowGUI() {
@@ -73,7 +102,7 @@ public class DungeonController extends JPanel {
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, exitOptions, exitOptions[1]);
                 if (promptResult == JOptionPane.YES_OPTION)  {
-//                    DungeonLogic.save();
+                    DungeonLogic.save();
                 }
                 System.exit(0);
             }
@@ -101,7 +130,7 @@ public class DungeonController extends JPanel {
         }
     }
 
-    public void fight (final Monster theMonster){
+    public void fight (final Monster theMonster) throws SQLException {
         if (checkGameStatus()) {
             while (myHero.getHP() > 0 && theMonster.getHP() > 0) {
 //            prompt user for what action they want to do for their turn
@@ -112,10 +141,19 @@ public class DungeonController extends JPanel {
                 myHero.skill(theMonster);
 //            if drink potion
                 drinkPotion();
+//                if flee
+//                    end fight and go to previous room
 
                 if (theMonster.getHP() > 0) {
                     theMonster.attack(myDungeon.getHero());
                     theMonster.skill(theMonster);
+
+                    String hitChanceQuery = "SELECT 'HitChance' FROM character WHERE CharName = '" +
+                        theMonster.getName() + "'";
+                    ResultSet rs = STATEMENT.executeQuery(hitChanceQuery);
+                    if (theMonster.getHitChance() < rs.getInt("HitChance")){
+                        theMonster.setHitChance(theMonster.getHitChance() + 20);
+                    }
                 }
             }
             if(myHero.getHP() <= 0){

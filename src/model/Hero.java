@@ -1,7 +1,5 @@
 package model;
 
-import enums.Direction;
-
 public class Hero extends AbstractDungeonCharacter {
 
 
@@ -21,8 +19,8 @@ public class Hero extends AbstractDungeonCharacter {
     }
 
     protected final void levelUp() {
-        multiplyMaxHP(1.1);
-        multiplyAttack(1.2);
+        setMaxHP((int) (getMaxHP() * 1.1));
+        setAttack((int)(getAttack() * 1.2));
         myHP = getMaxHP();
     }
 }

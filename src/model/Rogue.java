@@ -8,13 +8,13 @@ public class Rogue extends Hero {
 
     @Override
     public final void skill(final AbstractDungeonCharacter theTarget) {
-        multiplyAtkSpd(1.5);
-        theTarget.increaseHitChance(-20);
+        setAtkSpd((int) (getAtkSpd() * 1.5));
+        theTarget.setHitChance(getHitChance() - 20);
 System.out.println("Remember to set hit chance back after skill duration expires.");
 
         attack(theTarget);
 
-        multiplyAtkSpd(0.667);
+        setAtkSpd((int) (getAtkSpd() * 0.667));
 
         super.skill(theTarget);
     }

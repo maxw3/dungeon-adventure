@@ -2,6 +2,7 @@ package model;
 
 import enums.Direction;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -17,14 +18,15 @@ public class Floor {
     private final Room[][] myRooms;
 
     private final int myFloorLevel;
-
+  
     private final Room myStartingRoom;
 
-    Floor() {
+
+    Floor() throws SQLException {
         this(1, 5);
     }
 
-    Floor(final int theFloorLevel, final int theSize) {
+    Floor(final int theFloorLevel, final int theSize) throws SQLException {
         myFloorLevel = theFloorLevel;
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
@@ -48,13 +50,9 @@ public class Floor {
         myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
     }
 
-    public final int getSize() {
-        return mySize;
-    }
+    public final int getSize() { return mySize; }
 
-    public final Room getStartingRoom() {
-        return myStartingRoom;
-    }
+    public final Room getStartingRoom() { return myStartingRoom; }
 
     public final Room getRoom(final int theRow, final int theCol) {
         if (!outOfBounds(theCol) && !outOfBounds(theRow)) {
@@ -64,11 +62,9 @@ public class Floor {
         }
     }
 
-    Room[][] getRooms() {
-        return Arrays.copyOf(myRooms, mySize);
-    }
+    Room[][] getRooms() { return Arrays.copyOf(myRooms, mySize); }
 
-    private void fillFloor() {
+    private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
             for (int col = 0; col < mySize; col++) {
                 final int choice = RAND.nextInt(100);

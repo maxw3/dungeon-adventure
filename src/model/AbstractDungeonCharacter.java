@@ -2,7 +2,6 @@ package model;
 
 public abstract class AbstractDungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
-    public static final int MIN_STAT = 0;
     protected String myName;
     protected int myHP;
     protected int myMaxHP;
@@ -56,49 +55,23 @@ public abstract class AbstractDungeonCharacter {
         }
     }
 
-    public void skill(final AbstractDungeonCharacter theTarget) {
-        skillDescription();
-    }
+    public abstract void skill(final AbstractDungeonCharacter theTarget);
 
-//    protected final void setMaxHP(final int theHP) {
-//        final double hPRatio = (double)myHP / myMaxHP;
-//        myMaxHP = theHP;
-//        setCurrentHP((int)(myMaxHP * hPRatio));
-//    }
-//    protected final void increaseMaxHP(final int theChange) {
-//        final double hPRatio = (double)myHP / myMaxHP;
-//        myMaxHP += theChange;
-//        setCurrentHP((int)(myMaxHP * hPRatio));
-//    }
-    protected final void multiplyMaxHP(final double theMultiplier) {
+    protected final void setMaxHP(final int theHP) {
         final double hPRatio = (double)myHP / myMaxHP;
-        myMaxHP *= theMultiplier;
+        myMaxHP = theHP;
         setCurrentHP((int)(myMaxHP * hPRatio));
     }
 
-//    protected final void setAttack(final int theAttack) {
-//        myAttack = theAttack;
-//    }
-    protected final void increaseAttack(final int theChange) {
-        myAttack += theChange;
+    protected final void setAttack(final int theAttack) {
+        myAttack = theAttack;
     }
-    protected final void multiplyAttack(final double theMultiplier) {
-        myAttack *= theMultiplier;
+    protected final void setAtkSpd(final int theAtkSpd) {
+        myAtkSpd = theAtkSpd;
     }
-//    protected final void setAtkSpd(final int theAtkSpd) {
-//        myAtkSpd = theAtkSpd;
-//    }
-//    protected final void increaseAtkSpd(final int theChange) {
-//        myAtkSpd += theChange;
-//    }
-    protected final void multiplyAtkSpd(final double theMultiplier) {
-        myAtkSpd *= theMultiplier;
-    }
-//    protected final void setHitChance(final int theHitChance) {
-//        myHitChance = theHitChance;
-//    }
-    protected final void increaseHitChance(final int theChange) {
-        myHitChance += theChange;
+
+    public final void setHitChance(final int theHitChance) {
+        myHitChance = theHitChance;
     }
 
     private void setCurrentHP(final int theHP) {
@@ -140,24 +113,13 @@ public abstract class AbstractDungeonCharacter {
         return roll <= getBlockChance();
     }
 
-    public final int getMaxHP() {
-        return  myMaxHP;
-    }
-    public final int getHP() {
-        return myHP;
-    }
-    public final int getBlockChance() {
-        return myBlockChance;
-    }
-    public final int getAtkSpd() {
-        return myAtkSpd;
-    }
-    public final int getHitChance() {
-        return myHitChance;
-    }
-    public final int getAttack() {
-        return myAttack;
-    }
+    public final String getName() { return myName; }
+    public final int getMaxHP() { return  myMaxHP;}
+    public final int getHP() { return myHP; }
+    public final int getBlockChance() { return myBlockChance; }
+    public final int getAtkSpd() { return myAtkSpd; }
+    public final int getHitChance() { return myHitChance; }
+    public final int getAttack() { return myAttack; }
 
     public abstract String skillDescription();
 

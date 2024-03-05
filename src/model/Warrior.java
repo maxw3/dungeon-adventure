@@ -8,13 +8,13 @@ public class Warrior extends Hero {
 
     @Override
     public final void skill(final AbstractDungeonCharacter theTarget) {
-        increaseAttack(50);
-        increaseHitChance(-25);
+        setAttack(getAttack() + 50);
+        setHitChance(getHitChance() - 25);
 
         attack(theTarget);
 
-        increaseAttack(-50);
-        increaseHitChance(10);
+        setAttack(getAttack() - 50);
+        setHitChance(getHitChance() + 25);
 
         super.skill(theTarget);
     }
