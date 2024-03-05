@@ -1,8 +1,23 @@
 package model;
 
+import java.util.Set;
+
 public class VisionPotion extends AbstractConsumable {
     public VisionPotion() {
         super("Vision Potion");
+    }
+
+    public VisionPotion(final String theName, final int theQuantity) {
+        super("Vision Potion", theQuantity);
+    }
+    @Override
+    public void triggerEffect() {
+        super.triggerEffect();
+        final Room room = DungeonLogic.MY_INSTANCE.getCurrentRoom();
+        final Set<Room> neighbors = DungeonLogic.MY_INSTANCE.getNeighbors(room);
+        for (final Room r : neighbors) {
+            DungeonLogic.MY_INSTANCE.reveal(r);
+        }
     }
 
     @Override

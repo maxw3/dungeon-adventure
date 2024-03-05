@@ -18,6 +18,9 @@ public class Floor {
     private final Room[][] myRooms;
 
     private final int myFloorLevel;
+  
+    private final Room myStartingRoom;
+
 
     Floor() throws SQLException {
         this(1, 5);
@@ -34,7 +37,9 @@ public class Floor {
             }
         }
         fillFloor();
-        createMaze();
+        final Room startRoom = createMaze();
+        startRoom.emptyRoom();
+        myStartingRoom = startRoom;
     }
 
     public final void addCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
@@ -45,28 +50,19 @@ public class Floor {
         myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
     }
 
-    private void setRandomDoors() {
-        for (int row = 0; row < mySize; row++) {
-            for (int col = 0; col < mySize; col++) {
-                if (RAND.nextFloat() < DOOR_CHANCE && row - 1 >= 0) {
-                    myRooms[row][col].setNorthRoom(myRooms[row - 1][col]);
-                    myRooms[row - 1][col].setSouthRoom(myRooms[row][col]);
-                }
-                if (RAND.nextFloat() < DOOR_CHANCE && col - 1 >= 0) {
-                    myRooms[row][col].setWestRoom(myRooms[row][col - 1]);
-                    myRooms[row][col - 1].setEastRoom(myRooms[row][col]);
-                }
-                if (RAND.nextFloat() < DOOR_CHANCE && row + 1 < mySize) {
-                    myRooms[row][col].setSouthRoom(myRooms[row + 1][col]);
-                    myRooms[row + 1][col].setNorthRoom(myRooms[row][col]);
-                }
-                if (RAND.nextFloat() < DOOR_CHANCE && col + 1 < mySize) {
-                    myRooms[row][col].setEastRoom(myRooms[row][col + 1]);
-                    myRooms[row][col + 1].setWestRoom(myRooms[row][col]);
-                }
-            }
+    public final int getSize() { return mySize; }
+
+    public final Room getStartingRoom() { return myStartingRoom; }
+
+    public final Room getRoom(final int theRow, final int theCol) {
+        if (!outOfBounds(theCol) && !outOfBounds(theRow)) {
+            return myRooms[theRow][theCol];
+        } else {
+            throw new IllegalArgumentException("The position is out of bounds! " + theRow + " " + theCol);
         }
     }
+
+    Room[][] getRooms() { return Arrays.copyOf(myRooms, mySize); }
 
     private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
@@ -215,10 +211,6 @@ public class Floor {
         return validNeighbors;
     }
 
-    public final int getSize() {
-        return mySize;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -226,7 +218,7 @@ public class Floor {
         for (int row = 0; row < mySize; row++) {
             for (Room r: myRooms[row]) {
                 sb.append('*');
-                if (r.canWalkNorth()) {
+                if (r.canWalkNorth() != null) {
                     sb.append('-');
                 } else {
                     sb.append('*');
@@ -237,26 +229,44 @@ public class Floor {
             sb.append("*\n");
 
             for (Room r: myRooms[row]) {
-                if (r.canWalkWest()) {
+                if (r.canWalkWest() != null) {
                     sb.append('|');
                 } else {
                     sb.append('*');
                 }
+
                 boolean hasHero = false;
+                boolean hasMonster = false;
+                boolean hasItem = false;
+
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    if (dc.getClass().getSimpleName().equals("model.Hero")) {
+                    if (dc instanceof Hero) {
                         hasHero = true;
+                    }
+                    if (dc instanceof Monster){
+                        hasMonster = true;
+                    }
+                }
+
+                for(Item i: r.getItems()){
+                    if(i instanceof Item){
+                        hasItem = true;
                         break;
                     }
                 }
+
                 if (hasHero) {
                     sb.append('@');
-                } else {
+                } else if (hasMonster){
+                    sb.append('M');
+                } else if (hasItem){
+                    sb.append('\'');
+                }else {
                     sb.append(' ');
                 }
             }
 
-            if (myRooms[row][mySize - 1].canWalkEast()) {
+            if (myRooms[row][mySize - 1].canWalkEast() != null) {
                 sb.append('|');
             } else {
                 sb.append('*');
@@ -264,11 +274,11 @@ public class Floor {
 
             sb.append('\n');
 
-            
+
         }
         for (Room r: myRooms[mySize - 1]) {
             sb.append('*');
-            if (r.canWalkSouth()) {
+            if (r.canWalkSouth() != null) {
                 sb.append('-');
             } else {
                 sb.append('*');
@@ -279,7 +289,7 @@ public class Floor {
         return sb.toString();
     }
 
-    Room[][] getRooms() {
-        return Arrays.copyOf(myRooms, mySize);
+    private boolean outOfBounds(final int thePosition) {
+        return thePosition < 0 || thePosition >= mySize;
     }
 }

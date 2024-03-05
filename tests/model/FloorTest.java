@@ -8,6 +8,17 @@ class FloorTest {
 
     @Test
     void testFloorConstructor() {
+        Floor testFloor = new Floor();
+        Room[][] rooms = testFloor.getRooms();
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 5; col++) {
+                assertNotNull(rooms[row][col]);
+            }
+        }
+        assertEquals(5, testFloor.getSize());
+    }
+    @Test
+    void testFloorConstructorCorrectness() {
         boolean correct = true;
         for (int attempts = 0; attempts < 10; attempts++) {
             Floor testFloor = new Floor(1, 7);
@@ -64,12 +75,54 @@ class FloorTest {
      */
     @Test
     void testToString() {
-        assertEquals("", new Floor(1, 7));
+        Floor testFloor = new Floor(1, 2);
+        boolean doesMatch = false;
+        if (("""
+                *****
+                * * *
+                *-*-*
+                * | *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("""
+                *****
+                * | *
+                *-*-*
+                * * *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("""
+                *****
+                * | *
+                ***-*
+                * | *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("""
+                *****
+                * | *
+                *-***
+                * | *
+                *****
+                """).equals(testFloor.toString())) {
+            doesMatch = true;
+        }
+        assertTrue(doesMatch);
     }
 
     @Test
     void getSize() {
         Floor testFloor = new Floor(1, 7);
         assertEquals(7, testFloor.getSize());
+    }
+
+    @Test
+    void getStartingRoom() {
+        Floor testFloor = new Floor(1, 1);
+        final Room expectedRoom = testFloor.getRoom(0, 0);
+        assertEquals(expectedRoom, testFloor.getStartingRoom());
     }
 }

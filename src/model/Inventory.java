@@ -1,16 +1,16 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Inventory {
+
     private final String myNewLine = System.lineSeparator();
-    private final AbstractConsumable[] myConsumableItems;
-    private final AbstractEquipment[] myPillars;
+    private final ArrayList<AbstractEquipment> myConsumableItems;
+    private final ArrayList<Pillar> myPillars = new ArrayList<>(4);
 
 
     public Inventory() {
-        myConsumableItems = new AbstractConsumable[2];
-        myConsumableItems[0] = new HealthPotion();
-        myConsumableItems[1] = new VisionPotion();
-        myPillars = new AbstractEquipment[4];
+        myConsumableItems = new ArrayList<>();
     }
 
     public String toString() {
@@ -26,16 +26,16 @@ public class Inventory {
         output.append(myNewLine);
 
         output.append("Pillar of Abstraction: ");
-        output.append(pillarStatus(myPillars[0]));
+        output.append(pillarStatus(myPillars.get(0)));
         output.append(myNewLine);
         output.append("Pillar of Encapsulation: ");
-        output.append(pillarStatus(myPillars[1]));
+        output.append(pillarStatus(myPillars.get(1)));
         output.append(myNewLine);
         output.append("Pillar Inheritance: ");
-        output.append(pillarStatus(myPillars[2]));
+        output.append(pillarStatus(myPillars.get(2)));
         output.append(myNewLine);
         output.append("Pillar of Polymorphism: ");
-        output.append(pillarStatus(myPillars[3]));
+        output.append(pillarStatus(myPillars.get(3)));
 
         return output.toString();
     }
@@ -47,55 +47,93 @@ public class Inventory {
         }
     }
 
+    private AbstractEquipment containsItem(final String theName) {
+        for (final AbstractEquipment i : myConsumableItems) {
+            if (i.getName().equalsIgnoreCase(theName)) {
+                return i;
+            }
+        }
+        return null;
+    }
     public int getSize() {
-        return myConsumableItems[0].getQuantity() + myConsumableItems[1].getQuantity();
+        return myConsumableItems.size() + myPillars.size();
+    }
+
+    public AbstractEquipment getItem(final int theIndex) {
+        if (theIndex >= myConsumableItems.size()) {
+            throw new IllegalArgumentException("The index is out of bounds: Is " + theIndex);
+        }
+        return myConsumableItems.get(theIndex);
     }
 
     public void addItem(final AbstractEquipment theItem) {
-        if (theItem.getType().equals("CONSUMABLE")) {
-            if (theItem.getName().equals("Health Potion")) {
-                myConsumableItems[0].add();
-            } else if (theItem.getName().equals("Vision Potion")){
-                myConsumableItems[1].add();
-            } else {
-                throw new IllegalArgumentException("Invalid Consumable to add to inventory.");
+        if (theItem == null) {
+            throw new IllegalArgumentException("The Item is null.");
+        }
+        final AbstractEquipment firstInstance = containsItem(theItem.getName());
+        if (firstInstance != null) {
+            if (theItem.getType().equals("CONSUMABLE")) {
+                final AbstractConsumable oldConsumable = (AbstractConsumable) firstInstance;
+                oldConsumable.add();
+            }  else {
+                myConsumableItems.add(theItem);
             }
         } else if (theItem.getType().equals("PILLAR")) {
             switch(theItem.getName()) {
                 case "Abstraction":
-                    myPillars[0] = new Pillar("Abstraction");
+                    myPillars.add(0, new Pillar("Abstraction"));
                     break;
                 case "Encapsulation":
-                    myPillars[1] = new Pillar("Encapsulation");
+                    myPillars.add(1, new Pillar("Encapsulation"));
                     break;
                 case "Inheritance":
-                    myPillars[2] = new Pillar("Inheritance");
+                    myPillars.add(2, new Pillar("Inheritance"));
                     break;
                 case "Polymorphism":
-                    myPillars[3] = new Pillar("Polymorphism");
+                    myPillars.add(3, new Pillar("Polymorphism"));
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid Pillar to add to inventory.");
             }
+        } else if (theItem.getType().equals("CONSUMABLE")) {
+            myConsumableItems.add(theItem);
         } else {
             throw new IllegalArgumentException("Invalid item to add to inventory.");
         }
     }
 
     public void useItem(final AbstractEquipment theItem) {
-        if (theItem.getType().equals("CONSUMABLE")) {
-            ((AbstractConsumable) theItem).triggerEffect();
-        } /* else if (theItem.getType().equals("PERMANENT")){
-               example code here
-        } */
-        else {
-            throw new IllegalArgumentException("The Item has no active ability. Is not CONSUMABLE or PERMANENT");
+        if (theItem == null) {
+            throw new IllegalArgumentException("The Item is null.");
+        }
+        final AbstractEquipment firstInstance = containsItem(theItem.getName());
+        if (firstInstance != null) {
+            if (theItem.getType().equals("CONSUMABLE")) {
+                final AbstractConsumable oldConsumable = (AbstractConsumable) firstInstance;
+                oldConsumable.triggerEffect();
+                if (oldConsumable.getQuantity() <= 0) {
+                    myConsumableItems.remove(oldConsumable);
+                }
+            } /*
+             else if is permanent{
+            } */
+            else {
+                throw new IllegalArgumentException("The Item has no active ability. Is not CONSUMABLE or PERMANENT");
+            }
         }
     }
-    public int getHPPotionAmount(){
-        return myConsumableItems[0].getQuantity();
+    public int getHPPotionAmount() {
+        final AbstractEquipment item = containsItem("Health Potion");
+        if (item != null) {
+            return ((AbstractConsumable)item).getQuantity();
+        }
+        return 0;
     }
-    public int getVisionPotionAmount(){
-        return myConsumableItems[1].getQuantity();
+    public int getVisionPotionAmount() {
+        final AbstractEquipment item = containsItem("Vision Potion");
+        if (item != null) {
+            return ((AbstractConsumable)item).getQuantity();
+        }
+        return 0;
     }
 }

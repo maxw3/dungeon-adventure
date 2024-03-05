@@ -64,17 +64,26 @@ public class DungeonController extends JPanel {
     }
 
     public static void createAndShowGUI() {
-        //main frame
+
+        // Main Frame/Window
         myFrame = new JFrame("Dungeon Adventure");
-        //main panel
+
+        // Main Panel, Contains the Game
         final DungeonView mainPanel = new DungeonView();
-        //size of the main window
+
+        // Size of the Main Window
         final Dimension frameSize = new Dimension(960, 540);
-        //adds property change listeners to the main panel
+
+        // Adds property change listeners to the main panel
         DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
-        //disables "window exit" when clicking the X on the window
+
+        // Sets the Content Pane of the frame to the Main Panel
+        myFrame.setContentPane(mainPanel);
+
+        // Disables "window exit" when clicking the X on the window
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //Window Listener
+
+        // Window Listener
         myFrame.addWindowListener(new WindowAdapter() {
             /**
              * Listener when user tries to close the window
@@ -99,14 +108,14 @@ public class DungeonController extends JPanel {
             }
         });
 
-        //sets the content pane of the frame
-        myFrame.setContentPane(mainPanel);
-        //sets the size of the window
+        // Sets the size of the window
         myFrame.setSize(frameSize);
-        //sets the location of the window
+
+        // Sets the location of the window
         myFrame.setLocation(SCREEN_SIZE.width / 2 - myFrame.getWidth() / 2,
             SCREEN_SIZE.height / 2 - myFrame.getHeight() / 2);
-        //makes the main window visible
+
+        // Makes the main window visible
         myFrame.setVisible(true);
     }
 
@@ -114,8 +123,11 @@ public class DungeonController extends JPanel {
      * Helper method for the Use Hit Point Potion Buttons.
      */
     private void drinkPotion() {
-        myHero.healOrDamage(myHero.getMaxHP()/2);
-        myInventory.useItem(new HealthPotion());
+        if (myDungeon.getGameActive()) {
+            myDungeon.getInventory().useItem(new HealthPotion(1));
+        } else {
+            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+        }
     }
 
     public void fight (final Monster theMonster) throws SQLException {
@@ -171,8 +183,10 @@ public class DungeonController extends JPanel {
             //start new game prompt
         }
     }
+
     private boolean checkGameStatus(){
         if (myDungeon.getGameActive()) {
+            myDungeon.getInventory().useItem(new HealthPotion(1));
             return true;
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
