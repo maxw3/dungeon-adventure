@@ -2,7 +2,7 @@ package model;
 
 import java.sql.SQLException;
 
-public class Mage extends Hero {
+public final class Mage extends Hero {
     private Mage() throws SQLException {
         this("");
         throw new IllegalCallerException("Private Constructor Call on Mage");
@@ -12,13 +12,13 @@ public class Mage extends Hero {
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget) {
+    public void skill(final AbstractDungeonCharacter theTarget) {
         healOrDamage(myMaxHP / 4);
         super.skill(theTarget);
     }
 
     @Override
-    public final String skillDescription() {
+    public String skillDescription() {
         return "model.Mage heals itself.";
     }
 }

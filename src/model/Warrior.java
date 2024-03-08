@@ -2,7 +2,7 @@ package model;
 
 import java.sql.SQLException;
 
-public class Warrior extends Hero {
+public final class Warrior extends Hero {
     private Warrior() throws SQLException {
         this("");
         throw new IllegalCallerException("Private Constructor Call on Warrior");
@@ -12,7 +12,7 @@ public class Warrior extends Hero {
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget) {
+    public void skill(final AbstractDungeonCharacter theTarget) {
         setAttack(getAttack() + 50);
         setHitChance(getHitChance() - 25);
 
@@ -25,7 +25,7 @@ public class Warrior extends Hero {
     }
 
     @Override
-    public final String skillDescription() {
+    public String skillDescription() {
         return "model.Warrior performs a giant haphazard swing at the monster";
     }
 }

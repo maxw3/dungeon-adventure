@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SQLite {
+public final class SQLite {
     private static SQLiteDataSource myDS;
     private static Connection myConn;
     private static Statement myStatement;

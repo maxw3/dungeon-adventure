@@ -1,6 +1,6 @@
 package model;
 
-public class HealthPotion extends AbstractConsumable {
+public final class HealthPotion extends AbstractConsumable {
     public HealthPotion() {
         super("Health Potion");
     }
