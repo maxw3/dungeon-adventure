@@ -24,9 +24,8 @@ public final class DungeonLogic {
     private Hero myHero;
     private Floor myFloor;
     private Inventory myInventory;
-    private boolean myGameActive;
+    private static boolean myGameActive = false;
     private boolean myCombatStatus;
-    private String mySaveState;
     private int myFloorLevel;
     private int myHeroRow;
     private int myHeroCol;
@@ -36,8 +35,13 @@ public final class DungeonLogic {
         startGame();
     }
 
-    public static String save() {
-        return mySaveState;
+    public static void save() {
+        StringBuilder saveState = new StringBuilder();
+//         StringBuilder.append(myFloorLevel);
+//         for each room of the Floor, append room serial to saveState
+//         append player stats to saveState
+//         append Inventory to saveState
+//         save saveState to an external text file
     }
 
     private void startGame() throws SQLException {
@@ -56,12 +60,12 @@ public final class DungeonLogic {
 
     }
 
-    private void createCharacter() {
+    private void createCharacter() throws SQLException {
         //Ask for Hero Class and Name
         myHero = new Warrior("Hero Name");
     }
 
-    private void setGameActive(final boolean theState) {
+    public void setGameActive(final boolean theState) {
         myGameActive = theState;
     }
 

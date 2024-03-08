@@ -1,9 +1,14 @@
 package model;
 
+import java.sql.SQLException;
+
 public class Warrior extends Hero {
-    private Warrior() { this(""); }
-    protected Warrior(final String theName) {
-        super(theName, 500, 50, 1, 75, 50);
+    private Warrior() throws SQLException {
+        this("");
+        throw new IllegalCallerException("Private Constructor Call on Warrior");
+    }
+    public Warrior(final String theName) throws SQLException {
+        super(theName, "Warrior");
     }
 
     @Override
