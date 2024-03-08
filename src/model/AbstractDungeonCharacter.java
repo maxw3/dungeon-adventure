@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public abstract class AbstractDungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
     protected String myName;
@@ -9,21 +12,41 @@ public abstract class AbstractDungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
+    protected double myHealMultiplier;
+    protected double myHealRate;
 
     //private final model.Dummy myDummy = new model.Dummy();
 
-    private AbstractDungeonCharacter(){
-        throw new IllegalCallerException("private Constructor");
-    }
-    protected AbstractDungeonCharacter(final String theName, final int theHP, final int theAttack,
-                                       final int theAtkSpd, final int theHitChance, final int theBlockChance) {
+    protected AbstractDungeonCharacter(final String theName) throws SQLException {
+        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
+
         myName = theName;
-        myMaxHP = theHP;
+        myMaxHP = rs.getInt("MaxHP");
         myHP = myMaxHP;
-        myAttack = theAttack;
-        myAtkSpd = theAtkSpd;
-        myHitChance = theHitChance;
-        myBlockChance = theBlockChance;
+        myAttack = rs.getInt("Attack");
+        myAtkSpd = rs.getInt("AttackSpeed");
+        myHitChance = rs.getInt("HitChance");
+        myBlockChance = rs.getInt("BlockChance");
+        myHealMultiplier = rs.getDouble("HealMultiplier");
+        myHealRate = rs.getDouble("HealRate");
+    }
+
+    protected AbstractDungeonCharacter(final String theName, final int theFloor) throws SQLException {
+        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
+
+        myName = theName;
+        myMaxHP = (int) (rs.getInt("MaxHP") * Math.pow(rs.getDouble("HPMultiplier"), theFloor));
+        myHP = myMaxHP;
+        myAttack = (int) (rs.getInt("Attack") * Math.pow(rs.getDouble("AttackMultiplier"), theFloor));
+        myAtkSpd = rs.getInt("AttackSpeed");
+        myHitChance = (int) (100 - rs.getInt("HitChance")
+            / Math.pow(rs.getDouble("HitChanceMultiplier"), theFloor));
+        myBlockChance = rs.getInt("BlockChance");
+        myHealMultiplier = rs.getDouble("HealMultiplier");
+        myHealRate = rs.getDouble("HealRate")
+            * Math.pow(rs.getDouble("HealRateMultiplier"), theFloor);
     }
 
     protected AbstractDungeonCharacter(final int theRow, final int theCol) {

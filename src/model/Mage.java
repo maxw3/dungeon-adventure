@@ -1,9 +1,14 @@
 package model;
 
+import java.sql.SQLException;
+
 public class Mage extends Hero {
-    private Mage(){this("");}
-    protected Mage(String theName) {
-        super(theName, 300, 70, 1, 80, 10);
+    private Mage() throws SQLException {
+        this("");
+        throw new IllegalCallerException("Private Constructor Call on Mage");
+    }
+    public Mage(String theName) throws SQLException {
+        super(theName, "Mage");
     }
 
     @Override

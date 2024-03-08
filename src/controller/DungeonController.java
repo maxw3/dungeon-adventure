@@ -104,6 +104,7 @@ public class DungeonController extends JPanel {
                 if (promptResult == JOptionPane.YES_OPTION)  {
                     DungeonLogic.save();
                 }
+                DungeonLogic.setGameActive(false);
                 System.exit(0);
             }
         });
