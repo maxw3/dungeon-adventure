@@ -2,7 +2,7 @@ package model;
 
 import java.sql.SQLException;
 
-public class Rogue extends Hero {
+public final class Rogue extends Hero {
     private Rogue() throws SQLException {
         this("");
         throw new IllegalCallerException("Private Constructor Call on Rogue");
@@ -12,7 +12,7 @@ public class Rogue extends Hero {
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget) {
+    public void skill(final AbstractDungeonCharacter theTarget) {
         setAtkSpd((int) (getAtkSpd() * 1.5));
         theTarget.setHitChance(getHitChance() - 20);
 System.out.println("Remember to set hit chance back after skill duration expires.");
@@ -25,7 +25,7 @@ System.out.println("Remember to set hit chance back after skill duration expires
     }
 
     @Override
-    public final String skillDescription() {
+    public String skillDescription() {
         return "model.Rogue gets haste and is able to attack faster and dodge more.";
     }
 }

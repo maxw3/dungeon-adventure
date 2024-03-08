@@ -46,8 +46,8 @@ public final class Room {
     }
 
 
-    public void setExplored() {
-        myExplored = true;
+    public void setExplored(final boolean theState) {
+        myExplored = theState;
     }
     public void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);

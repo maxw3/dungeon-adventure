@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class Floor {
+public final class Floor {
     
     private static final float DOOR_CHANCE = 0.5f;
     private static final Random RAND = new Random();
@@ -42,19 +42,19 @@ public class Floor {
         myStartingRoom = startRoom;
     }
 
-    public final void addCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
+    public void addCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
         myRooms[theRoomY][theRoomX].addCharacter(theCharacter);
     }
 
-    public final void removeCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
+    public void removeCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
         myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
     }
 
-    public final int getSize() { return mySize; }
+    public int getSize() { return mySize; }
 
-    public final Room getStartingRoom() { return myStartingRoom; }
+    public Room getStartingRoom() { return myStartingRoom; }
 
-    public final Room getRoom(final int theRow, final int theCol) {
+    public Room getRoom(final int theRow, final int theCol) {
         if (!outOfBounds(theCol) && !outOfBounds(theRow)) {
             return myRooms[theRow][theCol];
         } else {

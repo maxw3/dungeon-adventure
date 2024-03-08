@@ -2,19 +2,19 @@ package model;
 
 import java.sql.SQLException;
 
-public class Monster extends AbstractDungeonCharacter {
+public final class Monster extends AbstractDungeonCharacter {
 
 
     private Monster() throws SQLException {
         this("", 0);
         throw new IllegalCallerException("Private Constructor Call on Monster");
     }
-    protected Monster(final String theName, final int theFloor)
+    Monster(final String theName, final int theFloor)
         throws SQLException {
         super(theName, theFloor);
     }
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget) {
+    public void skill(final AbstractDungeonCharacter theTarget) {
         theTarget.healOrDamage((int) (myHP * myHealMultiplier));
     }
 

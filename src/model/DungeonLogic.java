@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class DungeonLogic {
-    private static final DungeonLogic MY_INSTANCE;
+    public static final DungeonLogic MY_INSTANCE;
 
     static {
         try {
@@ -125,6 +125,7 @@ public final class DungeonLogic {
     public boolean endCombat() {
         if (myGameActive && myCombatStatus) {
             myCombatStatus = false;
+            reveal(myCurrentRoom);
             return true;
         }
         return false;
