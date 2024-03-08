@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Room {
+public final class Room {
 
     private final ArrayList<Item> myItems;
     private final ArrayList<AbstractDungeonCharacter> myDungeonCharacters;
@@ -16,7 +16,7 @@ public class Room {
     private Room myWestRoom;
     private boolean myExplored;
 
-    Room() {
+    private Room() {
         this(0, 0);
     }
 
@@ -25,6 +25,7 @@ public class Room {
         myDungeonCharacters = new ArrayList<AbstractDungeonCharacter>();
         myRow = theRow;
         myCol = theCol;
+        myExplored = false;
     }
 
     Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom, final int theRow, final int theCol) {
@@ -36,39 +37,40 @@ public class Room {
         myWestRoom = theWestRoom;
     }
 
-    public final ArrayList<AbstractDungeonCharacter> getCharacters() {
+    public ArrayList<AbstractDungeonCharacter> getCharacters() {
         return myDungeonCharacters;
     }
 
-    public final ArrayList<Item> getItems() {
+    public ArrayList<Item> getItems() {
         return myItems;
     }
 
-    public final boolean isExplored() {
-        return myExplored;
-    }
 
-    public final void setExplored(final boolean theState) {
-        myExplored = theState;
+    public void setExplored() {
+        myExplored = true;
     }
-    public final void addCharacter(final AbstractDungeonCharacter theCharacter) {
+    public void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
+
     }
 
-    public final void removeCharacter(final AbstractDungeonCharacter theCharacter) {
+    public void removeCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.remove(theCharacter);
+        if(theCharacter instanceof Hero) {
+            ((Hero) theCharacter).setPosition(myRow, myCol);
+        }
     }
 
-    public final void removeItem(final Item theItem) {
+    public void removeItem(final Item theItem) {
         myItems.remove(theItem);
     }
 
-    public final void emptyRoom() {
+    public void emptyRoom() {
         myItems.clear();
         myDungeonCharacters.clear();
     }
 
-    public final void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom) {
+    public void setRooms(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom) {
         myNorthRoom = theNorthRoom;
         myEastRoom = theEastRoom;
         mySouthRoom = theSouthRoom;
@@ -82,59 +84,59 @@ public class Room {
         myItems.add(theEquipment);
     }
 
-    public final Room canWalkNorth() {
+    public Room canWalkNorth() {
         return myNorthRoom;
     }
 
-    public final Room canWalkEast() {
+    public Room canWalkEast() {
         return myEastRoom;
     }
 
-    public final Room canWalkSouth() {
+    public Room canWalkSouth() {
         return mySouthRoom;
     }
 
-    public final Room canWalkWest() {
+    public Room canWalkWest() {
         return myWestRoom;
     }
 
-    public final Room getNorth() {
+    public Room getNorth() {
         return myNorthRoom;
     }
 
-    public final Room getEast() {
+    public Room getEast() {
         return myEastRoom;
     }
 
-    public final Room getSouth() {
+    public Room getSouth() {
         return mySouthRoom;
     }
 
-    public final Room getWest() {
+    public Room getWest() {
         return myWestRoom;
     }
 
 
-    public final int getRow() {
+    public int getRow() {
         return myRow;
     }
-    public final int getCol() {
+    public int getCol() {
         return myCol;
     }
 
-    public final void setNorthRoom(final Room theNorthRoom) {
+    public void setNorthRoom(final Room theNorthRoom) {
         myNorthRoom = theNorthRoom;
     }
 
-    public final void setEastRoom(final Room theEastRoom) {
+    public void setEastRoom(final Room theEastRoom) {
         myEastRoom = theEastRoom;
     }
 
-    public final void setSouthRoom(final Room theSouthRoom) {
+    public void setSouthRoom(final Room theSouthRoom) {
         mySouthRoom = theSouthRoom;
     }
 
-    public final void setWestRoom(final Room theWestRoom) {
+    public void setWestRoom(final Room theWestRoom) {
         myWestRoom = theWestRoom;
     }
 
