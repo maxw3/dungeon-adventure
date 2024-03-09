@@ -20,6 +20,6 @@ public final class Monster extends AbstractDungeonCharacter {
 
     @Override
     public String skillDescription() {
-        return "model.Monster has a chance to heal itself after every round.";
+        return myName + " has a chance to heal itself after every round.";
     }
 }
