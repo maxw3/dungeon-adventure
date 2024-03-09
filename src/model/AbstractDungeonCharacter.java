@@ -65,6 +65,7 @@ public abstract class AbstractDungeonCharacter {
      */
     public void healOrDamage(final int theAmount) {
         myHP += theAmount;
+        myHP = Math.min(myHP, myMaxHP);
     }
 
     public final void attack(final AbstractDungeonCharacter theTarget) {
