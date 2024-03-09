@@ -46,6 +46,18 @@ public final class MonsterFactory {
             return createTroll(theFloor);
         }
     }
+    public static Monster createBoss(final int theFloor)
+        throws SQLException {
+        return switch (theFloor) {
+            case 1 -> new Monster("Slime");
+            case 2 -> new Monster("Minotaur");
+            case 3 -> new Monster("Griffon");
+            case 4 -> new Monster("Rat King");
+            case 5 -> new Monster("Hydra");
+            default -> throw new SQLException("Invalid floor for creating a boss.");
+        };
+
+    }
     public static Monster createDummy() throws SQLException {
         return new Monster("Dummy", 1);
     }
