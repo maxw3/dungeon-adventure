@@ -11,6 +11,10 @@ public final class Inventory {
 
     public Inventory() {
         myConsumableItems = new ArrayList<>();
+        myPillars.add(null);
+        myPillars.add(null);
+        myPillars.add(null);
+        myPillars.add(null);
     }
 
     public String toString() {
@@ -56,7 +60,7 @@ public final class Inventory {
         return null;
     }
     public int getSize() {
-        return myConsumableItems.size() + myPillars.size();
+        return myConsumableItems.size();
     }
 
     public AbstractEquipment getItem(final int theIndex) {

@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,35 +21,24 @@ import model.*;
 import org.sqlite.SQLiteDataSource;
 import view.DungeonView;
 
-public class DungeonController extends JPanel {
+public class DungeonController extends JPanel implements PropertyChangeListener {
 
     public static JFrame myFrame;
+    private static final DungeonController MY_INSTANCE;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
     private final DungeonLogic myDungeon;
     private final Hero myHero;
     private final Inventory myInventory;
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
-    static {
-        try {
-            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
     public static Connection CONNECTION;
-    static {
-        try {
-            CONNECTION = DATA_SOURCE.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static final Statement STATEMENT;
     static {
         try {
+            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
+            CONNECTION = DATA_SOURCE.getConnection();
             STATEMENT = CONNECTION.createStatement();
+            MY_INSTANCE = new DungeonController();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -59,7 +50,7 @@ public class DungeonController extends JPanel {
         myInventory = myDungeon.getInventory();
     }
 
-    public static void main(final String[] theArgs){
+    public static void main(final String[] theArgs) {
         EventQueue.invokeLater(DungeonController::createAndShowGUI);
     }
 
@@ -76,6 +67,7 @@ public class DungeonController extends JPanel {
 
         // Adds property change listeners to the main panel
         DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(MY_INSTANCE);
 
         // Sets the Content Pane of the frame to the Main Panel
         myFrame.setContentPane(mainPanel);
@@ -104,7 +96,6 @@ public class DungeonController extends JPanel {
                 if (promptResult == JOptionPane.YES_OPTION)  {
                     DungeonLogic.save();
                 }
-//DungeonLogic.setGameActive(false);
                 System.exit(0);
             }
         });
@@ -137,16 +128,18 @@ public class DungeonController extends JPanel {
 //            prompt user for what action they want to do for their turn
 //            listen to key press or button click
 //            if attack
-                myHero.attack(theMonster);
+//                myHero.attack(theMonster);
 //            if skill
-                myHero.skill(theMonster);
+//                myHero.skill(theMonster);
 //            if drink potion
-                drinkPotion();
+//                drinkPotion();
 //                if flee
 //                    end fight and go to previous room
 
+                // Temporarily makes both sides attack each other
                 if (theMonster.getHP() > 0) {
                     theMonster.attack(myDungeon.getHero());
+                    myHero.attack(theMonster);
                     theMonster.skill(theMonster);
 
                     String hitChanceQuery = "SELECT 'HitChance' FROM character WHERE CharName = '" +
@@ -157,13 +150,14 @@ public class DungeonController extends JPanel {
                     }
                 }
             }
-            if(myHero.getHP() <= 0){
+            if (myHero.getHP() <= 0) {
                 endGame(false);
             } else {
                 //won the fight
                 //get drop item of monster if available
                 //get pillar or escape through exit if available
                 //make the room empty and traversable
+                myDungeon.collect();
             }
         }
     }
@@ -175,18 +169,18 @@ public class DungeonController extends JPanel {
      *                  True means the Hero has successfully cleared the game.
      *                  False means the Hero has died
      */
-    public void endGame(final boolean theState){
+    public void endGame(final boolean theState) {
         if (theState) { //beat the game
             JOptionPane.showMessageDialog(null, "Congratulations! You beat the game!");
             //show the stats window
             //show credits page
-        } else{
+        } else {
             JOptionPane.showMessageDialog(null, "You have unfortunately met your end.");
             //start new game prompt
         }
     }
 
-    private boolean checkGameStatus(){
+    private boolean checkGameStatus() {
         if (myDungeon.getGameActive()) {
             return true;
         } else {
@@ -195,4 +189,36 @@ public class DungeonController extends JPanel {
         }
     }
 
+    /**
+     * This method gets called when a bound property is changed.
+     *
+     * @param theEvent A PropertyChangeEvent object describing the event source
+     *            and the property that has changed.
+     */
+    @Override
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        final String s = theEvent.getPropertyName();
+        if ("COMBAT STATUS".equals(s)) {
+            if (theEvent.getNewValue().equals(true)) {
+                for (AbstractDungeonCharacter c : myDungeon.getCurrentRoom().getCharacters()) {
+                    if (c instanceof Monster) {
+                        myDungeon.getCurrentRoom().removeCharacter(c);
+                        try {
+                            fight((Monster)c);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        myDungeon.endCombat();
+                    }
+                }
+            }
+        } else if ("COMPLETED FLOOR".equals(s)) {
+            // Prompt view to offer to save game
+            try {
+                myDungeon.changeFloor();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

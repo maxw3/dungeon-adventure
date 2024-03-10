@@ -9,8 +9,8 @@ import java.util.Random;
 import java.util.Set;
 
 public final class Floor {
-    
-    private static final float DOOR_CHANCE = 0.5f;
+
+    private final static String NEWLINE = System.lineSeparator();
     private static final Random RAND = new Random();
 
     private final int mySize;
@@ -18,7 +18,7 @@ public final class Floor {
     private final Room[][] myRooms;
 
     private final int myFloorLevel;
-  
+
     private final Room myStartingRoom;
 
 
@@ -62,7 +62,9 @@ public final class Floor {
         }
     }
 
-    Room[][] getRooms() { return Arrays.copyOf(myRooms, mySize); }
+    Room[][] getRooms() {
+        return Arrays.copyOf(myRooms, mySize);
+    }
 
     private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
@@ -218,7 +220,7 @@ public final class Floor {
         for (int row = 0; row < mySize; row++) {
             for (Room r: myRooms[row]) {
                 sb.append('*');
-                if (r.canWalkNorth() != null) {
+                if (r.canWalkNorth()) {
                     sb.append('-');
                 } else {
                     sb.append('*');
@@ -226,10 +228,10 @@ public final class Floor {
             }
 
             // Print top-right-most corner
-            sb.append("*\n");
+            sb.append('*').append(NEWLINE);
 
             for (Room r: myRooms[row]) {
-                if (r.canWalkWest() != null) {
+                if (r.canWalkWest()) {
                     sb.append('|');
                 } else {
                     sb.append('*');
@@ -243,30 +245,33 @@ public final class Floor {
                     if (dc instanceof Hero) {
                         hasHero = true;
                     }
-                    if (dc instanceof Monster){
+                    if (dc instanceof Monster) {
                         hasMonster = true;
                     }
                 }
 
-                for(Item i: r.getItems()){
-                    if(i instanceof Item){
+                for (Item i: r.getItems()) {
+                    if (i instanceof Item) {
                         hasItem = true;
                         break;
                     }
                 }
-
-                if (hasHero) {
-                    sb.append('@');
-                } else if (hasMonster){
-                    sb.append('M');
-                } else if (hasItem){
-                    sb.append('\'');
-                }else {
-                    sb.append(' ');
-                }
+//                if (r.isExplored()) {
+                    if (hasHero) {
+                        sb.append('@');
+                    } else if (hasMonster) {
+                        sb.append('M');
+                    } else if (hasItem) {
+                        sb.append('\'');
+                    } else {
+                        sb.append(' ');
+                    }
+//                } else {
+//                    sb.append('?');
+//                }
             }
 
-            if (myRooms[row][mySize - 1].canWalkEast() != null) {
+            if (myRooms[row][mySize - 1].canWalkEast()) {
                 sb.append('|');
             } else {
                 sb.append('*');
@@ -278,13 +283,13 @@ public final class Floor {
         }
         for (Room r: myRooms[mySize - 1]) {
             sb.append('*');
-            if (r.canWalkSouth() != null) {
+            if (r.canWalkSouth()) {
                 sb.append('-');
             } else {
                 sb.append('*');
             }
         }
-        sb.append("*\n");
+        sb.append('*').append(NEWLINE);
 
         return sb.toString();
     }
