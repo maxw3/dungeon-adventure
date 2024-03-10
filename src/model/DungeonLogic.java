@@ -4,11 +4,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class DungeonLogic {
     public static final DungeonLogic MY_INSTANCE;
-
     static {
         try {
             MY_INSTANCE = new DungeonLogic();
@@ -21,6 +21,7 @@ public final class DungeonLogic {
     private final PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
 
+    private final StringBuilder myMessages = new StringBuilder();
     private Hero myHero;
     private Floor myFloor;
     private Inventory myInventory;
@@ -33,6 +34,20 @@ public final class DungeonLogic {
 
     private DungeonLogic() throws SQLException {
         startGame();
+    }
+
+    private DungeonLogic(final Hero theHero, final Inventory theInventory) throws SQLException {
+        myFloorLevel = 1;
+        setGameActive(true);
+        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
+        myHero = theHero;
+        myInventory = theInventory;
+        final Room startingRoom = myFloor.getStartingRoom();
+        startingRoom.addCharacter(myHero);
+        myHeroCol = myHero.getPosition()[1];
+        myHeroRow = myHero.getPosition()[0];
+        myCurrentRoom = startingRoom;
+        reveal(myCurrentRoom);
     }
 
     public static void save() {
@@ -52,12 +67,21 @@ public final class DungeonLogic {
         myInventory = new Inventory();
         final Room startingRoom = myFloor.getStartingRoom();
         startingRoom.addCharacter(myHero);
-        myHeroCol = myHero.getPosition()[1];
-        myHeroRow = myHero.getPosition()[0];
+        myHeroCol = startingRoom.getCol();
+        myHeroRow = startingRoom.getRow();
         myCurrentRoom = startingRoom;
+        reveal(myCurrentRoom);
+    }
 
-        myFloor.addCharacter(0, 0, myHero);
-
+    public void changeFloor() throws SQLException {
+        myFloorLevel++;
+        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
+        final Room startingRoom = myFloor.getStartingRoom();
+        startingRoom.addCharacter(myHero);
+        myHeroCol = startingRoom.getCol();
+        myHeroRow = startingRoom.getRow();
+        myCurrentRoom = startingRoom;
+        reveal(myCurrentRoom);
     }
 
     private void createCharacter() throws SQLException {
@@ -89,16 +113,16 @@ public final class DungeonLogic {
 
     public Set<Room> getNeighbors(final Room theRoom) {
         final Set<Room> set = new HashSet<Room>();
-        if (theRoom.canWalkNorth() != null) {
+        if (theRoom.canWalkNorth()) {
             set.add(theRoom.getNorth());
         }
-        if (theRoom.canWalkSouth() != null) {
+        if (theRoom.canWalkSouth()) {
             set.add(theRoom.getSouth());
         }
-        if (theRoom.canWalkWest() != null) {
+        if (theRoom.canWalkWest()) {
             set.add(theRoom.getWest());
         }
-        if (theRoom.canWalkEast() != null) {
+        if (theRoom.canWalkEast()) {
             set.add(theRoom.getEast());
         }
         return set;
@@ -106,11 +130,13 @@ public final class DungeonLogic {
 
     public boolean startCombat() {
         if (myGameActive && !myCombatStatus && !outOfBounds(myHeroCol) && !outOfBounds(myHeroRow)) {
-            myCurrentRoom = myFloor.getRoom(myHeroRow, myHeroCol);
             boolean isMonster = false;
             for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
                 if (c instanceof Monster) {
                     isMonster = true;
+                    myMessages.append("You've encountered a ").append(c.getClass().getSimpleName()).append("!\n");
+                    trimMessage();
+                    myChanges.firePropertyChange("MESSAGE", null, myMessages);
                     break;
                 }
             }
@@ -151,7 +177,7 @@ public final class DungeonLogic {
      *
      * @param theListener   The listener (Frame, Panel, etc)
      */
-    public void addPropertyChangeListener(PropertyChangeListener theListener) {
+    public void addPropertyChangeListener(final PropertyChangeListener theListener) {
         myChanges.addPropertyChangeListener(theListener);
     }
 
@@ -160,58 +186,101 @@ public final class DungeonLogic {
      *
      * @param theListener   The listener (Frame, Panel, etc)
      */
-    public void removePropertyChangeListener(PropertyChangeListener theListener) {
+    public void removePropertyChangeListener(final PropertyChangeListener theListener) {
         myChanges.removePropertyChangeListener(theListener);
     }
 
     public void moveUp() {
-        int[] position = myHero.getPosition();
-
-        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
-
-        if(currentRoom.canWalkNorth() != null){
-            // currentRoom.removeCharacter(myHero);
-            // currentRoom.canWalkNorth().addCharacter(myHero);
-            myFloor.removeCharacter(position[1], position[0], myHero);
-            position[0] = Math.max(position[0] - 1, 0);
-            myFloor.addCharacter(position[1], position[0], myHero);
+        if (myCurrentRoom.canWalkNorth()) {
+            myCurrentRoom.removeCharacter(myHero);
+            myCurrentRoom.getNorth().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getNorth();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
+            reveal(myCurrentRoom);
+            applyEffects();
         }
-
     }
 
-    public void moveRight(){
-        int[] position = myHero.getPosition();
-
-        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
-
-        if(currentRoom.canWalkEast() != null){
-            myFloor.removeCharacter(position[1], position[0], myHero);
-            position[1] = Math.min(position[1] + 1, myFloor.getSize() - 1);
-            myFloor.addCharacter(position[1], position[0], myHero);
+    public void moveRight() {
+        if (myCurrentRoom.canWalkEast()) {
+            myCurrentRoom.removeCharacter(myHero);
+            myCurrentRoom.getEast().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getEast();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
+            reveal(myCurrentRoom);
+            applyEffects();
         }
     }
 
     public void moveDown() {
-        int[] position = myHero.getPosition();
-
-        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
-
-        if(currentRoom.canWalkSouth() != null){
-            myFloor.removeCharacter(position[1], position[0], myHero);
-            position[0] = Math.min(position[0] + 1, myFloor.getSize() - 1);
-            myFloor.addCharacter(position[1], position[0], myHero);
+        if (myCurrentRoom.canWalkSouth()) {
+            myCurrentRoom.removeCharacter(myHero);
+            myCurrentRoom.getSouth().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getSouth();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
+            reveal(myCurrentRoom);
+            applyEffects();
         }
     }
 
     public void moveLeft() {
-        int[] position = myHero.getPosition();
-
-        Room currentRoom = myFloor.getRooms()[position[0]][position[1]];
-
-        if(currentRoom.canWalkWest() != null){
-            myFloor.removeCharacter(position[1], position[0], myHero);
-            position[1] = Math.max(position[1] - 1, 0);
-            myFloor.addCharacter(position[1], position[0], myHero);
+        if (myCurrentRoom.canWalkWest()) {
+            myCurrentRoom.removeCharacter(myHero);
+            myCurrentRoom.getWest().addCharacter(myHero);
+            myCurrentRoom = myCurrentRoom.getWest();
+            myHeroCol = myHero.getPosition()[1];
+            myHeroRow = myHero.getPosition()[0];
+            reveal(myCurrentRoom);
+            applyEffects();
         }
     }
+
+    private void applyEffects() {
+        final boolean previous = myCombatStatus;
+        startCombat();
+        if (!myCombatStatus) {
+            collect();
+        }
+        myChanges.firePropertyChange("COMBAT STATUS", previous, myCombatStatus);
+    }
+
+    public void collect() {
+        final List<Item> items = myCurrentRoom.getItems();
+
+        for (int pos = 0; pos < items.size(); pos++) {
+            final Item i = items.get(pos);
+            if (i.getType().equals("PIT")) {
+                final int damage = ((Pit)i).activate(myHero);
+                myCurrentRoom.removeItem(i);
+                myMessages.append("You activated a pit, and took ").append(damage).append(" damage! \n");
+                trimMessage();
+                myChanges.firePropertyChange("MESSAGE", null, myMessages);
+            } else if (i.getType().equals("CONSUMABLE")) {
+                final AbstractConsumable consumable = (AbstractConsumable)i;
+                myInventory.addItem(consumable);
+                myCurrentRoom.removeItem(i);
+                myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ').append(consumable.getName()).append("s! \n");
+                trimMessage();
+                myChanges.firePropertyChange("MESSAGE", null, myMessages);
+            } else if (i.getType().equals("PILLAR")) {
+                final Pillar pillar = (Pillar)i;
+                myInventory.addItem(pillar);
+                myCurrentRoom.removeItem(i);
+                myMessages.append("You acquired the ").append(pillar.getName()).append(" pillar of OO! \n");
+                trimMessage();
+                myChanges.firePropertyChange("MESSAGE", null, myMessages);
+                myChanges.firePropertyChange("COMPLETED FLOOR", false, true);
+            }
+        }
+    }
+
+    private void trimMessage() {
+        if (myMessages.length() > 300) {
+            myMessages.delete(0, 50);
+        }
+    }
+
 }

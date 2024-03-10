@@ -33,7 +33,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public final class DungeonView extends JPanel implements PropertyChangeListener{
+public final class DungeonView extends JPanel implements PropertyChangeListener {
     private final static String NEWLINE = System.lineSeparator();
     /** Font for buttons on the main frame */
     private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);
@@ -71,6 +71,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
     private JPanel myRoomPanel;
     private JPanel myFightPanel;
     private JTextArea myMap;
+    private JTextArea myMessages;
     
     final DungeonLogic myDungeon;
 
@@ -82,6 +83,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
         myMap = new JTextArea(myDungeon.getFloorString());
         myMap.setFont(new Font("Consolas", 1, 32));
         myMap.setBackground(getBackground());
+
+        myMessages = new JTextArea("Welcome to Dungeon Adventure!" + NEWLINE);
+        myMessages.setEditable(false);
 
         setMenuBar();
         DungeonController.myFrame.setJMenuBar(myMenu);
@@ -101,7 +105,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
         myPanel.add(myMovePanel);
         myPanel.add(myFightPanel);
 //        myPanel.add(myInventoryPanel);
-
+        myPanel.add(myMessages);
 //        addListeners();
 
         add(myPanel);
@@ -289,7 +293,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
         });
 
         //listener for rules button
-        myRules.addActionListener(theEvent ->{
+        myRules.addActionListener(theEvent -> {
             JOptionPane.showMessageDialog(null,"Try to complete the dungeon"
                     + NEWLINE + "Every room except the starting room contains an event." + NEWLINE +
                     "The possible events are a monster fight, trap trigger, an item to collect, or a boss monster." + NEWLINE +
@@ -306,14 +310,14 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
         });
     }
 
-    private void traverse (final Direction theDir){
-        if(theDir == Direction.NORTH){
+    private void traverse(final Direction theDir) {
+        if (theDir == Direction.NORTH) {
             myDungeon.moveUp();
-        }else if(theDir == Direction.EAST){
+        } else if (theDir == Direction.EAST) {
             myDungeon.moveRight();
-        }else if(theDir == Direction.SOUTH){
+        } else if (theDir == Direction.SOUTH) {
             myDungeon.moveDown();
-        }else if(theDir == Direction.WEST){
+        } else if (theDir == Direction.WEST) {
             myDungeon.moveLeft();
         }
         myMap.setText(myDungeon.getFloorString());
@@ -326,10 +330,15 @@ public final class DungeonView extends JPanel implements PropertyChangeListener{
      *          and the property that has changed.
      */
     @Override
-    public void propertyChange(PropertyChangeEvent theEvent) {
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        final String s = theEvent.getPropertyName();
         //update Inventory UI
         //update map
         //Hero hp falls to 0
         //Monster hp falls to 0
+        if ("MESSAGE".equals(s)) {
+            String t = theEvent.getNewValue().toString();
+            myMessages.setText(t);
+        }
     }
 }

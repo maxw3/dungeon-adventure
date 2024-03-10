@@ -6,7 +6,7 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     private static final ItemType MY_TYPE = ItemType.CONSUMABLE;
     private int myQuantity;
     public AbstractConsumable(final String theName) {
-        this(theName, 0);
+        this(theName, 1);
     }
     public AbstractConsumable(final String theName, final int theQuantity) {
         super(theName);

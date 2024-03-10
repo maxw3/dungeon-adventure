@@ -45,13 +45,15 @@ public final class Room {
         return myItems;
     }
 
+    public final boolean isExplored() {
+        return myExplored;
+    }
 
     public void setExplored(final boolean theState) {
         myExplored = theState;
     }
     public void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
-
     }
 
     public void removeCharacter(final AbstractDungeonCharacter theCharacter) {
@@ -84,20 +86,20 @@ public final class Room {
         myItems.add(theEquipment);
     }
 
-    public Room canWalkNorth() {
-        return myNorthRoom;
+    public boolean canWalkNorth() {
+        return myNorthRoom != null;
     }
 
-    public Room canWalkEast() {
-        return myEastRoom;
+    public boolean canWalkEast() {
+        return myEastRoom != null;
     }
 
-    public Room canWalkSouth() {
-        return mySouthRoom;
+    public boolean canWalkSouth() {
+        return mySouthRoom != null;
     }
 
-    public Room canWalkWest() {
-        return myWestRoom;
+    public boolean canWalkWest() {
+        return myWestRoom != null;
     }
 
     public Room getNorth() {
