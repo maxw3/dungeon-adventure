@@ -3,7 +3,6 @@ package view;
 import enums.Direction;
 import controller.DungeonController;
 import model.DungeonLogic;
-import model.HealthPotion;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -94,7 +93,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myBorder = BorderFactory.createLineBorder(Color.DARK_GRAY,2);
 
         myMap = new JTextArea(myDungeon.getFloorString());
-        myMap.setFont(new Font("Consolas", 1, 32));
+        myMap.setFont(new Font("Consolas", Font.BOLD, 32));
         myMap.setBackground(getBackground());
 
         myMessages = new JTextArea("Welcome to Dungeon Adventure!" + NEWLINE);
@@ -105,9 +104,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         DungeonController.myFrame.setJMenuBar(myMenu);
 
         myPanel = new JPanel();
-//        GridBagLayout theLayout = new GridBagLayout();
-//        GridBagConstraints theConstraints = new GridBagConstraints();
-//        myPanel.setLayout(theLayout);
+        myPanel.setBackground(myBackgroundColor);
 
         setGamePanel();
         setRoomPanel();
@@ -115,36 +112,12 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         setMovementPanel();
         setInventoryPanel();
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
-//        locationPanel.setLayout(new GridBagLayout());
-//        GridBagConstraints constraints = new GridBagConstraints();
-//        constraints.gridx = 0;
-//        constraints.gridy = 0;
-//        constraints.gridwidth = 480;
-//        constraints.gridheight = 300;
-//        constraints.weightx = 0.5;
-//        constraints.weighty = 0.5;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        constraints.fill = GridBagConstraints.BOTH;
-        mainPanel.add(myRoomPanel);
-        mainPanel.add(myMessages);
-
-        JPanel fightMovePanel = new JPanel();
-        fightMovePanel.setLayout(new GridLayout(1,2));
-        fightMovePanel.add(myFightPanel);
-        fightMovePanel.add(myMovePanel);
-
-        JPanel actionPanel = new JPanel();
-        actionPanel.setLayout(new GridLayout(3,1, 0, 10));
-        actionPanel.add(myGamePanel);
-        actionPanel.add(fightMovePanel);
-        actionPanel.add(myInventoryPanel);
+        JPanel mainPanel = setMainPanel();
+        JPanel actionPanel = setActionPanel(setFightMovePanel());
 
         myPanel.add(myMap, BorderLayout.LINE_START);
         myPanel.add(mainPanel, BorderLayout.CENTER);
         myPanel.add(actionPanel, BorderLayout.LINE_END);
-        myPanel.add(myMessages);
 
         add(myPanel);
         myMap.setCursor(null);
@@ -154,6 +127,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         addListeners();
 
     }
+
+
     /**
      * adds a property change listener to the listener provided
      *
@@ -172,20 +147,39 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myChanges.removePropertyChangeListener(theListener);
     }
 
+    private JPanel setActionPanel(final JPanel theFightMovePanel) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3,1, 0, 10));
+        panel.add(myGamePanel);
+        panel.add(theFightMovePanel);
+        panel.add(myInventoryPanel);
+        panel.setBackground(myBackgroundColor);
+        return panel;
+    }
+    private JPanel setFightMovePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1,2));
+        panel.add(myFightPanel);
+        panel.add(myMovePanel);
+        return panel;
+    }
+    private JPanel setMainPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.add(myRoomPanel);
+        panel.add(myMessages);
+        return panel;
+    }
     private void setGamePanel() {
         myGamePanel = new JPanel();
         myGamePanel.setLayout(new GridLayout(3,1));
         myGamePanel.setBackground(myBackgroundColor);
 
-        myStart = new JButton("Start Game");
-        myStart.setFont(BUTTON_FONT);
-        myStart.setBackground(myBackgroundColor.brighter());
-        mySave = new JButton("Save Game");
-        mySave.setFont(BUTTON_FONT);
-        mySave.setBackground(myBackgroundColor.brighter());
-        myLoad = new JButton("Load Game");
-        myLoad.setFont(BUTTON_FONT);
-        myLoad.setBackground(myBackgroundColor.brighter());
+        myStart = setButton("Start Game", BUTTON_FONT, myBackgroundColor.brighter());
+        mySave = setButton("Save Game", BUTTON_FONT, myBackgroundColor.brighter());
+        myLoad = setButton("Load Game", BUTTON_FONT, myBackgroundColor.brighter());
+        mySave.setEnabled(false);
+        checkSaveFile();
 
         myGamePanel.add(myStart);
         myGamePanel.add(mySave);
@@ -193,6 +187,24 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myGamePanel.setPreferredSize(new Dimension(300,150));
 
         myGamePanel.setVisible(true);
+    }
+    private void checkSaveFile() {
+        //if save file does not exist
+        myLoad.setEnabled(false);
+        myLoadGame.setEnabled(false);
+    }
+    private JButton setButton(final String theLabel, final Font theFont, final Color theBG) {
+        JButton button = new JButton(theLabel);
+        button.setFont(theFont);
+        button.setBackground(theBG);
+        return button;
+    }
+    private JLabel setLabel(final String theLabel, final Color theBG, final boolean theOpaque) {
+        JLabel label = new JLabel(theLabel);
+        label.setFont(FONT);
+        label.setBackground(theBG);
+        label.setOpaque(theOpaque);
+        return label;
     }
     private void setRoomPanel() {
         myRoomPanel = new JPanel();
@@ -208,6 +220,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myRoomContents = new JLabel("Monster/Item/Pit.png");
         myRoomContents.setBorder( BorderFactory.createLineBorder(Color.BLACK,2));
 
+        JPanel hpPanel = setHPIndicator(myDungeon.getHero());
+        JPanel oppHpPanel = setHPIndicator(getEnemy());
+        oppHpPanel.setVisible(false);
+
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new GridBagLayout());
         namePanel.add(myName);
@@ -221,23 +237,53 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myRoomPanel.add(new JLabel());
         myRoomPanel.add(myRoomContents, 5);
 
+        myRoomPanel.add(hpPanel,6);
         myRoomPanel.add(new JLabel());
-        myRoomPanel.add(new JLabel());
-        myRoomPanel.add(new JLabel());
+        myRoomPanel.add(oppHpPanel,8);
 
         myRoomPanel.setVisible(true);
+    }
+    private JPanel setHPIndicator(final model.AbstractDungeonCharacter theChar) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
+
+        String hp = "0";
+        String maxHP = "0";
+        if (theChar != null) {
+            hp = String.valueOf(theChar.getHP());
+            maxHP = String.valueOf(theChar.getMaxHP());
+        }
+
+        JLabel hpLabel = new JLabel("HP: ");
+        JLabel hpAmount = new JLabel(hp);
+        JLabel hpDivider = new JLabel("/");
+        JLabel maxHPAmount = new JLabel(maxHP);
+
+        panel.add(hpLabel);
+        panel.add(hpAmount);
+        panel.add(hpDivider);
+        panel.add(maxHPAmount);
+        panel.setOpaque(false);
+
+        return panel;
+    }
+    private model.Monster getEnemy() {
+        model.AbstractDungeonCharacter monster = null;
+        for (model.AbstractDungeonCharacter character: myDungeon.getCurrentRoom().getCharacters()) {
+            if(character instanceof model.Monster) {
+                monster = character;
+            }
+        }
+        return (model.Monster) monster;
     }
     private void setMovementPanel(){
         myMovePanel = new JPanel();
         myMovePanel.setBackground(myBackgroundColor);
 
-        myNorth = new JButton("^");
-
-        myEast = new JButton(">");
-
-        mySouth = new JButton("v");
-
-        myWest = new JButton("<");
+        myNorth = setButton("^", FONT, myBackgroundColor.brighter());
+        myEast = setButton(">", FONT, myBackgroundColor.brighter());
+        mySouth = setButton("v", FONT, myBackgroundColor.brighter());
+        myWest = setButton("<", FONT, myBackgroundColor.brighter());
 
         myMovePanel.setLayout(new GridLayout(3,3));
 
@@ -292,47 +338,26 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myMovePanel.setVisible(true);
     }
 
+    private void setPotions() {
+        myHPPotion = setButton("Health Potion", BUTTON_FONT, myBackgroundColor);
+        myHPPotion.setBorder(myBorder);
+        myHPPotionAmount = setLabel(String.valueOf(myDungeon.getInventory().getHPPotionAmount()),
+            myBackgroundColor, false);
+
+        myVisionPotion = setButton("Vision Potion", BUTTON_FONT, myBackgroundColor);
+        myVisionPotion.setBorder(myBorder);
+        myVisionPotionAmount = setLabel(String.valueOf(myDungeon.getInventory().getVisionPotionAmount()),
+            myBackgroundColor, false);
+    }
     private void setInventoryPanel(){
         myInventoryPanel = new JPanel();
         myInventoryPanel.setBackground(myBackgroundColor);
 
-        myInventoryLabel = new JLabel("Inventory");
-        myInventoryLabel.setFont(FONT);
-        myInventoryLabel.setBackground(myBackgroundColor);
-        myInventoryLabel.setOpaque(true);
+        myInventoryLabel = setLabel("Inventory", myBackgroundColor, true);
+        setPotions();
 
-        myHPPotion = new JButton("Health Potion");
-        myHPPotion.setBackground(myBackgroundColor);
-        myHPPotion.setBorder(myBorder);
-        myHPPotion.setFont(BUTTON_FONT);
-        myHPPotionAmount = new JLabel(
-            String.valueOf(myDungeon.getInventory().getHPPotionAmount()));
-        myHPPotion.setBackground(myBackgroundColor);
-        myHPPotionAmount.setOpaque(false);
-        myHPPotionAmount.setFont(FONT);
-
-        myVisionPotion = new JButton("Vision Potion");
-        myVisionPotion.setBackground(myBackgroundColor);
-        myVisionPotion.setBorder(myBorder);
-        myVisionPotion.setFont(BUTTON_FONT);
-        myVisionPotionAmount = new JLabel(
-            String.valueOf(myDungeon.getInventory().getVisionPotionAmount()));
-        myVisionPotion.setBackground(myBackgroundColor);
-        myVisionPotionAmount.setOpaque(false);
-        myVisionPotionAmount.setFont(FONT);
-
-        JPanel hpInv = new JPanel();
-        hpInv.setLayout(new BoxLayout(hpInv, BoxLayout.LINE_AXIS));
-        hpInv.setBackground(myBackgroundColor);
-
-        JPanel vision = new JPanel();
-        vision.setLayout(new BoxLayout(vision, BoxLayout.LINE_AXIS));
-        vision.setBackground(myBackgroundColor);
-
-        hpInv.add(myHPPotion);
-        hpInv.add(myHPPotionAmount);
-        vision.add(myVisionPotion);
-        vision.add(myVisionPotionAmount);
+        JPanel hpInv = setItemPanel(myHPPotion, myHPPotionAmount);
+        JPanel vision = setItemPanel(myVisionPotion, myVisionPotionAmount);
 
         myInventoryPanel.setLayout(new GridLayout(3,1));
 
@@ -361,6 +386,15 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myInventoryPanel.setVisible(true);
     }
 
+    private JPanel setItemPanel(final JButton theButton, final JLabel theLabel){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+        panel.setBackground(myBackgroundColor);
+        panel.add(theButton);
+        panel.add(theLabel);
+        theButton.setEnabled(false);
+        return panel;
+    }
     private void setMenuBar() {
         myMenu = new JMenuBar();
 
@@ -373,6 +407,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myStartGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
         mySaveGame = new JMenuItem("Save Game", KeyEvent.VK_S);
         mySaveGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+        mySaveGame.setEnabled(false);
         myLoadGame = new JMenuItem("Load Game", KeyEvent.VK_L);
         myLoadGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
         myExitGame = new JMenuItem("Exit Game", KeyEvent.VK_X);
@@ -405,14 +440,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myFightPanel.setBackground(myBackgroundColor);
         myFightPanel.setLayout(new GridLayout(3,1,0,5));
 
-        myAttack = new JButton("Attack");
-        myAttack.setBackground(myBackgroundColor);
+        myAttack = setButton("Attack", BUTTON_FONT, myBackgroundColor);
         myAttack.setBorder(myBorder);
-        myAttack.setFont(BUTTON_FONT);
-        mySkill = new JButton("Use Skill");
-        mySkill.setBackground(myBackgroundColor);
+        mySkill = setButton("Use Skill", BUTTON_FONT, myBackgroundColor);
         mySkill.setBorder(myBorder);
-        mySkill.setFont(BUTTON_FONT);
         myFlee = new JButton("FLEE!");
         myFlee.setFont(BUTTON_FONT);
 
@@ -436,6 +467,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
 //        myHPPotion.addActionListener((theEvent -> {}));
 //        myVisionPotion.addActionListener((theEvent -> {}));
+
 //        mySaveGame.addActionListener((theEvent -> {}));
 //        mySave.addActionListener((theEvent -> {}));
 //        myLoadGame.addActionListener((theEvent -> {}));
@@ -493,7 +525,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     }
 
     private void traverse (final Direction theDir){
-        myLastDirection = theDir;
         if(theDir == Direction.NORTH){
             myDungeon.moveUp();
         }else if(theDir == Direction.EAST){
