@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -32,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.sql.SQLException;
 
 public final class DungeonView extends JPanel implements PropertyChangeListener {
     private final static String NEWLINE = System.lineSeparator();
@@ -66,6 +68,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private JLabel myHero;
     private JLabel myRoomContents;
     private JLabel myInventoryLabel;
+    private JLabel myHeroHP;
+    private JLabel myHeroMaxHP;
+    private JLabel myOppHP;
+    private JLabel myOppMaxHP;
     private JButton myHPPotion;
     private JButton myVisionPotion;
     private JButton myAttack;
@@ -80,6 +86,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private JPanel myInventoryPanel;
     private JPanel myRoomPanel;
     private JPanel myFightPanel;
+    private JPanel myOppHpPanel;
 
     private final JTextArea myMap;
     private JTextArea myMessages;
@@ -213,16 +220,16 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myRoomPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         myRoomPanel.setBackground(Color.LIGHT_GRAY);
 
-        myName = new JLabel(myDungeon.getHero().getCharName());
+        myName = new JLabel();
         myName.setFont(BUTTON_FONT);
         myHero = new JLabel("Hero.png");
         myHero.setBorder( BorderFactory.createLineBorder(Color.BLACK,2));
         myRoomContents = new JLabel("Monster/Item/Pit.png");
         myRoomContents.setBorder( BorderFactory.createLineBorder(Color.BLACK,2));
 
-        JPanel hpPanel = setHPIndicator(myDungeon.getHero());
-        JPanel oppHpPanel = setHPIndicator(getEnemy());
-        oppHpPanel.setVisible(false);
+        JPanel hpPanel = setHPIndicator(myDungeon.getHero(), true);
+        myOppHpPanel = setHPIndicator(getEnemy(), false);
+        myOppHpPanel.setVisible(false);
 
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new GridBagLayout());
@@ -239,11 +246,11 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         myRoomPanel.add(hpPanel,6);
         myRoomPanel.add(new JLabel());
-        myRoomPanel.add(oppHpPanel,8);
+        myRoomPanel.add(myOppHpPanel,8);
 
         myRoomPanel.setVisible(true);
     }
-    private JPanel setHPIndicator(final model.AbstractDungeonCharacter theChar) {
+    private JPanel setHPIndicator(final model.AbstractDungeonCharacter theChar, final boolean theHero) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
 
@@ -255,14 +262,30 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         }
 
         JLabel hpLabel = new JLabel("HP: ");
-        JLabel hpAmount = new JLabel(hp);
+        if (theHero) {
+            myHeroHP = new JLabel(hp);
+        } else {
+            myOppHP = new JLabel(hp);
+        }
         JLabel hpDivider = new JLabel("/");
-        JLabel maxHPAmount = new JLabel(maxHP);
+        if (theHero) {
+            myHeroMaxHP = new JLabel(maxHP);
+        } else {
+            myOppMaxHP = new JLabel(maxHP);
+        }
 
         panel.add(hpLabel);
-        panel.add(hpAmount);
+        if (theHero) {
+            panel.add(myHeroHP);
+        } else {
+            panel.add(myOppHP);
+        }
         panel.add(hpDivider);
-        panel.add(maxHPAmount);
+        if (theHero) {
+            panel.add(myHeroMaxHP);
+        } else {
+            panel.add(myOppMaxHP);
+        }
         panel.setOpaque(false);
 
         return panel;
@@ -284,6 +307,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myEast = setButton(">", FONT, myBackgroundColor.brighter());
         mySouth = setButton("v", FONT, myBackgroundColor.brighter());
         myWest = setButton("<", FONT, myBackgroundColor.brighter());
+        myNorth.setEnabled(false);
+        myEast.setEnabled(false);
+        mySouth.setEnabled(false);
+        myWest.setEnabled(false);
 
         myMovePanel.setLayout(new GridLayout(3,3));
 
@@ -465,9 +492,22 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         mySouth.addActionListener(theEvent -> traverse(Direction.SOUTH));
         myWest.addActionListener(theEvent -> traverse(Direction.WEST));
 
-//        myHPPotion.addActionListener((theEvent -> {}));
 //        myVisionPotion.addActionListener((theEvent -> {}));
 
+        myStart.addActionListener(theEvent -> {
+            try {
+                startConfirm();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        myStartGame.addActionListener(theEvent -> {
+            try {
+                startConfirm();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
 //        mySaveGame.addActionListener((theEvent -> {}));
 //        mySave.addActionListener((theEvent -> {}));
 //        myLoadGame.addActionListener((theEvent -> {}));
@@ -524,6 +564,46 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         });
     }
 
+    /**
+     * Helper method that creates an option pane to
+     * confirm if the player wants to start a new game.
+     */
+    private void startConfirm() throws SQLException {
+        String[] exitOptions = {"Yes","No"};
+        int PromptResult = JOptionPane.showOptionDialog(null,
+            "Start new game?","Start Game",
+            JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,
+            null,exitOptions,exitOptions[1]);
+        if(PromptResult==JOptionPane.YES_OPTION)
+        {
+            myStart.setEnabled(false);
+            characterCreation();
+        }
+    }
+    /**
+     * Helper method that opens up the window to enter your balance.
+     */
+    private void characterCreation() {
+        JFrame creationWindow = new JFrame();
+        String name = JOptionPane.showInputDialog(creationWindow, "Name:");
+        String[] classes = {"Warrior", "Rogue", "Mage"};
+        int classChoice = JOptionPane.showOptionDialog(null, "Choose a class",
+            "Character Creation",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null, classes, classes[0]);
+        try {
+            myDungeon.createCharacter(name, classChoice);
+            myName.setText(myDungeon.getHero().getCharName());
+            myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+            myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        startGame();
+    }
+    private void startGame() {
+        myStart.setEnabled(false);
+        myStartGame.setEnabled(false);
+        myDungeon.setGameActive(true);
+    }
     private void traverse (final Direction theDir){
         if(theDir == Direction.NORTH){
             myDungeon.moveUp();
@@ -558,6 +638,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myAttack.setEnabled(true);
                 mySkill.setEnabled(true);
                 myFlee.setEnabled(true);
+                myOppHpPanel.setVisible(true);
+                myOppHP.setText(String.valueOf(getEnemy().getHP()));
+                myOppMaxHP.setText(String.valueOf(getEnemy().getMaxHP()));
                 // Test code to make it obvious that combat has been entered.
                 Color color = Color.RED;
                 myFightPanel.setBackground(color);
@@ -576,6 +659,92 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
         } else if ("FLED".equals(s)) {
             myMap.setText(myDungeon.getFloorString());
+        } else if ("Can Save".equals(s)) {
+            mySave.setEnabled(true);
+            mySaveGame.setEnabled(true);
+        } else if ("Can Load".equals(s)) {
+            myLoad.setEnabled(true);
+            myLoadGame.setEnabled(true);
+        } else if ("North".equals(s)) { //if hero went north
+            mySouth.setEnabled(true);
+            if (!myDungeon.getCurrentRoom().canWalkNorth()) {
+                myNorth.setEnabled(false);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkEast()) {
+                myEast.setEnabled(false);
+            } else {
+                myEast.setEnabled(true);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkWest()) {
+                myWest.setEnabled(false);
+            } else {
+                myWest.setEnabled(true);
+            }
+        } else if ("South".equals(s)) {
+            myNorth.setEnabled(true);
+            if (!myDungeon.getCurrentRoom().canWalkSouth()) {
+                mySouth.setEnabled(false);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkEast()) {
+                myEast.setEnabled(false);
+            } else {
+                myEast.setEnabled(true);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkWest()) {
+                myWest.setEnabled(false);
+            } else {
+                myWest.setEnabled(true);
+            }
+        } else if ("East".equals(s)) {
+            myWest.setEnabled(true);
+            if (!myDungeon.getCurrentRoom().canWalkEast()) {
+                myEast.setEnabled(false);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkSouth()) {
+                mySouth.setEnabled(false);
+            } else {
+                mySouth.setEnabled(true);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkNorth()) {
+                myNorth.setEnabled(false);
+            } else {
+                myNorth.setEnabled(true);
+            }
+        } else if ("West".equals(s)) {
+            myEast.setEnabled(true);
+            if (!myDungeon.getCurrentRoom().canWalkWest()) {
+                myWest.setEnabled(false);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkSouth()) {
+                mySouth.setEnabled(false);
+            } else {
+                mySouth.setEnabled(true);
+            }
+            if (!myDungeon.getCurrentRoom().canWalkNorth()) {
+                myNorth.setEnabled(false);
+            } else {
+                myNorth.setEnabled(true);
+            }
+        } else if ("Dir".equals(s)) {
+            if (theEvent.getNewValue().equals(true)) {
+                if (myDungeon.getCurrentRoom().canWalkNorth()) {
+                    myNorth.setEnabled(true);
+                }
+                if (myDungeon.getCurrentRoom().canWalkWest()) {
+                    myWest.setEnabled(true);
+                }
+                if (myDungeon.getCurrentRoom().canWalkSouth()) {
+                    mySouth.setEnabled(true);
+                }
+                if (myDungeon.getCurrentRoom().canWalkEast()) {
+                    myEast.setEnabled(true);
+                }
+            } else {
+                myNorth.setEnabled(false);
+                myEast.setEnabled(false);
+                mySouth.setEnabled(false);
+                myWest.setEnabled(false);
+            }
         }
     }
 }
