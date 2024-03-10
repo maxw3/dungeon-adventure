@@ -655,8 +655,18 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             }
         } else if ("Health Potion".equals(s)) {
             myHPPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
+            if(theEvent.getNewValue().equals(0)) {
+                myHPPotion.setEnabled(false);
+            } else {
+                myHPPotion.setEnabled(true);
+            }
         } else if ("Vision Potion".equals(s)) {
             myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
+            if(theEvent.getNewValue().equals(0)) {
+                myVisionPotion.setEnabled(false);
+            } else {
+                myVisionPotion.setEnabled(true);
+            }
         } else if ("FLED".equals(s)) {
             myMap.setText(myDungeon.getFloorString());
         } else if ("Can Save".equals(s)) {
