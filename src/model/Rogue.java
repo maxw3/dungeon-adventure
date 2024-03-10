@@ -1,29 +1,31 @@
 package model;
 
-public class Rogue extends Hero {
-    protected Rogue(final String theName) {
-        super(theName);
-        setMaxHP(350);
-        setAttack(30);
-        setAtkSpd(2);
-        setHitChance(85);
+import java.sql.SQLException;
+
+public final class Rogue extends Hero {
+    private Rogue() throws SQLException {
+        this("");
+        throw new IllegalCallerException("Private Constructor Call on Rogue");
+    }
+    public Rogue(final String theName) throws SQLException {
+        super(theName, "Rogue");
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget) {
-        multiplyAtkSpd(1.5);
-        theTarget.increaseHitChance(-20);
-        System.out.println("Remember to set hit chance back after skill duration expires.");
+    public void skill(final AbstractDungeonCharacter theTarget) {
+        setAtkSpd((int) (getAtkSpd() * 1.5));
+        theTarget.setHitChance(getHitChance() - 20);
+System.out.println("Remember to set hit chance back after skill duration expires.");
 
         attack(theTarget);
 
-        multiplyAtkSpd(0.667);
+        setAtkSpd((int) (getAtkSpd() * 0.667));
 
         super.skill(theTarget);
     }
 
     @Override
-    public final String skillDescription() {
+    public String skillDescription() {
         return "model.Rogue gets haste and is able to attack faster and dodge more.";
     }
 }

@@ -2,7 +2,7 @@ package model;
 
 import java.util.Set;
 
-public class VisionPotion extends AbstractConsumable {
+public final class VisionPotion extends AbstractConsumable {
     public VisionPotion() {
         super("Vision Potion");
     }

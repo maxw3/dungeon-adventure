@@ -2,7 +2,7 @@ package model;
 
 import java.util.ArrayList;
 
-public class Inventory {
+public final class Inventory {
 
     private final String myNewLine = System.lineSeparator();
     private final ArrayList<AbstractEquipment> myConsumableItems;

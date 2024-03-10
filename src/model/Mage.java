@@ -1,23 +1,24 @@
 package model;
 
-public class Mage extends Hero {
-    protected Mage(String theName) {
-        super(theName);
-        setMaxHP(300);
-        setAttack(70);
-        setAtkSpd(1);
-        setHitChance(80);
+import java.sql.SQLException;
+
+public final class Mage extends Hero {
+    private Mage() throws SQLException {
+        this("");
+        throw new IllegalCallerException("Private Constructor Call on Mage");
+    }
+    public Mage(String theName) throws SQLException {
+        super(theName, "Mage");
     }
 
     @Override
-    public final void skill(final AbstractDungeonCharacter theTarget) {
+    public void skill(final AbstractDungeonCharacter theTarget) {
         healOrDamage(myMaxHP / 4);
-
         super.skill(theTarget);
     }
 
     @Override
-    public final String skillDescription() {
+    public String skillDescription() {
         return "model.Mage heals itself.";
     }
 }

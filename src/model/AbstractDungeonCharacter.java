@@ -1,8 +1,10 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public abstract class AbstractDungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
-    protected static final int MIN_STAT = 0;
     protected String myName;
     protected int myHP;
     protected int myMaxHP;
@@ -10,17 +12,41 @@ public abstract class AbstractDungeonCharacter {
     protected int myAtkSpd;
     protected int myHitChance;
     protected int myBlockChance;
-    private final int[] myPosition;
+    protected double myHealMultiplier;
+    protected double myHealRate;
+
     //private final model.Dummy myDummy = new model.Dummy();
 
-    protected AbstractDungeonCharacter() {
-        myMaxHP = -1;
-        myHP = -1;
-        myAttack = MIN_STAT;
-        myAtkSpd = MIN_STAT;
-        myBlockChance = MIN_STAT;
+    protected AbstractDungeonCharacter(final String theName) throws SQLException {
+        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
 
-        myPosition = new int[2];
+        myName = theName;
+        myMaxHP = rs.getInt("MaxHP");
+        myHP = myMaxHP;
+        myAttack = rs.getInt("Attack");
+        myAtkSpd = rs.getInt("AttackSpeed");
+        myHitChance = rs.getInt("HitChance");
+        myBlockChance = rs.getInt("BlockChance");
+        myHealMultiplier = rs.getDouble("HealMultiplier");
+        myHealRate = rs.getDouble("HealRate");
+    }
+
+    protected AbstractDungeonCharacter(final String theName, final int theFloor) throws SQLException {
+        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
+
+        myName = theName;
+        myMaxHP = (int) (rs.getInt("MaxHP") * Math.pow(rs.getDouble("HPMultiplier"), theFloor));
+        myHP = myMaxHP;
+        myAttack = (int) (rs.getInt("Attack") * Math.pow(rs.getDouble("AttackMultiplier"), theFloor));
+        myAtkSpd = rs.getInt("AttackSpeed");
+        myHitChance = (int) (100 - rs.getInt("HitChance")
+            / Math.pow(rs.getDouble("HitChanceMultiplier"), theFloor));
+        myBlockChance = rs.getInt("BlockChance");
+        myHealMultiplier = rs.getDouble("HealMultiplier");
+        myHealRate = rs.getDouble("HealRate")
+            * Math.pow(rs.getDouble("HealRateMultiplier"), theFloor);
     }
 
     protected AbstractDungeonCharacter(final int theRow, final int theCol) {
@@ -52,54 +78,23 @@ public abstract class AbstractDungeonCharacter {
         }
     }
 
-    public void skill(final AbstractDungeonCharacter theTarget) {
-        skillDescription();
-    }
-
-    public final void setPosition(final int[] thePosition) {
-        myPosition[0] = thePosition[0];
-        myPosition[1] = thePosition[1];
-    }
+    public abstract void skill(final AbstractDungeonCharacter theTarget);
 
     protected final void setMaxHP(final int theHP) {
         final double hPRatio = (double)myHP / myMaxHP;
         myMaxHP = theHP;
         setCurrentHP((int)(myMaxHP * hPRatio));
     }
-    protected final void increaseMaxHP(final int theChange) {
-        final double hPRatio = (double)myHP / myMaxHP;
-        myMaxHP += theChange;
-        setCurrentHP((int)(myMaxHP * hPRatio));
-    }
-    protected final void multiplyMaxHP(final double theMultiplier) {
-        final double hPRatio = (double)myHP / myMaxHP;
-        myMaxHP *= theMultiplier;
-        setCurrentHP((int)(myMaxHP * hPRatio));
-    }
 
     protected final void setAttack(final int theAttack) {
         myAttack = theAttack;
     }
-    protected final void increaseAttack(final int theChange) {
-        myAttack += theChange;
-    }
-    protected final void multiplyAttack(final double theMultiplier) {
-        myAttack *= theMultiplier;
-    }
     protected final void setAtkSpd(final int theAtkSpd) {
         myAtkSpd = theAtkSpd;
     }
-    protected final void increaseAtkSpd(final int theChange) {
-        myAtkSpd += theChange;
-    }
-    protected final void multiplyAtkSpd(final double theMultiplier) {
-        myAtkSpd *= theMultiplier;
-    }
-    protected final void setHitChance(final int theHitChance) {
+
+    public final void setHitChance(final int theHitChance) {
         myHitChance = theHitChance;
-    }
-    protected final void increaseHitChance(final int theChange) {
-        myHitChance += theChange;
     }
 
     private void setCurrentHP(final int theHP) {
@@ -141,28 +136,13 @@ public abstract class AbstractDungeonCharacter {
         return roll <= getBlockChance();
     }
 
-    public final int[] getPosition() {
-        return myPosition;
-    }
-
-    public final int getMaxHP() {
-        return  myMaxHP;
-    }
-    public final int getHP() {
-        return myHP;
-    }
-    public final int getBlockChance() {
-        return myBlockChance;
-    }
-    public final int getAtkSpd() {
-        return myAtkSpd;
-    }
-    public final int getHitChance() {
-        return myHitChance;
-    }
-    public final int getAttack() {
-        return myAttack;
-    }
+    public final String getName() { return myName; }
+    public final int getMaxHP() { return  myMaxHP;}
+    public final int getHP() { return myHP; }
+    public final int getBlockChance() { return myBlockChance; }
+    public final int getAtkSpd() { return myAtkSpd; }
+    public final int getHitChance() { return myHitChance; }
+    public final int getAttack() { return myAttack; }
 
     public abstract String skillDescription();
 

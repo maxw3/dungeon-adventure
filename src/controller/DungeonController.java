@@ -7,14 +7,18 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import enums.Direction;
 import model.*;
 
+import org.sqlite.SQLiteDataSource;
 import view.DungeonView;
 
 public class DungeonController extends JPanel implements PropertyChangeListener {
@@ -26,6 +30,31 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     private final DungeonLogic myDungeon;
     private final Hero myHero;
     private final Inventory myInventory;
+    public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
+    static {
+        try {
+            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Connection CONNECTION;
+    static {
+        try {
+            CONNECTION = DATA_SOURCE.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static final Statement STATEMENT;
+    static {
+        try {
+            STATEMENT = CONNECTION.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public DungeonController() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
@@ -34,7 +63,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     }
 
     public static void main(final String[] theArgs) {
-        EventQueue.invokeLater(() -> createAndShowGUI());
+        EventQueue.invokeLater(DungeonController::createAndShowGUI);
     }
 
     public static void createAndShowGUI() {
@@ -76,8 +105,8 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                     "Would you like to save progress before you exit?", "Save on Exit",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, exitOptions, exitOptions[1]);
-                if (promptResult == JOptionPane.YES_OPTION) {
-//                    DungeonLogic.save();
+                if (promptResult == JOptionPane.YES_OPTION)  {
+                    DungeonLogic.save();
                 }
                 System.exit(0);
             }
@@ -105,7 +134,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         }
     }
 
-    public void fight (final Monster theMonster) {
+    public void fight (final Monster theMonster) throws SQLException {
         if (checkGameStatus()) {
             while (myHero.getHP() > 0 && theMonster.getHP() > 0) {
 //            prompt user for what action they want to do for their turn
@@ -116,12 +145,21 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
 //                myHero.skill(theMonster);
 //            if drink potion
 //                drinkPotion();
+//                if flee
+//                    end fight and go to previous room
 
                 // Temporarily makes both sides attack each other
                 if (theMonster.getHP() > 0) {
                     theMonster.attack(myDungeon.getHero());
                     myHero.attack(theMonster);
                     theMonster.skill(theMonster);
+
+                    String hitChanceQuery = "SELECT 'HitChance' FROM character WHERE CharName = '" +
+                        theMonster.getName() + "'";
+                    ResultSet rs = STATEMENT.executeQuery(hitChanceQuery);
+                    if (theMonster.getHitChance() < rs.getInt("HitChance")){
+                        theMonster.setHitChance(theMonster.getHitChance() + 20);
+                    }
                 }
             }
             if (myHero.getHP() <= 0) {

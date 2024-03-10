@@ -2,12 +2,21 @@ package model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public final class DungeonLogic {
-    public static final DungeonLogic MY_INSTANCE = new DungeonLogic();
+    public static final DungeonLogic MY_INSTANCE;
+    static {
+        try {
+            MY_INSTANCE = new DungeonLogic();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final int DUNGEON_SIZE = 5;
     private final PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
@@ -16,15 +25,14 @@ public final class DungeonLogic {
     private Hero myHero;
     private Floor myFloor;
     private Inventory myInventory;
-    private boolean myGameActive;
+    private static boolean myGameActive = false;
     private boolean myCombatStatus;
-    private String mySaveState;
     private int myFloorLevel;
     private int myHeroRow;
     private int myHeroCol;
     private Room myCurrentRoom;
 
-    private DungeonLogic() {
+    private DungeonLogic() throws SQLException {
         startGame();
     }
 
@@ -42,7 +50,16 @@ public final class DungeonLogic {
         reveal(myCurrentRoom);
     }
 
-    private void startGame() {
+    public static void save() {
+        StringBuilder saveState = new StringBuilder();
+//         StringBuilder.append(myFloorLevel);
+//         for each room of the Floor, append room serial to saveState
+//         append player stats to saveState
+//         append Inventory to saveState
+//         save saveState to an external text file
+    }
+
+    private void startGame() throws SQLException {
         myFloorLevel = 1;
         setGameActive(true);
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
@@ -67,12 +84,12 @@ public final class DungeonLogic {
         reveal(myCurrentRoom);
     }
 
-    private void createCharacter() {
+    private void createCharacter() throws SQLException {
         //Ask for Hero Class and Name
         myHero = new Warrior("Hero Name");
     }
 
-    private void setGameActive(final boolean theState) {
+    public void setGameActive(final boolean theState) {
         myGameActive = theState;
     }
 
@@ -134,6 +151,7 @@ public final class DungeonLogic {
     public boolean endCombat() {
         if (myGameActive && myCombatStatus) {
             myCombatStatus = false;
+            reveal(myCurrentRoom);
             return true;
         }
         return false;

@@ -4,7 +4,7 @@ import enums.ItemType;
 
 import java.util.Random;
 
-public class Pit implements Item {
+public final class Pit implements Item {
     private static final Random RANDOM = new Random();
     private static final ItemType MY_TYPE = ItemType.PIT;
     @Override
