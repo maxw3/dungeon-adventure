@@ -40,7 +40,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);
     /** Font for labels on the main frame */
     private static final Font FONT = new Font("Arial", Font.BOLD, 20);
-    private Direction myFleeDirection = Direction.NORTH;
+    private Direction myLastDirection;
     private JMenuBar myMenu;
     private JMenu myFile;
     private JMenu myHelp;
@@ -422,7 +422,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         myAttack.addActionListener(theEvent -> combatAction(1));
         mySkill.addActionListener(theEvent -> combatAction(2));
-        myFlee.addActionListener(theEvent -> traverse(myFleeDirection));
+        myFlee.addActionListener(theEvent -> traverse(myLastDirection.getOpposite()));
 
         //listener for exit game button
         myExitGame.addActionListener((theEvent -> {
@@ -457,17 +457,14 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     }
 
     private void traverse (final Direction theDir){
+        myLastDirection = theDir;
         if(theDir == Direction.NORTH){
-            myFleeDirection = Direction.SOUTH;
             myDungeon.moveUp();
         }else if(theDir == Direction.EAST){
-            myFleeDirection = Direction.WEST;
             myDungeon.moveRight();
         }else if(theDir == Direction.SOUTH){
-            myFleeDirection = Direction.NORTH;
             myDungeon.moveDown();
         }else if(theDir == Direction.WEST){
-            myFleeDirection = Direction.EAST;
             myDungeon.moveLeft();
         }
         myMap.setText(myDungeon.getFloorString());
