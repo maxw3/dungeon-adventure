@@ -273,12 +273,12 @@ public final class DungeonLogic {
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("CONSUMABLE")) {
-                int before = myInventory.getHPPotionAmount();
+                int before = myInventory.getCount((AbstractEquipment)i);
                 final AbstractConsumable consumable = (AbstractConsumable)i;
                 myInventory.addItem(consumable);
                 myCurrentRoom.removeItem(i);
                 myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ').append(consumable.getName()).append("s! \n");
-                myChanges.firePropertyChange("Health Potion", before, myInventory.getHPPotionAmount());
+                myChanges.firePropertyChange(i.getName(), before, myInventory.getCount((AbstractEquipment)i));
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("PILLAR")) {
