@@ -1,10 +1,7 @@
 package model;
 
-import controller.DungeonController;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public abstract class AbstractDungeonCharacter {
     public static final String NEW_LINE = System.lineSeparator();
@@ -17,7 +14,6 @@ public abstract class AbstractDungeonCharacter {
     protected int myBlockChance;
     protected double myHealMultiplier;
     protected double myHealRate;
-    private int[] myPosition;
 
     //private final model.Dummy myDummy = new model.Dummy();
 

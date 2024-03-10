@@ -37,40 +37,22 @@ public final class DungeonLogic {
         startGame();
     }
 
-    private DungeonLogic(final Hero theHero, final Inventory theInventory) throws SQLException {
-        myFloorLevel = 1;
-        setGameActive(true);
-        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
-        myHero = theHero;
-        myInventory = theInventory;
-        final Room startingRoom = myFloor.getStartingRoom();
-        startingRoom.addCharacter(myHero);
-        myHeroCol = myHero.getPosition()[1];
-        myHeroRow = myHero.getPosition()[0];
-        myCurrentRoom = startingRoom;
-        myLastRoom = startingRoom;
-        reveal(myCurrentRoom);
-    }
-
-    public static void save() {
+    public void save() {
         StringBuilder saveState = new StringBuilder();
 //         StringBuilder.append(myFloorLevel);
 //         for each room of the Floor, append room serial to saveState
 //         append player stats to saveState
 //         append Inventory to saveState
 //         save saveState to an external text file
+        myChanges.firePropertyChange("Can Load", false, true);
     }
 
     private void startGame() throws SQLException {
         myFloorLevel = 1;
         setGameActive(true);
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
-        createCharacter();
         myInventory = new Inventory();
         final Room startingRoom = myFloor.getStartingRoom();
-        startingRoom.addCharacter(myHero);
-        myHeroCol = startingRoom.getCol();
-        myHeroRow = startingRoom.getRow();
         myCurrentRoom = startingRoom;
         myLastRoom = startingRoom;
         reveal(myCurrentRoom);
@@ -85,15 +67,31 @@ public final class DungeonLogic {
         myHeroRow = startingRoom.getRow();
         myCurrentRoom = startingRoom;
         reveal(myCurrentRoom);
+        myChanges.firePropertyChange("Dir",null,true);
     }
 
-    private void createCharacter() throws SQLException {
-        //Ask for Hero Class and Name
-        myHero = new Warrior("Hero Name");
+    public void createCharacter(final String theName, final int theClass) throws SQLException {
+        if (theClass == 0) {
+            myHero = new Warrior(theName);
+        } else if (theClass == 1) {
+            myHero = new Rogue(theName);
+        } else if (theClass == 2) {
+            myHero = new Mage(theName);
+        } else {
+            throw new IllegalArgumentException("Invalid Class on Character Creation!");
+        }
+        myFloor.getStartingRoom().addCharacter(myHero);
+        myHeroCol = myFloor.getStartingRoom().getCol();
+        myHeroRow = myFloor.getStartingRoom().getRow();
+        myChanges.firePropertyChange("Hero",null,true);
+        myChanges.firePropertyChange("Dir",null,true);
     }
 
     public void setGameActive(final boolean theState) {
         myGameActive = theState;
+        if (theState) {
+            myChanges.firePropertyChange("Can Save", false, true);
+        }
     }
 
     public boolean getGameActive() {
@@ -118,7 +116,7 @@ public final class DungeonLogic {
     }
 
     public Set<Room> getNeighbors(final Room theRoom) {
-        final Set<Room> set = new HashSet<Room>();
+        final Set<Room> set = new HashSet<>();
         if (theRoom.canWalkNorth()) {
             set.add(theRoom.getNorth());
         }
@@ -148,6 +146,7 @@ public final class DungeonLogic {
             }
             if (isMonster) {
                 myCombatStatus = true;
+                myChanges.firePropertyChange("Dir",true,false);
                 return true;
             }
         }
@@ -210,6 +209,7 @@ public final class DungeonLogic {
             myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
+            myChanges.firePropertyChange("North", null,true);
         }
     }
 
@@ -223,6 +223,7 @@ public final class DungeonLogic {
             myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
+            myChanges.firePropertyChange("East", null,true);
         }
     }
 
@@ -236,6 +237,7 @@ public final class DungeonLogic {
             myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
+            myChanges.firePropertyChange("South", null,true);
         }
     }
 
@@ -249,6 +251,7 @@ public final class DungeonLogic {
             myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
+            myChanges.firePropertyChange("West", null,true);
         }
     }
 
@@ -264,28 +267,31 @@ public final class DungeonLogic {
     public void collect() {
         final List<Item> items = myCurrentRoom.getItems();
 
-        for (int pos = 0; pos < items.size(); pos++) {
-            final Item i = items.get(pos);
+        for (final Item i : items) {
             if (i.getType().equals("PIT")) {
-                final int damage = ((Pit)i).activate(myHero);
+                final int damage = ((Pit) i).activate(myHero);
                 myCurrentRoom.removeItem(i);
-                myMessages.append("You activated a pit, and took ").append(damage).append(" damage! \n");
+                myMessages.append("You activated a pit, and took ").append(damage)
+                    .append(" damage! \n");
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("CONSUMABLE")) {
-                int before = myInventory.getCount((AbstractEquipment)i);
-                final AbstractConsumable consumable = (AbstractConsumable)i;
+                int before = myInventory.getCount((AbstractEquipment) i);
+                final AbstractConsumable consumable = (AbstractConsumable) i;
                 myInventory.addItem(consumable);
                 myCurrentRoom.removeItem(i);
-                myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ').append(consumable.getName()).append("s! \n");
-                myChanges.firePropertyChange(i.getName(), before, myInventory.getCount((AbstractEquipment)i));
+                myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ')
+                    .append(consumable.getName()).append("s! \n");
+                myChanges.firePropertyChange(i.getName(), before,
+                    myInventory.getCount((AbstractEquipment) i));
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("PILLAR")) {
-                final Pillar pillar = (Pillar)i;
+                final Pillar pillar = (Pillar) i;
                 myInventory.addItem(pillar);
                 myCurrentRoom.removeItem(i);
-                myMessages.append("You acquired the ").append(pillar.getName()).append(" pillar of OO! \n");
+                myMessages.append("You acquired the ").append(pillar.getName())
+                    .append(" pillar of OO! \n");
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
                 myChanges.firePropertyChange("COMPLETED FLOOR", false, true);
@@ -303,7 +309,7 @@ public final class DungeonLogic {
         return b;
     }
 
-    public boolean flee() {
+    public void flee() {
         if (myCombatStatus) {
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom = myLastRoom;
@@ -313,9 +319,7 @@ public final class DungeonLogic {
             myCombatStatus = false;
             myChanges.firePropertyChange("COMBAT STATUS", true, false);
             myChanges.firePropertyChange("FLED", false, true);
-            return true;
         }
-        return false;
     }
     private void trimMessage() {
         if (myMessages.length() > 300) {
