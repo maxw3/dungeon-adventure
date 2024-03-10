@@ -39,10 +39,11 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     /** Font for buttons on the main frame */
     private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);
     /** Font for labels on the main frame */
-    private static final Font FONT = new Font("Arial", Font.PLAIN, 15);
+    private static final Font FONT = new Font("Arial", Font.BOLD, 20);
 
     private final PropertyChangeSupport myChanges
             = new PropertyChangeSupport(this);
+  
     private JMenuBar myMenu;
     private JMenu myFile;
     private JMenu myHelp;
@@ -438,6 +439,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 //        mySaveGame.addActionListener((theEvent -> {}));
 //        mySave.addActionListener((theEvent -> {}));
 //        myLoadGame.addActionListener((theEvent -> {}));
+//        myLoad.addActionListener((theEvent -> {}));
+
 
         //listener for exit game button
         myExitGame.addActionListener((theEvent -> {
@@ -490,6 +493,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     }
 
     private void traverse (final Direction theDir){
+        myLastDirection = theDir;
         if(theDir == Direction.NORTH){
             myDungeon.moveUp();
         }else if(theDir == Direction.EAST){
