@@ -36,7 +36,7 @@ public final class DungeonLogic {
         startGame();
     }
 
-    private DungeonLogic(final Hero theHero, final Inventory theInventory) {
+    private DungeonLogic(final Hero theHero, final Inventory theInventory) throws SQLException {
         myFloorLevel = 1;
         setGameActive(true);
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
@@ -73,7 +73,7 @@ public final class DungeonLogic {
         reveal(myCurrentRoom);
     }
 
-    public void changeFloor() {
+    public void changeFloor() throws SQLException {
         myFloorLevel++;
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
         final Room startingRoom = myFloor.getStartingRoom();

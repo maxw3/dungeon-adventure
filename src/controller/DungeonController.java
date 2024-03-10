@@ -24,33 +24,21 @@ import view.DungeonView;
 public class DungeonController extends JPanel implements PropertyChangeListener {
 
     public static JFrame myFrame;
-    private static final DungeonController MY_INSTANCE = new DungeonController();
+    private static final DungeonController MY_INSTANCE;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
     private final DungeonLogic myDungeon;
     private final Hero myHero;
     private final Inventory myInventory;
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
-    static {
-        try {
-            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
     public static Connection CONNECTION;
-    static {
-        try {
-            CONNECTION = DATA_SOURCE.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static final Statement STATEMENT;
     static {
         try {
+            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
+            CONNECTION = DATA_SOURCE.getConnection();
             STATEMENT = CONNECTION.createStatement();
+            MY_INSTANCE = new DungeonController();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -214,14 +202,22 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                 for (AbstractDungeonCharacter c : myDungeon.getCurrentRoom().getCharacters()) {
                     if (c instanceof Monster) {
                         myDungeon.getCurrentRoom().removeCharacter(c);
-                        fight((Monster)c);
+                        try {
+                            fight((Monster)c);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                         myDungeon.endCombat();
                     }
                 }
             }
         } else if ("COMPLETED FLOOR".equals(s)) {
             // Prompt view to offer to save game
-            myDungeon.changeFloor();
+            try {
+                myDungeon.changeFloor();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
