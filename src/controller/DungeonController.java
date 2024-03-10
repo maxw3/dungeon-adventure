@@ -125,7 +125,7 @@ public class DungeonController extends JPanel {
      */
     private void drinkPotion() {
         if (myDungeon.getGameActive()) {
-            myDungeon.getInventory().useItem(new HealthPotion(1));
+            myInventory.useItem(new HealthPotion());
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
         }
@@ -162,6 +162,7 @@ public class DungeonController extends JPanel {
             } else {
                 //won the fight
                 //get drop item of monster if available
+                //get pillar or escape through exit if available
                 //make the room empty and traversable
             }
         }
@@ -187,7 +188,6 @@ public class DungeonController extends JPanel {
 
     private boolean checkGameStatus(){
         if (myDungeon.getGameActive()) {
-            myDungeon.getInventory().useItem(new HealthPotion(1));
             return true;
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
