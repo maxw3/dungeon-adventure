@@ -70,6 +70,13 @@ public final class Inventory {
         return myConsumableItems.get(theIndex);
     }
 
+    public int getCount(final AbstractEquipment theItem) {
+        final AbstractEquipment equipment = containsItem(theItem.getName());
+        if (equipment != null && equipment.getType().equals("CONSUMABLE")) {
+            return ((AbstractConsumable)equipment).getQuantity();
+        }
+        return 0;
+    }
     public void addItem(final AbstractEquipment theItem) {
         if (theItem == null) {
             throw new IllegalArgumentException("The Item is null.");
@@ -106,7 +113,7 @@ public final class Inventory {
         }
     }
 
-    public void useItem(final AbstractEquipment theItem) {
+    public boolean useItem(final AbstractEquipment theItem) {
         if (theItem == null) {
             throw new IllegalArgumentException("The Item is null.");
         }
@@ -118,12 +125,15 @@ public final class Inventory {
                 if (oldConsumable.getQuantity() <= 0) {
                     myConsumableItems.remove(oldConsumable);
                 }
+                return true;
             } /*
              else if is permanent{
             } */
             else {
                 throw new IllegalArgumentException("The Item has no active ability. Is not CONSUMABLE or PERMANENT");
             }
+        } else {
+            return false;
         }
     }
     public int getHPPotionAmount() {

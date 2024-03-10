@@ -29,6 +29,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
     private final DungeonLogic myDungeon;
     private final Hero myHero;
+    private Monster myEnemy;
     private final Inventory myInventory;
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
     public static Connection CONNECTION;
@@ -61,6 +62,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
 
         // Main Panel, Contains the Game
         final DungeonView mainPanel = new DungeonView();
+        mainPanel.addPropertyChangeListener(MY_INSTANCE);
 
         // Size of the Main Window
         final Dimension frameSize = new Dimension(960, 540);
@@ -114,50 +116,53 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     /**
      * Helper method for the Use Hit Point Potion Buttons.
      */
-    private void drinkPotion() {
-        if (myDungeon.getGameActive()) {
-            myInventory.useItem(new HealthPotion());
-        } else {
-            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
-        }
-    }
+// This code does not allow for the updating of potion counts in view (routed through DungeonLogic now)
+//    private void drinkPotion() {
+//        if (myDungeon.getGameActive()) {
+//            myDungeon.getInventory().useItem(new HealthPotion(1));
+//        } else {
+//            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+//        }
+//    }
 
-    public void fight (final Monster theMonster) throws SQLException {
+    public void fight (final Monster theMonster, final int theChoice) {
         if (checkGameStatus()) {
-            while (myHero.getHP() > 0 && theMonster.getHP() > 0) {
-//            prompt user for what action they want to do for their turn
-//            listen to key press or button click
-//            if attack
-//                myHero.attack(theMonster);
-//            if skill
-//                myHero.skill(theMonster);
-//            if drink potion
-//                drinkPotion();
-//                if flee
-//                    end fight and go to previous room
+            if (myHero.getHP() > 0 && theMonster.getHP() > 0) {
+                if (theChoice == 1) {
+                    String mResult = theMonster.attack(myHero);
+                    String hResult = myHero.attack(theMonster);
+                    myDungeon.sendMessage("The " + theMonster.getName() + " " + mResult + "\n");
+                    myDungeon.sendMessage("You " + hResult + "\n");
+                } else if (theChoice == 2) {
+                    String mResult = theMonster.attack(myHero);
+                    String hResult = myHero.skill(theMonster);
+                    myDungeon.sendMessage("The " + theMonster.getName() + " " + mResult + "\n");
+                    myDungeon.sendMessage("You " + hResult + "\n");
 
-                // Temporarily makes both sides attack each other
-                if (theMonster.getHP() > 0) {
-                    theMonster.attack(myDungeon.getHero());
-                    myHero.attack(theMonster);
-                    theMonster.skill(theMonster);
-
-                    String hitChanceQuery = "SELECT 'HitChance' FROM character WHERE CharName = '" +
-                        theMonster.getName() + "'";
-                    ResultSet rs = STATEMENT.executeQuery(hitChanceQuery);
-                    if (theMonster.getHitChance() < rs.getInt("HitChance")){
-                        theMonster.setHitChance(theMonster.getHitChance() + 20);
+                } else if (theChoice == 3) {
+                    boolean success = myDungeon.useItem(new HealthPotion());
+                    if (success) {
+                        String mResult = theMonster.attack(myHero);
+                        myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
+                        myDungeon.sendMessage("The " + theMonster.getName() + " " + mResult + "\n");
                     }
+                } else if (theChoice == 4) {
+                    String mResult = theMonster.attack(myHero);
+                    myDungeon.flee();
+                    myDungeon.sendMessage("The " + theMonster.getName() + " " + mResult + "\n");
+                    myDungeon.sendMessage("You fled the encounter!\n");
                 }
             }
             if (myHero.getHP() <= 0) {
                 endGame(false);
-            } else {
+            } else if (theMonster.getHP() <= 0) {
                 //won the fight
                 //get drop item of monster if available
                 //get pillar or escape through exit if available
                 //make the room empty and traversable
+                myDungeon.endCombat();
                 myDungeon.collect();
+                myDungeon.getCurrentRoom().getCharacters().remove(theMonster);
             }
         }
     }
@@ -202,13 +207,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             if (theEvent.getNewValue().equals(true)) {
                 for (AbstractDungeonCharacter c : myDungeon.getCurrentRoom().getCharacters()) {
                     if (c instanceof Monster) {
-                        myDungeon.getCurrentRoom().removeCharacter(c);
-                        try {
-                            fight((Monster)c);
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                        myDungeon.endCombat();
+                        myEnemy = (Monster)c;
                     }
                 }
             }
@@ -218,6 +217,21 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                 myDungeon.changeFloor();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
+            }
+        } else if ("Action".equals(s)) {
+            if (myDungeon.getCombatStatus()) {
+                try {
+                    fight(myEnemy, (int) (theEvent.getNewValue()));
+                } catch (final NullPointerException exception) {
+                    throw new NullPointerException("The current enemy is null! The buttons should be disabled!");
+                }
+            } else {
+                if ((int)(theEvent.getNewValue()) == 3) {
+                    boolean success = myDungeon.useItem(new HealthPotion());
+                    if (success) {
+                        myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
+                    }
+                }
             }
         }
     }
