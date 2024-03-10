@@ -4,7 +4,6 @@ import enums.Direction;
 import controller.DungeonController;
 import model.DungeonLogic;
 import model.HealthPotion;
-import model.VisionPotion;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -33,6 +32,7 @@ import java.awt.event.KeyEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public final class DungeonView extends JPanel implements PropertyChangeListener {
     private final static String NEWLINE = System.lineSeparator();
@@ -40,7 +40,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);
     /** Font for labels on the main frame */
     private static final Font FONT = new Font("Arial", Font.BOLD, 20);
-    private Direction myLastDirection;
+
+    private final PropertyChangeSupport myChanges
+            = new PropertyChangeSupport(this);
+  
     private JMenuBar myMenu;
     private JMenu myFile;
     private JMenu myHelp;
@@ -141,6 +144,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myPanel.add(myMap, BorderLayout.LINE_START);
         myPanel.add(mainPanel, BorderLayout.CENTER);
         myPanel.add(actionPanel, BorderLayout.LINE_END);
+        myPanel.add(myMessages);
 
         add(myPanel);
         myMap.setCursor(null);
@@ -149,6 +153,23 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         addListeners();
 
+    }
+    /**
+     * adds a property change listener to the listener provided
+     *
+     * @param theListener   The listener (Frame, Panel, etc)
+     */
+    public void addPropertyChangeListener(final PropertyChangeListener theListener) {
+        myChanges.addPropertyChangeListener(theListener);
+    }
+
+    /**
+     * removes a property change listener to the listener provided
+     *
+     * @param theListener   The listener (Frame, Panel, etc)
+     */
+    public void removePropertyChangeListener(final PropertyChangeListener theListener) {
+        myChanges.removePropertyChangeListener(theListener);
     }
 
     private void setGamePanel() {
@@ -399,6 +420,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myFightPanel.add(mySkill);
         myFightPanel.add(myFlee);
         myFightPanel.setPreferredSize(new Dimension(150,150));
+        myAttack.setEnabled(false);
+        mySkill.setEnabled(false);
+        myFlee.setEnabled(false);
     }
 
     /**
@@ -410,19 +434,13 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         mySouth.addActionListener(theEvent -> traverse(Direction.SOUTH));
         myWest.addActionListener(theEvent -> traverse(Direction.WEST));
 
-        myHPPotion.addActionListener(theEvent -> useItem(1));
-        myVisionPotion.addActionListener(theEvent -> useItem(2));
-
-//        myStartGame.addActionListener((theEvent -> {}));
-//        myStart.addActionListener((theEvent -> {}));
+//        myHPPotion.addActionListener((theEvent -> {}));
+//        myVisionPotion.addActionListener((theEvent -> {}));
 //        mySaveGame.addActionListener((theEvent -> {}));
 //        mySave.addActionListener((theEvent -> {}));
 //        myLoadGame.addActionListener((theEvent -> {}));
 //        myLoad.addActionListener((theEvent -> {}));
 
-        myAttack.addActionListener(theEvent -> combatAction(1));
-        mySkill.addActionListener(theEvent -> combatAction(2));
-        myFlee.addActionListener(theEvent -> traverse(myLastDirection.getOpposite()));
 
         //listener for exit game button
         myExitGame.addActionListener((theEvent -> {
@@ -454,6 +472,24 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myStats.addActionListener(theEvent -> JOptionPane.showMessageDialog(null,"Hero stats: "
             + NEWLINE + "Number of movement: "
             + NEWLINE + "Current level: ", "Statistics", JOptionPane.PLAIN_MESSAGE));
+
+        //listeners for attack actions
+        myAttack.addActionListener(theEvent -> {
+            if (myAttack.isEnabled()) {
+                myChanges.firePropertyChange("Action", 0, 1);
+            }
+        });
+        mySkill.addActionListener(theEvent -> {
+            if (mySkill.isEnabled()) {
+                myChanges.firePropertyChange("Action", 0, 2);
+            }
+        });
+        myHPPotion.addActionListener(theEvent -> myChanges.firePropertyChange("Action", 0, 3));
+        myFlee.addActionListener(theEvent -> {
+            if (mySkill.isEnabled()) {
+                myChanges.firePropertyChange("Action", 0, 4);
+            }
+        });
     }
 
     private void traverse (final Direction theDir){
@@ -468,26 +504,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myDungeon.moveLeft();
         }
         myMap.setText(myDungeon.getFloorString());
-    }
-  
-    private void useItem(final int theItem) {
-        if (theItem == 1) {
-            myDungeon.getInventory().useItem(new HealthPotion());
-        } else if (theItem == 2) {
-            myDungeon.getInventory().useItem(new VisionPotion());
-        } else {
-            throw new IllegalArgumentException("Invalid item for consumption");
-        }
-    }
-  
-    private void combatAction(final int theAction) {
-        if (theAction == 1) {
-            //player chooses fight for the fight round
-        } else if (theAction == 2) {
-            //player chooses to use skill for fright round
-        } else {
-            throw new IllegalArgumentException("Invalid action for combat phase");
-        }
     }
 
     /**
@@ -506,6 +522,29 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         if ("MESSAGE".equals(s)) {
             String t = theEvent.getNewValue().toString();
             myMessages.setText(t);
+        } else if ("COMBAT STATUS".equals(s)) {
+            if (theEvent.getNewValue().equals(true)) {
+                myAttack.setEnabled(true);
+                mySkill.setEnabled(true);
+                myFlee.setEnabled(true);
+                // Test code to make it obvious that combat has been entered.
+                Color color = Color.RED;
+                myFightPanel.setBackground(color);
+                myMovePanel.setEnabled(false);
+            } else {
+                myAttack.setEnabled(false);
+                mySkill.setEnabled(false);
+                myFlee.setEnabled(false);
+                Color color = Color.LIGHT_GRAY.darker();
+                myFightPanel.setBackground(color);
+                myMovePanel.setEnabled(true);
+            }
+        } else if ("Health Potion".equals(s)) {
+            myHPPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
+        } else if ("Vision Potion".equals(s)) {
+            myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
+        } else if ("FLED".equals(s)) {
+            myMap.setText(myDungeon.getFloorString());
         }
     }
 }

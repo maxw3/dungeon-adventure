@@ -17,8 +17,9 @@ public final class Monster extends AbstractDungeonCharacter {
         super(theName, theFloor);
     }
     @Override
-    public void skill(final AbstractDungeonCharacter theTarget) {
-        theTarget.healOrDamage((int) (myHP * myHealMultiplier));
+    public String skill(final AbstractDungeonCharacter theTarget) {
+//        theTarget.healOrDamage((int) (myHP * myHealMultiplier));
+        return "";
     }
 
     @Override

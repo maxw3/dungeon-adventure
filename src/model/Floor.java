@@ -73,7 +73,9 @@ public final class Floor {
                 if (choice <= 30) {
                     myRooms[row][col].addCharacter(MonsterFactory.createMonster(myFloorLevel));
                 } else if (choice <= 70) {
-                    myRooms[row][col].addItem(new HealthPotion());
+                    int r = RAND.nextInt(2);
+                    AbstractConsumable[] select = new AbstractConsumable[] {new HealthPotion(), new VisionPotion()};
+                    myRooms[row][col].addItem(select[r]);
                 } else if (choice <= 80) {
                     myRooms[row][col].addItem(new Pit());
                 }

@@ -25,12 +25,13 @@ public final class DungeonLogic {
     private Hero myHero;
     private Floor myFloor;
     private Inventory myInventory;
-    private static boolean myGameActive = false;
+    private static boolean myGameActive;
     private boolean myCombatStatus;
     private int myFloorLevel;
     private int myHeroRow;
     private int myHeroCol;
     private Room myCurrentRoom;
+    private Room myLastRoom;
 
     private DungeonLogic() throws SQLException {
         startGame();
@@ -47,6 +48,7 @@ public final class DungeonLogic {
         myHeroCol = myHero.getPosition()[1];
         myHeroRow = myHero.getPosition()[0];
         myCurrentRoom = startingRoom;
+        myLastRoom = startingRoom;
         reveal(myCurrentRoom);
     }
 
@@ -70,6 +72,7 @@ public final class DungeonLogic {
         myHeroCol = startingRoom.getCol();
         myHeroRow = startingRoom.getRow();
         myCurrentRoom = startingRoom;
+        myLastRoom = startingRoom;
         reveal(myCurrentRoom);
     }
 
@@ -95,6 +98,9 @@ public final class DungeonLogic {
 
     public boolean getGameActive() {
         return myGameActive;
+    }
+    public boolean getCombatStatus() {
+        return myCombatStatus;
     }
     public static DungeonLogic getDungeonInstance() {
         return MY_INSTANCE;
@@ -134,7 +140,7 @@ public final class DungeonLogic {
             for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
                 if (c instanceof Monster) {
                     isMonster = true;
-                    myMessages.append("You've encountered a ").append(c.getClass().getSimpleName()).append("!\n");
+                    myMessages.append("You've encountered a ").append(c.getName()).append("!\n");
                     trimMessage();
                     myChanges.firePropertyChange("MESSAGE", null, myMessages);
                     break;
@@ -152,6 +158,10 @@ public final class DungeonLogic {
         if (myGameActive && myCombatStatus) {
             myCombatStatus = false;
             reveal(myCurrentRoom);
+            myMessages.append("You defeated the enemy!\n");
+            trimMessage();
+            myChanges.firePropertyChange("MESSAGE", null, myMessages);
+            myChanges.firePropertyChange("COMBAT STATUS", true, false);
             return true;
         }
         return false;
@@ -191,48 +201,52 @@ public final class DungeonLogic {
     }
 
     public void moveUp() {
-        if (myCurrentRoom.canWalkNorth()) {
+        if (myCurrentRoom.canWalkNorth() && !myCombatStatus) {
+            myLastRoom = myCurrentRoom;
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getNorth().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getNorth();
-            myHeroCol = myHero.getPosition()[1];
-            myHeroRow = myHero.getPosition()[0];
+            myHeroCol = myCurrentRoom.getCol();
+            myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
         }
     }
 
     public void moveRight() {
-        if (myCurrentRoom.canWalkEast()) {
+        if (myCurrentRoom.canWalkEast() && !myCombatStatus) {
+            myLastRoom = myCurrentRoom;
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getEast().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getEast();
-            myHeroCol = myHero.getPosition()[1];
-            myHeroRow = myHero.getPosition()[0];
+            myHeroCol = myCurrentRoom.getCol();
+            myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
         }
     }
 
     public void moveDown() {
-        if (myCurrentRoom.canWalkSouth()) {
+        if (myCurrentRoom.canWalkSouth() && !myCombatStatus) {
+            myLastRoom = myCurrentRoom;
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getSouth().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getSouth();
-            myHeroCol = myHero.getPosition()[1];
-            myHeroRow = myHero.getPosition()[0];
+            myHeroCol = myCurrentRoom.getCol();
+            myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
         }
     }
 
     public void moveLeft() {
-        if (myCurrentRoom.canWalkWest()) {
+        if (myCurrentRoom.canWalkWest() && !myCombatStatus) {
+            myLastRoom = myCurrentRoom;
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getWest().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getWest();
-            myHeroCol = myHero.getPosition()[1];
-            myHeroRow = myHero.getPosition()[0];
+            myHeroCol = myCurrentRoom.getCol();
+            myHeroRow = myCurrentRoom.getRow();
             reveal(myCurrentRoom);
             applyEffects();
         }
@@ -259,10 +273,12 @@ public final class DungeonLogic {
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("CONSUMABLE")) {
+                int before = myInventory.getCount((AbstractEquipment)i);
                 final AbstractConsumable consumable = (AbstractConsumable)i;
                 myInventory.addItem(consumable);
                 myCurrentRoom.removeItem(i);
                 myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ').append(consumable.getName()).append("s! \n");
+                myChanges.firePropertyChange(i.getName(), before, myInventory.getCount((AbstractEquipment)i));
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("PILLAR")) {
@@ -277,10 +293,43 @@ public final class DungeonLogic {
         }
     }
 
+    public boolean useItem(final AbstractEquipment theItem) {
+        int before = 0;
+        if (theItem.getType().equals("CONSUMABLE")) {
+            before = getInventory().getCount(theItem);
+        }
+        boolean b = myInventory.useItem(theItem);
+        myChanges.firePropertyChange(theItem.getName(), before, myInventory.getCount(theItem));
+        return b;
+    }
+
+    public boolean flee() {
+        if (myCombatStatus) {
+            myCurrentRoom.removeCharacter(myHero);
+            myCurrentRoom = myLastRoom;
+            myCurrentRoom.addCharacter(myHero);
+            myHeroCol = myCurrentRoom.getCol();
+            myHeroRow = myCurrentRoom.getRow();
+            myCombatStatus = false;
+            myChanges.firePropertyChange("COMBAT STATUS", true, false);
+            myChanges.firePropertyChange("FLED", false, true);
+            return true;
+        }
+        return false;
+    }
     private void trimMessage() {
         if (myMessages.length() > 300) {
             myMessages.delete(0, 50);
         }
     }
 
+    public void sendMessage(final String theMessage) {
+        if (theMessage == null) {
+            throw new NullPointerException("The message is null!");
+        }
+
+        myMessages.append(theMessage);
+        trimMessage();
+        myChanges.firePropertyChange("MESSAGE", null, myMessages);
+    }
 }

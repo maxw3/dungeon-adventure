@@ -12,9 +12,9 @@ public final class Mage extends Hero {
     }
 
     @Override
-    public void skill(final AbstractDungeonCharacter theTarget) {
+    public String skill(final AbstractDungeonCharacter theTarget) {
         healOrDamage(myMaxHP / 4);
-        super.skill(theTarget);
+        return "healed " + myMaxHP / 4 + " HP!";
     }
 
     @Override
