@@ -116,7 +116,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
      */
     private void drinkPotion() {
         if (myDungeon.getGameActive()) {
-            myDungeon.getInventory().useItem(new HealthPotion(1));
+            myInventory.useItem(new HealthPotion());
         } else {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
         }
@@ -155,6 +155,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             } else {
                 //won the fight
                 //get drop item of monster if available
+                //get pillar or escape through exit if available
                 //make the room empty and traversable
                 myDungeon.collect();
             }
