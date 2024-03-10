@@ -132,7 +132,7 @@ public final class DungeonLogic {
         return set;
     }
 
-    public boolean startCombat() {
+    public void startCombat() {
         if (myGameActive && !myCombatStatus && !outOfBounds(myHeroCol) && !outOfBounds(myHeroRow)) {
             boolean isMonster = false;
             for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
@@ -147,13 +147,11 @@ public final class DungeonLogic {
             if (isMonster) {
                 myCombatStatus = true;
                 myChanges.firePropertyChange("Dir",true,false);
-                return true;
             }
         }
-        return false;
     }
 
-    public boolean endCombat() {
+    public void endCombat() {
         if (myGameActive && myCombatStatus) {
             myCombatStatus = false;
             reveal(myCurrentRoom);
@@ -161,9 +159,7 @@ public final class DungeonLogic {
             trimMessage();
             myChanges.firePropertyChange("MESSAGE", null, myMessages);
             myChanges.firePropertyChange("COMBAT STATUS", true, false);
-            return true;
         }
-        return false;
     }
 
     public void reveal(final Room theRoom) {
@@ -267,31 +263,28 @@ public final class DungeonLogic {
     public void collect() {
         final List<Item> items = myCurrentRoom.getItems();
 
-        for (final Item i : items) {
+        for (int pos = 0; pos < items.size(); pos++) {
+            final Item i = items.get(pos);
             if (i.getType().equals("PIT")) {
-                final int damage = ((Pit) i).activate(myHero);
+                final int damage = ((Pit)i).activate(myHero);
                 myCurrentRoom.removeItem(i);
-                myMessages.append("You activated a pit, and took ").append(damage)
-                    .append(" damage! \n");
+                myMessages.append("You activated a pit, and took ").append(damage).append(" damage! \n");
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("CONSUMABLE")) {
-                int before = myInventory.getCount((AbstractEquipment) i);
-                final AbstractConsumable consumable = (AbstractConsumable) i;
+                int before = myInventory.getCount((AbstractEquipment)i);
+                final AbstractConsumable consumable = (AbstractConsumable)i;
                 myInventory.addItem(consumable);
                 myCurrentRoom.removeItem(i);
-                myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ')
-                    .append(consumable.getName()).append("s! \n");
-                myChanges.firePropertyChange(i.getName(), before,
-                    myInventory.getCount((AbstractEquipment) i));
+                myMessages.append("You acquired ").append(consumable.getQuantity()).append(' ').append(consumable.getName()).append("s! \n");
+                myChanges.firePropertyChange(i.getName(), before, myInventory.getCount((AbstractEquipment)i));
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
             } else if (i.getType().equals("PILLAR")) {
-                final Pillar pillar = (Pillar) i;
+                final Pillar pillar = (Pillar)i;
                 myInventory.addItem(pillar);
                 myCurrentRoom.removeItem(i);
-                myMessages.append("You acquired the ").append(pillar.getName())
-                    .append(" pillar of OO! \n");
+                myMessages.append("You acquired the ").append(pillar.getName()).append(" pillar of OO! \n");
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
                 myChanges.firePropertyChange("COMPLETED FLOOR", false, true);
@@ -305,6 +298,7 @@ public final class DungeonLogic {
             before = getInventory().getCount(theItem);
         }
         boolean b = myInventory.useItem(theItem);
+        myHero.healOrDamage(myHero.getMaxHP()/2);
         myChanges.firePropertyChange(theItem.getName(), before, myInventory.getCount(theItem));
         return b;
     }
