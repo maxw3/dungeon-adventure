@@ -12,7 +12,8 @@ public final class HealthPotion extends AbstractConsumable {
     public void triggerEffect() {
         super.triggerEffect();
         final Hero hero = DungeonLogic.MY_INSTANCE.getHero();
-        hero.healOrDamage(hero.myMaxHP / 2);
+        int heal = Math.min(hero.getMaxHP() / 2 + hero.getHP(), hero.getMaxHP() - hero.getHP());
+        hero.healOrDamage(heal);
     }
     @Override
     public String toString() {

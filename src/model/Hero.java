@@ -16,7 +16,9 @@ public class Hero extends AbstractDungeonCharacter {
     }
 
     @Override
-    public void skill(final AbstractDungeonCharacter theTarget) {}
+    public String skill(final AbstractDungeonCharacter theTarget) {
+        return "";
+    }
 
     @Override
     public String skillDescription() {

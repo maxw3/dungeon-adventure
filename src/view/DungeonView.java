@@ -32,6 +32,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public final class DungeonView extends JPanel implements PropertyChangeListener {
     private final static String NEWLINE = System.lineSeparator();
@@ -40,6 +41,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     /** Font for labels on the main frame */
     private static final Font FONT = new Font("Arial", Font.PLAIN, 15);
 
+    private final PropertyChangeSupport myChanges
+            = new PropertyChangeSupport(this);
     private JMenuBar myMenu;
     private JMenu myFile;
     private JMenu myHelp;
@@ -106,7 +109,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myPanel.add(myFightPanel);
 //        myPanel.add(myInventoryPanel);
         myPanel.add(myMessages);
-//        addListeners();
 
         add(myPanel);
         myMap.setCursor(null);
@@ -115,6 +117,23 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         addListeners();
 
+    }
+    /**
+     * adds a property change listener to the listener provided
+     *
+     * @param theListener   The listener (Frame, Panel, etc)
+     */
+    public void addPropertyChangeListener(final PropertyChangeListener theListener) {
+        myChanges.addPropertyChangeListener(theListener);
+    }
+
+    /**
+     * removes a property change listener to the listener provided
+     *
+     * @param theListener   The listener (Frame, Panel, etc)
+     */
+    public void removePropertyChangeListener(final PropertyChangeListener theListener) {
+        myChanges.removePropertyChangeListener(theListener);
     }
 
     private void setMovementPanel(){
@@ -256,6 +275,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         hp.add(myHPPotionAmount);
         myFightPanel.add(hp);
         myFightPanel.add(myFlee);
+        myAttack.setEnabled(false);
+        mySkill.setEnabled(false);
+        myFlee.setEnabled(false);
     }
 
     /**
@@ -308,6 +330,24 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 + NEWLINE + "Number of movement: "
                 + NEWLINE + "Current level: ", "Statistics",JOptionPane.DEFAULT_OPTION);
         });
+
+        //listeners for attack actions
+        myAttack.addActionListener(theEvent -> {
+            if (myAttack.isEnabled()) {
+                myChanges.firePropertyChange("Action", 0, 1);
+            }
+        });
+        mySkill.addActionListener(theEvent -> {
+            if (mySkill.isEnabled()) {
+                myChanges.firePropertyChange("Action", 0, 2);
+            }
+        });
+        myHPPotion.addActionListener(theEvent -> myChanges.firePropertyChange("Action", 0, 3));
+        myFlee.addActionListener(theEvent -> {
+            if (mySkill.isEnabled()) {
+                myChanges.firePropertyChange("Action", 0, 4);
+            }
+        });
     }
 
     private void traverse(final Direction theDir) {
@@ -339,6 +379,28 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         if ("MESSAGE".equals(s)) {
             String t = theEvent.getNewValue().toString();
             myMessages.setText(t);
+        } else if ("COMBAT STATUS".equals(s)) {
+            if (theEvent.getNewValue().equals(true)) {
+                myAttack.setEnabled(true);
+                mySkill.setEnabled(true);
+                myFlee.setEnabled(true);
+                // Test code to make it obvious that combat has been entered.
+                Color color = Color.RED;
+                myFightPanel.setBackground(color);
+                myMovePanel.setEnabled(false);
+            } else {
+                myAttack.setEnabled(false);
+                mySkill.setEnabled(false);
+                myFlee.setEnabled(false);
+                Color color = Color.LIGHT_GRAY.darker();
+                myFightPanel.setBackground(color);
+                myMovePanel.setEnabled(true);
+            }
+        } else if ("Health Potion".equals(s)) {
+            myHPPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
+        } else if ("FLED".equals(s)) {
+            myMap.setText(myDungeon.getFloorString());
         }
     }
+
 }

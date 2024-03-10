@@ -71,18 +71,24 @@ public abstract class AbstractDungeonCharacter {
         myHP += theAmount;
     }
 
-    public final void attack(final AbstractDungeonCharacter theTarget) {
+    public final String attack(final AbstractDungeonCharacter theTarget) {
+        int damage = 0;
+        int hits = 0;
         for (int i = 0; i < myAtkSpd; i++) {
             final int roll = roll();
 
             if (roll <= getHitChance() && !theTarget.isBlocked()) {
+                hits++;
                 final double multiplier = Math.random() + 0.5;
-                theTarget.healOrDamage((int) (getAttack() * multiplier * -1));
+                int hitDamage = (int) (getAttack() * multiplier * -1);
+                theTarget.healOrDamage(hitDamage);
+                damage += hitDamage;
             }
         }
+        return "dealt " + damage + " in " + hits + " hits!";
     }
 
-    public abstract void skill(final AbstractDungeonCharacter theTarget);
+    public abstract String skill(final AbstractDungeonCharacter theTarget);
 
     protected final void setMaxHP(final int theHP) {
         final double hPRatio = (double)myHP / myMaxHP;

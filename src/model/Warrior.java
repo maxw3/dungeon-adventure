@@ -12,16 +12,16 @@ public final class Warrior extends Hero {
     }
 
     @Override
-    public void skill(final AbstractDungeonCharacter theTarget) {
+    public String skill(final AbstractDungeonCharacter theTarget) {
         setAttack(getAttack() + 50);
         setHitChance(getHitChance() - 25);
 
-        attack(theTarget);
+        String result = attack(theTarget);
 
         setAttack(getAttack() - 50);
         setHitChance(getHitChance() + 25);
 
-        super.skill(theTarget);
+        return result;
     }
 
     @Override
