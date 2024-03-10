@@ -21,10 +21,10 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -53,6 +53,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private JMenuItem myStats;
     private JMenuItem myShortcuts;
     private final Color myBackgroundColor;
+    private final Border myBorder;
     private JButton myNorth;
     private JButton myWest;
     private JButton mySouth;
@@ -87,21 +88,23 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myDungeon = model.DungeonLogic.getDungeonInstance();
 
         myBackgroundColor = Color.LIGHT_GRAY.darker();
+        myBorder = BorderFactory.createLineBorder(Color.DARK_GRAY,2);
 
         myMap = new JTextArea(myDungeon.getFloorString());
         myMap.setFont(new Font("Consolas", 1, 32));
         myMap.setBackground(getBackground());
 
         myMessages = new JTextArea("Welcome to Dungeon Adventure!" + NEWLINE);
+        myMessages.setPreferredSize(new Dimension(480,180));
         myMessages.setEditable(false);
 
         setMenuBar();
         DungeonController.myFrame.setJMenuBar(myMenu);
 
         myPanel = new JPanel();
-        GridBagLayout theLayout = new GridBagLayout();
+//        GridBagLayout theLayout = new GridBagLayout();
 //        GridBagConstraints theConstraints = new GridBagConstraints();
-        myPanel.setLayout(theLayout);
+//        myPanel.setLayout(theLayout);
 
         setGamePanel();
         setRoomPanel();
@@ -109,10 +112,20 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         setMovementPanel();
         setInventoryPanel();
 
-        JPanel locationPanel = new JPanel();
-        locationPanel.setLayout(new GridLayout(2,1));
-        locationPanel.add(myRoomPanel);
-        locationPanel.add(myMap);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+//        locationPanel.setLayout(new GridBagLayout());
+//        GridBagConstraints constraints = new GridBagConstraints();
+//        constraints.gridx = 0;
+//        constraints.gridy = 0;
+//        constraints.gridwidth = 480;
+//        constraints.gridheight = 300;
+//        constraints.weightx = 0.5;
+//        constraints.weighty = 0.5;
+//        constraints.anchor = GridBagConstraints.CENTER;
+//        constraints.fill = GridBagConstraints.BOTH;
+        mainPanel.add(myRoomPanel);
+        mainPanel.add(myMessages);
 
         JPanel fightMovePanel = new JPanel();
         fightMovePanel.setLayout(new GridLayout(1,2));
@@ -125,9 +138,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         actionPanel.add(fightMovePanel);
         actionPanel.add(myInventoryPanel);
 
-        myPanel.add(locationPanel);
-        myPanel.add(actionPanel);
-        myPanel.add(myMessages);
+        myPanel.add(myMap, BorderLayout.LINE_START);
+        myPanel.add(mainPanel, BorderLayout.CENTER);
+        myPanel.add(actionPanel, BorderLayout.LINE_END);
 
         add(myPanel);
         myMap.setCursor(null);
@@ -259,8 +272,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     }
 
     private void setInventoryPanel(){
-        Border border = BorderFactory.createLineBorder(Color.DARK_GRAY,2);
-
         myInventoryPanel = new JPanel();
         myInventoryPanel.setBackground(myBackgroundColor);
 
@@ -269,8 +280,19 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myInventoryLabel.setBackground(myBackgroundColor);
         myInventoryLabel.setOpaque(true);
 
+        myHPPotion = new JButton("Health Potion");
+        myHPPotion.setBackground(myBackgroundColor);
+        myHPPotion.setBorder(myBorder);
+        myHPPotion.setFont(BUTTON_FONT);
+        myHPPotionAmount = new JLabel(
+            String.valueOf(myDungeon.getInventory().getHPPotionAmount()));
+        myHPPotion.setBackground(myBackgroundColor);
+        myHPPotionAmount.setOpaque(false);
+        myHPPotionAmount.setFont(FONT);
+
         myVisionPotion = new JButton("Vision Potion");
         myVisionPotion.setBackground(myBackgroundColor);
+        myVisionPotion.setBorder(myBorder);
         myVisionPotion.setFont(BUTTON_FONT);
         myVisionPotionAmount = new JLabel(
             String.valueOf(myDungeon.getInventory().getVisionPotionAmount()));
@@ -279,13 +301,11 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myVisionPotionAmount.setFont(FONT);
 
         JPanel hpInv = new JPanel();
-        hpInv.setLayout(new BoxLayout(hpInv, BoxLayout.X_AXIS));
-        hpInv.setBorder(border);
+        hpInv.setLayout(new BoxLayout(hpInv, BoxLayout.LINE_AXIS));
         hpInv.setBackground(myBackgroundColor);
 
         JPanel vision = new JPanel();
-        vision.setLayout(new BoxLayout(vision, BoxLayout.X_AXIS));
-        vision.setBorder(border);
+        vision.setLayout(new BoxLayout(vision, BoxLayout.LINE_AXIS));
         vision.setBackground(myBackgroundColor);
 
         hpInv.add(myHPPotion);
@@ -293,7 +313,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         vision.add(myVisionPotion);
         vision.add(myVisionPotionAmount);
 
-        myInventoryPanel.setLayout(new GridLayout(3,1,0,5));
+        myInventoryPanel.setLayout(new GridLayout(3,1));
 
         myInventoryPanel.add(myInventoryLabel);
         myInventoryPanel.add(hpInv);
@@ -360,27 +380,17 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     }
 
     private void setFightPanel(){
-        Color color = Color.LIGHT_GRAY.darker();
-        Border border = BorderFactory.createLineBorder(Color.DARK_GRAY,2);
         myFightPanel = new JPanel();
-        myFightPanel.setBackground(color);
+        myFightPanel.setBackground(myBackgroundColor);
         myFightPanel.setLayout(new GridLayout(3,1,0,5));
 
-        myHPPotion = new JButton("Health Potion");
-        myHPPotion.setBackground(color);
-        myHPPotion.setFont(BUTTON_FONT);
-        myHPPotionAmount = new JLabel(
-            String.valueOf(myDungeon.getInventory().getHPPotionAmount()));
-        myHPPotion.setBackground(color);
-        myHPPotionAmount.setOpaque(false);
-        myHPPotionAmount.setFont(FONT);
         myAttack = new JButton("Attack");
-        myAttack.setBackground(color);
-        myAttack.setBorder(border);
+        myAttack.setBackground(myBackgroundColor);
+        myAttack.setBorder(myBorder);
         myAttack.setFont(BUTTON_FONT);
         mySkill = new JButton("Use Skill");
-        mySkill.setBackground(color);
-        mySkill.setBorder(border);
+        mySkill.setBackground(myBackgroundColor);
+        mySkill.setBorder(myBorder);
         mySkill.setFont(BUTTON_FONT);
         myFlee = new JButton("FLEE!");
         myFlee.setFont(BUTTON_FONT);
