@@ -650,7 +650,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         if (name == null || name.equals("")) {
             invalidNamePane();
         }
-        String[] classes = {"Warrior", "Rogue", "Mage"};
+        String[] classes = {"Warrior", "Rogue", "Priestess"};
         JFrame createWindow = new JFrame();
         int classChoice = JOptionPane.showOptionDialog(createWindow, "Choose a class",
             "Character Creation",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null, classes, classes[0]);
