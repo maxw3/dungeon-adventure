@@ -1,12 +1,20 @@
 package model;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * The monster class that lives in the dungeon to fight the hero
  */
 public final class Monster extends AbstractDungeonCharacter {
-
+    /**
+     * The amount of HP the character gains when healing itself
+     */
+    private double myHealMultiplier;
+    /**
+     * How often the character heals
+     */
+    private double myHealRate;
     /**
      * private constructor to avoid calls
      * @throws SQLException
@@ -22,7 +30,7 @@ public final class Monster extends AbstractDungeonCharacter {
      * @throws SQLException
      */
     Monster(final String theName) throws SQLException {
-        super(theName, 1);
+        this(theName, 1);
     }
 
     /**
@@ -34,6 +42,12 @@ public final class Monster extends AbstractDungeonCharacter {
     Monster(final String theName, final int theFloor)
         throws SQLException {
         super(theName, theFloor);
+
+        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
+        myHealMultiplier = rs.getDouble("HealMultiplier");
+        myHealRate = rs.getDouble("HealRate")
+            * Math.pow(rs.getDouble("HealRateMultiplier"), theFloor);
     }
 
     /**
@@ -44,9 +58,9 @@ public final class Monster extends AbstractDungeonCharacter {
     @Override
     public String skill(final AbstractDungeonCharacter theTarget) {
         if (Math.random() <= myHealRate) {
-            int healAmount = (int) (myHP * myHealMultiplier);
+            int healAmount = (int) (getHP() * myHealMultiplier);
             theTarget.healOrDamage(healAmount);
-            return myName + "healed " + healAmount + " HP!";
+            return getName() + "healed " + healAmount + " HP!";
         }
         else {
             return "";
@@ -55,7 +69,7 @@ public final class Monster extends AbstractDungeonCharacter {
 
     @Override
     public String skillDescription() {
-        return myName + " has a chance to heal itself after every round.";
+        return getName() + " has a chance to heal itself after every round.";
     }
 
     /**
@@ -65,7 +79,7 @@ public final class Monster extends AbstractDungeonCharacter {
     @Override
     public void healOrDamage(final int theAmount) {
         super.healOrDamage(theAmount);
-        if (theAmount < 0 && !myName.equals("Rat King")  && getHP() < getMaxHP()) {
+        if (theAmount < 0 && !getName().equals("Rat King")  && getHP() < getMaxHP()) {
             setAtkSpd(((int) ((double)getHP() / (double)getMaxHP()) * 10) + 1);
         }
     }

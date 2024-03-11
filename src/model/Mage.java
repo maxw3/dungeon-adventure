@@ -34,8 +34,8 @@ public final class Mage extends Hero {
      */
     @Override
     public String skill(final AbstractDungeonCharacter theTarget) {
-        healOrDamage(myMaxHP / 4);
-        return "healed " + myMaxHP / 4 + " HP!";
+        healOrDamage(getMaxHP() / 4);
+        return "healed " + getMaxHP() / 4 + " HP!";
     }
 
     @Override

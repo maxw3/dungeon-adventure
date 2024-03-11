@@ -24,7 +24,7 @@ import view.DungeonView;
 
 public class DungeonController extends JPanel implements PropertyChangeListener {
 
-    public static JFrame myFrame;
+    private static JFrame myFrame;
     private static final DungeonController MY_INSTANCE;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
@@ -185,6 +185,9 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
         }
         return myDungeon.getGameActive();
+    }
+    public static JFrame getFrame() {
+        return myFrame;
     }
 
     /**

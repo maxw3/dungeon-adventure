@@ -113,7 +113,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myMessages.setEditable(false);
 
         setMenuBar();
-        DungeonController.myFrame.setJMenuBar(myMenu);
+        DungeonController.getFrame().setJMenuBar(myMenu);
 
         myPanel = new JPanel();
         myPanel.setBackground(myBackgroundColor);
