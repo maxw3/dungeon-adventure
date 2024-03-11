@@ -8,7 +8,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The main class of the game.
+ * Starts the game
+ * Saves, and loads
+ * calls the construction of the dungeon
+ */
 public final class DungeonLogic implements Serializable {
+    /**
+     * The instance of this Dungeon Logic
+     */
     public static DungeonLogic MY_INSTANCE;
     static {
         try {
@@ -18,28 +27,82 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * The length of the cube shaped dungeon
+     */
     private static final int DUNGEON_SIZE = 5;
+    /**
+     * Property Change Support
+     */
     private PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
 
+    /**
+     * The messages to print to the console
+     */
     private final StringBuilder myMessages = new StringBuilder();
+    /**
+     * The user controlled hero
+     */
     private Hero myHero;
+    /**
+     * The current floor layout that the hero is in
+     */
     private Floor myFloor;
+    /**
+     * The inventory of the hero
+     */
     private Inventory myInventory;
+    /**
+     * Is the game currently active?
+     */
     private static boolean myGameActive;
+    /**
+     * Is the hero currently in combat?
+     */
     private boolean myCombatStatus;
+    /**
+     * The floor that the hero is in
+     */
     private int myFloorLevel;
+    /**
+     * X-coord of the Hero
+     */
     private int myHeroRow;
+    /**
+     * Y-coord of the Hero
+     */
     private int myHeroCol;
+    /**
+     * The current room the hero is in
+     */
     private Room myCurrentRoom;
+    /**
+     * The previous room the hero was in
+     */
     private Room myLastRoom;
-    private Monster myEnemy = new Monster("Skeleton");
+    /**
+     * The current enemy
+     */
+    private Monster myEnemy = MonsterFactory.createSkeleton(myFloorLevel);
+    /**
+     * How many save files there are in the save folder
+     */
     private int mySaveCount = 0;
+
+    /**
+     * private constructor to avoid calling from outside
+     * @throws SQLException
+     */
 
     private DungeonLogic() throws SQLException {
         startGame();
     }
 
+    /**
+     * save the current game
+     * @throws IOException
+     */
     public void save() throws IOException {
         File f = new File("saves\\" + myHero.getCharName() + (++mySaveCount) + ".adv");
         FileOutputStream file = new FileOutputStream(f);
@@ -50,6 +113,12 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("Can Load", false, true);
     }
 
+    /**
+     * Load a game from an existing save file
+     * @param theFile the save file
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public void load(final File theFile) throws IOException, ClassNotFoundException {
         myCombatStatus = false;
         endCombat();
@@ -61,6 +130,9 @@ public final class DungeonLogic implements Serializable {
         myChanges = new PropertyChangeSupport(this);
     }
 
+    /**
+     * refresh the screen
+     */
     public void updateView() {
         int hp = myHero.getHP();
         int hPotions = myInventory.getCount(new HealthPotion());
@@ -74,12 +146,20 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
     }
 
+    /**
+     * Start a new game
+     * @throws SQLException
+     */
     private void startGame() throws SQLException {
         myFloorLevel = 1;
         setGameActive(true);
         reset();
     }
 
+    /**
+     * progress to the next floor
+     * @throws SQLException
+     */
     public void changeFloor() throws SQLException {
         myFloorLevel++;
         myHero.levelUp();
@@ -89,6 +169,11 @@ public final class DungeonLogic implements Serializable {
         reset();
         myInventory = inv;
     }
+
+    /**
+     * reset the game
+     * @throws SQLException
+     */
     public void reset() throws SQLException {
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
         final Room startingRoom = myFloor.getStartingRoom();
@@ -103,6 +188,12 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("UPDATE MAP",null,true);
     }
 
+    /**
+     * Create the hero
+     * @param theName Name of the Hero
+     * @param theClass  Class of the Hero
+     * @throws SQLException
+     */
     public void createCharacter(final String theName, final int theClass) throws SQLException {
         if (theClass == 0) {
             myHero = new Warrior(theName);
@@ -120,6 +211,10 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("Dir",null,true);
     }
 
+    /**
+     * Set game status
+     * @param theState the Status
+     */
     public void setGameActive(final boolean theState) {
         myGameActive = theState;
         myChanges.firePropertyChange("GAME STATE", !theState, theState);
@@ -131,31 +226,67 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * Getter for game status
+     * @return  The status
+     */
     public boolean getGameActive() {
         return myGameActive;
     }
+
+    /**
+     * Getter of myCombatStatus
+     * @return The Status
+     */
     public boolean getCombatStatus() {
         return myCombatStatus;
     }
+
+    /**
+     * Getter for the current instance
+     * @return the instance
+     */
     public static DungeonLogic getDungeonInstance() {
         return MY_INSTANCE;
     }
 
+    /**
+     * Getter for the hero
+     * @return The hero
+     */
     public Hero getHero() {
         return myHero;
     }
+
+    /**
+     * Getter for the hero's inventory
+     * @return The inventory
+     */
     public Inventory getInventory() {
         return myInventory;
     }
 
+    /**
+     * Getter for the room the hero is in
+     * @return The room
+     */
     public Room getCurrentRoom() {
         return myCurrentRoom;
     }
 
+    /**
+     * Getter for the latest Monster the hero is fighting
+     * @return  The Monster
+     */
     public Monster getEnemy() {
         return myEnemy;
     }
 
+    /**
+     * Getter for the adjacent rooms of myCurrentRoom
+     * @param theRoom the Rooms
+     * @return
+     */
     public Set<Room> getNeighbors(final Room theRoom) {
         final Set<Room> set = new HashSet<>();
         Room[][] rooms = myFloor.getRooms();
@@ -176,6 +307,9 @@ public final class DungeonLogic implements Serializable {
         return set;
     }
 
+    /**
+     * Start combat with myEnemy
+     */
     public void startCombat() {
         if (myGameActive && !myCombatStatus && !outOfBounds(myHeroCol) && !outOfBounds(myHeroRow)) {
             boolean isMonster = false;
@@ -195,6 +329,9 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * End Combat with myEnemy
+     */
     public void endCombat() {
         if (myGameActive && myCombatStatus) {
             myCombatStatus = false;
@@ -209,6 +346,10 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * set the room to explored
+     * @param theRoom the room
+     */
     public void explore(final Room theRoom) {
         if (theRoom == null) {
             throw new IllegalArgumentException("The Room is null.");
@@ -216,12 +357,21 @@ public final class DungeonLogic implements Serializable {
         theRoom.setExplored(true);
         theRoom.setVisibilty(true);
     }
+
+    /**
+     * reveal the contents of the adjacent rooms
+     * @param theRoom the room in the middle
+     */
     public void reveal(final Room theRoom) {
         if (theRoom == null) {
             throw new IllegalArgumentException("The Room is null.");
         }
         theRoom.setVisibilty(true);
     }
+
+    /**
+     * disable the effects of the consumed vision potion
+     */
     public void expireVisPot() {
         Set<Room> rooms = getNeighbors(myCurrentRoom);
         for (Room r: rooms) {
@@ -231,10 +381,19 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * Is the pointer out of bounds?
+     * @param thePosition the index of the pointer
+     * @return Is it out of bounds?
+     */
     private boolean outOfBounds(final int thePosition) {
         return thePosition < 0 || thePosition >= DUNGEON_SIZE;
     }
 
+    /**
+     * The floor contents and state in String from
+     * @return
+     */
     public String getFloorString(){
         return myFloor.toString();
     }
@@ -257,6 +416,10 @@ public final class DungeonLogic implements Serializable {
         myChanges.removePropertyChangeListener(theListener);
     }
 
+    /**
+     * Setter for myEnemy
+     * @param theEnemy the new enemy
+     */
     public void setEnemy(final Monster theEnemy) {
         if (theEnemy == null) {
             throw new NullPointerException();
@@ -264,6 +427,10 @@ public final class DungeonLogic implements Serializable {
 
         myEnemy = theEnemy;
     }
+
+    /**
+     * hero moves north
+     */
     public void moveUp() {
         if (myCurrentRoom.canWalkNorth() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
@@ -279,6 +446,9 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * hero moves east
+     */
     public void moveRight() {
         if (myCurrentRoom.canWalkEast() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
@@ -294,6 +464,9 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * hero moves south
+     */
     public void moveDown() {
         if (myCurrentRoom.canWalkSouth() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
@@ -309,6 +482,9 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * hero moves west
+     */
     public void moveLeft() {
         if (myCurrentRoom.canWalkWest() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
@@ -324,6 +500,9 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * trigger the room's events
+     */
     private void applyEffects() {
         final boolean previous = myCombatStatus;
         startCombat();
@@ -333,6 +512,9 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("COMBAT STATUS", previous, myCombatStatus);
     }
 
+    /**
+     * collect the items in the room into the inventory
+     */
     public void collect() {
         final List<Item> items = myCurrentRoom.getItems();
 
@@ -368,6 +550,11 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
+    /**
+     * use the item
+     * @param theItem the item
+     * @return did we use it?
+     */
     public boolean useItem(final AbstractEquipment theItem) {
         int before = 0;
         int oldHp = myHero.getHP();
@@ -380,6 +567,9 @@ public final class DungeonLogic implements Serializable {
         return b;
     }
 
+    /**
+     * escape from combat
+     */
     public void flee() {
         if (myCombatStatus) {
             myCurrentRoom.removeCharacter(myHero);
@@ -392,12 +582,20 @@ public final class DungeonLogic implements Serializable {
             myChanges.firePropertyChange("UPDATE MAP", false, true);
         }
     }
+
+    /**
+     * format the message
+     */
     private void trimMessage() {
         if (myMessages.length() > 300) {
             myMessages.delete(0, 50);
         }
     }
 
+    /**
+     * fire the message for the View to catch and use
+     * @param theMessage
+     */
     public void sendMessage(final String theMessage) {
         if (theMessage == null) {
             throw new NullPointerException("The message is null!");
