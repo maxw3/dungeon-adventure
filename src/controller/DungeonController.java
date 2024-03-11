@@ -7,6 +7,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,7 +28,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     private static final DungeonController MY_INSTANCE;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
-    private final DungeonLogic myDungeon;
+    private DungeonLogic myDungeon;
     private Hero myHero;
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
     public static Connection CONNECTION;
@@ -92,7 +94,11 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, exitOptions, exitOptions[1]);
                 if (promptResult == JOptionPane.YES_OPTION)  {
-//                    DungeonLogic.save();
+                    try {
+                        MY_INSTANCE.myDungeon.save();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 System.exit(0);
             }
@@ -108,18 +114,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         // Makes the main window visible
         myFrame.setVisible(true);
     }
-
-    /**
-     * Helper method for the Use Hit Point Potion Buttons.
-     */
-// This code does not allow for the updating of potion counts in view (routed through DungeonLogic now)
-//    private void drinkPotion() {
-//        if (myDungeon.getGameActive()) {
-//            myDungeon.getInventory().useItem(new HealthPotion(1));
-//        } else {
-//            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
-//        }
-//    }
 
     public void fight (final int theChoice) {
         if (checkGameStatus()) {
@@ -149,7 +143,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             if (myHero.getHP() <= 0) {
                 endGame(false);
             } else if (enemy.getHP() <= 0) {
-                //get pillar or escape through exit if available
                 myDungeon.endCombat();
                 if (!enemy.getName().equals("Hydra")) {
                     myDungeon.collect();
@@ -181,17 +174,14 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             //show credits page
         } else {
             JOptionPane.showMessageDialog(null, "You have unfortunately met your end.");
-            //start new game prompt
         }
     }
 
     private boolean checkGameStatus() {
-        if (myDungeon.getGameActive()) {
-            return true;
-        } else {
+        if (!myDungeon.getGameActive()) {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
-            return false;
         }
+        return myDungeon.getGameActive();
     }
 
     /**
@@ -239,6 +229,19 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             boolean success = myDungeon.useItem(new VisionPotion());
             if (success) {
                 myDungeon.sendMessage("You can see what's inside the adjacent rooms.\n");
+        } else if ("LOAD GAME".equals(s)) {
+            try {
+                myDungeon.load((File)(theEvent.getNewValue()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            myDungeon = model.DungeonLogic.getDungeonInstance();
+            myDungeon.addPropertyChangeListener(this);
+        } else if ("USE ITEM".equals(s)) {
+            if (theEvent.getNewValue().equals("Vision Potion")) {
+                myDungeon.useItem(new VisionPotion());
             }
         }
     }

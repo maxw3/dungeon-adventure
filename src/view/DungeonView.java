@@ -35,6 +35,8 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 public final class DungeonView extends JPanel implements PropertyChangeListener {
@@ -93,7 +95,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private final JTextArea myMap;
     private JTextArea myMessages;
 
-    final DungeonLogic myDungeon;
+    DungeonLogic myDungeon;
 
     public DungeonView() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
@@ -494,7 +496,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         mySouth.addActionListener(theEvent -> traverse(Direction.SOUTH));
         myWest.addActionListener(theEvent -> traverse(Direction.WEST));
 
-//        myVisionPotion.addActionListener((theEvent -> {}));
+        myVisionPotion.addActionListener((theEvent -> {myChanges.firePropertyChange("USE ITEM", null, "Vision Potion");}));
 
         myStart.addActionListener(theEvent -> {
             try {
@@ -510,10 +512,22 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 throw new RuntimeException(e);
             }
         });
-//        mySaveGame.addActionListener((theEvent -> {}));
-//        mySave.addActionListener((theEvent -> {}));
-//        myLoadGame.addActionListener((theEvent -> {}));
-//        myLoad.addActionListener((theEvent -> {}));
+        mySaveGame.addActionListener((theEvent -> {
+            try {
+                myDungeon.save();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        mySave.addActionListener((theEvent -> {
+            try {
+                myDungeon.save();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        myLoadGame.addActionListener((theEvent -> {loadLogic();}));
+        myLoad.addActionListener((theEvent -> {loadLogic();}));
 
 
         //listener for exit game button
@@ -525,7 +539,11 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 null,exitOptions,exitOptions[1]);
             if(PromptResult==JOptionPane.YES_OPTION)
             {
-//save game
+                try {
+                    myDungeon.save();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 System.exit(0);
             }
         }));
@@ -578,6 +596,26 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myChanges.firePropertyChange("SEE", false, true);
             myMap.setText(myDungeon.getFloorString());
         });
+    }
+
+    private void loadLogic() {
+        String promptResult = JOptionPane.showInputDialog(null,
+                "What is the save file's name?");
+        File saveGame;
+        while (true) {
+            saveGame = new File("saves\\" + promptResult + ".adv");
+            if (saveGame.isFile() || promptResult == null) {
+                break;
+            }
+            promptResult = JOptionPane.showInputDialog(null,
+                    "This save does not exist! What is the save file's name?");
+        }
+        if (saveGame.isFile()) {
+            myChanges.firePropertyChange("LOAD GAME", null, saveGame);
+            myDungeon = DungeonLogic.getDungeonInstance();
+            myDungeon.addPropertyChangeListener(this);
+            myDungeon.updateView();
+        }
     }
 
     /**
@@ -680,10 +718,18 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myEast.setEnabled(false);
                 mySouth.setEnabled(false);
                 myWest.setEnabled(false);
+                mySave.setEnabled(false);
+                mySaveGame.setEnabled(false);
+                myVisionPotion.setEnabled(false);
             } else {
                 myAttack.setEnabled(false);
                 mySkill.setEnabled(false);
                 myFlee.setEnabled(false);
+                mySave.setEnabled(true);
+                mySaveGame.setEnabled(true);
+                if (!myVisionPotionAmount.getText().equals("0")) {
+                    myVisionPotion.setEnabled(true);
+                }
                 Color color = Color.LIGHT_GRAY.darker();
                 myFightPanel.setBackground(color);
                 myNorth.setEnabled(myDungeon.getCurrentRoom().canWalkNorth());
@@ -696,6 +742,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myHPPotion.setEnabled(!theEvent.getNewValue().equals(0));
         } else if ("Vision Potion".equals(s)) {
             myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
+            myMap.setText(myDungeon.getFloorString());
             if(theEvent.getNewValue().equals(0)) {
                 myVisionPotion.setEnabled(false);
             } else {
