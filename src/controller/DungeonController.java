@@ -154,7 +154,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                     endGame(true);
                 }
             } else {
-                String msg = enemy.skill(enemy);
+                String msg = enemy.skill(enemy) + "\n";
                 if (!msg.isEmpty()) {
                     myDungeon.sendMessage(msg);
                 }
