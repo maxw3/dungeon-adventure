@@ -1,8 +1,9 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class Inventory {
+public final class Inventory implements Serializable {
 
     private final String myNewLine = System.lineSeparator();
     private final ArrayList<AbstractEquipment> myConsumableItems;

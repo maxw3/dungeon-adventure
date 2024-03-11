@@ -1,9 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class AbstractDungeonCharacter {
+public abstract class AbstractDungeonCharacter implements Serializable {
     public static final String NEW_LINE = System.lineSeparator();
     protected String myName;
     protected int myHP;

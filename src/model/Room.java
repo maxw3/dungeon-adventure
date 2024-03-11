@@ -1,9 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public final class Room {
+public final class Room implements Serializable {
 
     private final ArrayList<Item> myItems;
     private final ArrayList<AbstractDungeonCharacter> myDungeonCharacters;

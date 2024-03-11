@@ -7,6 +7,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,7 +28,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     private static final DungeonController MY_INSTANCE;
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
-    private final DungeonLogic myDungeon;
+    private DungeonLogic myDungeon;
     private Hero myHero;
     private final Inventory myInventory;
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
@@ -94,7 +96,11 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, exitOptions, exitOptions[1]);
                 if (promptResult == JOptionPane.YES_OPTION)  {
-//                    DungeonLogic.save();
+                    try {
+                        MY_INSTANCE.myDungeon.save();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 System.exit(0);
             }
@@ -231,6 +237,20 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             }
         } else if ("Hero".equals(s)) {
             myHero = myDungeon.getHero();
+        } else if ("LOAD GAME".equals(s)) {
+            try {
+                myDungeon.load((File)(theEvent.getNewValue()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            myDungeon = model.DungeonLogic.getDungeonInstance();
+            myDungeon.addPropertyChangeListener(this);
+        } else if ("USE ITEM".equals(s)) {
+            if (theEvent.getNewValue().equals("Vision Potion")) {
+                myDungeon.useItem(new VisionPotion());
+            }
         }
     }
 }

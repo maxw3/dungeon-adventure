@@ -2,13 +2,14 @@ package model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class DungeonLogic {
-    public static final DungeonLogic MY_INSTANCE;
+public final class DungeonLogic implements Serializable {
+    public static DungeonLogic MY_INSTANCE;
     static {
         try {
             MY_INSTANCE = new DungeonLogic();
@@ -18,7 +19,7 @@ public final class DungeonLogic {
     }
 
     private static final int DUNGEON_SIZE = 5;
-    private final PropertyChangeSupport myChanges
+    private PropertyChangeSupport myChanges
         = new PropertyChangeSupport(this);
 
     private final StringBuilder myMessages = new StringBuilder();
@@ -33,19 +34,42 @@ public final class DungeonLogic {
     private Room myCurrentRoom;
     private Room myLastRoom;
     private Monster myEnemy = new Monster("Skeleton");
+    private int mySaveCount = 0;
 
     private DungeonLogic() throws SQLException {
         startGame();
     }
 
-    public void save() {
-        StringBuilder saveState = new StringBuilder();
-//         StringBuilder.append(myFloorLevel);
-//         for each room of the Floor, append room serial to saveState
-//         append player stats to saveState
-//         append Inventory to saveState
-//         save saveState to an external text file
+    public void save() throws IOException {
+        File f = new File("saves\\" + myHero.getCharName() + (++mySaveCount) + ".adv");
+        FileOutputStream file = new FileOutputStream(f);
+        ObjectOutputStream out = new ObjectOutputStream(file);
+        out.writeObject(this);
+        out.close();
+        file.close();
         myChanges.firePropertyChange("Can Load", false, true);
+    }
+
+    public void load(final File theFile) throws IOException, ClassNotFoundException {
+        FileInputStream file = new FileInputStream(theFile);
+        ObjectInputStream in = new ObjectInputStream(file);
+        MY_INSTANCE = (DungeonLogic)in.readObject();
+        in.close();
+        file.close();
+        myChanges = new PropertyChangeSupport(this);
+    }
+
+    public void updateView() {
+        int hp = myHero.getHP();
+        int hPotions = myInventory.getCount(new HealthPotion());
+        int vPotions = myInventory.getCount(new VisionPotion());
+        myChanges.firePropertyChange("HP CHANGE", null, hp);
+        myChanges.firePropertyChange("Dir", false, true);
+        myChanges.firePropertyChange("Health Potion", null, hPotions);
+        myChanges.firePropertyChange("Vision Potion", null, vPotions);
+        myChanges.firePropertyChange("UPDATE MAP", false, true);
+        myChanges.firePropertyChange("MESSAGE", null, myMessages);
+        myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
     }
 
     private void startGame() throws SQLException {
@@ -303,6 +327,7 @@ public final class DungeonLogic {
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
                 myChanges.firePropertyChange("COMPLETED FLOOR", false, true);
+                myChanges.firePropertyChange("UPDATE MAP", false, true);
             }
         }
     }

@@ -1,7 +1,9 @@
 package model;
 import enums.ItemType;
 
-public final class Pillar extends AbstractEquipment {
+import java.io.Serializable;
+
+public final class Pillar extends AbstractEquipment implements Serializable {
 
     private static final ItemType MY_TYPE = ItemType.PILLAR;
 

@@ -2,7 +2,9 @@ package model;
 
 import enums.ItemType;
 
-public abstract class AbstractEquipment implements Item {
+import java.io.Serializable;
+
+public abstract class AbstractEquipment implements Item, Serializable {
 
     private static final ItemType MY_TYPE = ItemType.EQUIPMENT;
     private final String myName;

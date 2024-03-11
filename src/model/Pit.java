@@ -2,9 +2,10 @@ package model;
 
 import enums.ItemType;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public final class Pit implements Item {
+public final class Pit implements Item, Serializable {
     private static final Random RANDOM = new Random();
     private static final ItemType MY_TYPE = ItemType.PIT;
     @Override

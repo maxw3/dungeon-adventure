@@ -2,13 +2,14 @@ package model;
 
 import enums.Direction;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public final class Floor {
+public final class Floor implements Serializable {
 
     private final static String NEWLINE = System.lineSeparator();
     private static final Random RAND = new Random();
@@ -242,6 +243,7 @@ public final class Floor {
                 boolean hasHero = false;
                 boolean hasMonster = false;
                 boolean hasItem = false;
+                boolean hasPillar = false;
 
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
                     if (dc instanceof Hero) {
@@ -253,13 +255,18 @@ public final class Floor {
                 }
 
                 for (Item i: r.getItems()) {
-                    if (i instanceof Item) {
+                    if (i instanceof Pillar) {
+                        hasPillar = true;
+                        break;
+                    } else if (i instanceof Item) {
                         hasItem = true;
                         break;
                     }
                 }
-//                if (r.isExplored()) {
-                    if (hasHero) {
+                if (r.isExplored()) {
+                    if (hasPillar) {
+                        sb.append('P');
+                    } else if (hasHero) {
                         sb.append('@');
                     } else if (hasMonster) {
                         sb.append('M');
@@ -268,9 +275,9 @@ public final class Floor {
                     } else {
                         sb.append(' ');
                     }
-//                } else {
-//                    sb.append('?');
-//                }
+                } else {
+                    sb.append('?');
+                }
             }
 
             if (myRooms[row][mySize - 1].canWalkEast()) {
