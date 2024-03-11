@@ -87,6 +87,6 @@ public class Hero extends AbstractDungeonCharacter {
         setMaxHP((int) (getMaxHP() * rs.getDouble("HPMultiplier")));
         setAttack((int)(getAttack() * rs.getDouble("AttackMultiplier")));
         setHitChance((int)(getHitChance() * rs.getDouble("HitChanceMultiplier")));
-        myHP = getMaxHP();
+        healOrDamage(getMaxHP());
     }
 }

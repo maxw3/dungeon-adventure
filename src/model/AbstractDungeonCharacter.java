@@ -11,43 +11,35 @@ public abstract class AbstractDungeonCharacter implements Serializable {
     /**
      * String that acts as a line separator for new lines
      */
-    public static final String NEW_LINE = System.lineSeparator();
+    private static final String NEW_LINE = System.lineSeparator();
     /**
      * The name of the Character
      */
-    protected String myName;
+    private String myName;
     /**
      * The current HP of the Character
      */
-    protected int myHP;
+    private int myHP;
     /**
      * The maximum HP of the Character
      */
-    protected int myMaxHP;
+    private int myMaxHP;
     /**
      * The Attack of the Character
      */
-    protected int myAttack;
+    private int myAttack;
     /**
      * The Attack Speed of the Character
      */
-    protected int myAtkSpd;
+    private int myAtkSpd;
     /**
      * The Hit Chance of the Character
      */
-    protected int myHitChance;
+    private int myHitChance;
     /**
      * The Block Chance of the Character
      */
-    protected int myBlockChance;
-    /**
-     * The amount of HP the character gains when healing itself
-     */
-    protected double myHealMultiplier;
-    /**
-     * How often the character heals
-     */
-    protected double myHealRate;
+    private int myBlockChance;
 
     //private final model.Dummy myDummy = new model.Dummy();
 
@@ -69,8 +61,6 @@ public abstract class AbstractDungeonCharacter implements Serializable {
         myAtkSpd = rs.getInt("AttackSpeed");
         myHitChance = rs.getInt("HitChance");
         myBlockChance = rs.getInt("BlockChance");
-        myHealMultiplier = rs.getDouble("HealMultiplier");
-        myHealRate = rs.getDouble("HealRate");
     }
 
     /**
@@ -93,9 +83,6 @@ public abstract class AbstractDungeonCharacter implements Serializable {
         myHitChance = (int) (100 - rs.getInt("HitChance")
             / Math.pow(rs.getDouble("HitChanceMultiplier"), theFloor));
         myBlockChance = rs.getInt("BlockChance");
-        myHealMultiplier = rs.getDouble("HealMultiplier");
-        myHealRate = rs.getDouble("HealRate")
-            * Math.pow(rs.getDouble("HealRateMultiplier"), theFloor);
     }
 
     /**
