@@ -549,17 +549,26 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myAttack.addActionListener(theEvent -> {
             if (myAttack.isEnabled()) {
                 myChanges.firePropertyChange("Action", 0, 1);
+                myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+                myOppHP.setText(String.valueOf(myDungeon.getEnemy().getHP()));
             }
         });
         mySkill.addActionListener(theEvent -> {
             if (mySkill.isEnabled()) {
                 myChanges.firePropertyChange("Action", 0, 2);
+                myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+                myOppHP.setText(String.valueOf(myDungeon.getEnemy().getHP()));
             }
         });
-        myHPPotion.addActionListener(theEvent -> myChanges.firePropertyChange("Action", 0, 3));
+        myHPPotion.addActionListener(theEvent -> {
+            myChanges.firePropertyChange("Action", 0, 3);
+            myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+            myOppHP.setText(String.valueOf(myDungeon.getEnemy().getHP()));
+        });
         myFlee.addActionListener(theEvent -> {
-            if (mySkill.isEnabled()) {
+            if (myFlee.isEnabled()) {
                 myChanges.firePropertyChange("Action", 0, 4);
+                myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
             }
         });
     }
@@ -644,14 +653,20 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 // Test code to make it obvious that combat has been entered.
                 Color color = Color.RED;
                 myFightPanel.setBackground(color);
-                myMovePanel.setEnabled(false);
+                myNorth.setEnabled(false);
+                myEast.setEnabled(false);
+                mySouth.setEnabled(false);
+                myWest.setEnabled(false);
             } else {
                 myAttack.setEnabled(false);
                 mySkill.setEnabled(false);
                 myFlee.setEnabled(false);
                 Color color = Color.LIGHT_GRAY.darker();
                 myFightPanel.setBackground(color);
-                myMovePanel.setEnabled(true);
+                myNorth.setEnabled(myDungeon.getCurrentRoom().canWalkNorth());
+                myEast.setEnabled(myDungeon.getCurrentRoom().canWalkEast());
+                mySouth.setEnabled(myDungeon.getCurrentRoom().canWalkSouth());
+                myWest.setEnabled(myDungeon.getCurrentRoom().canWalkWest());
             }
         } else if ("Health Potion".equals(s)) {
             myHPPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
@@ -667,7 +682,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             } else {
                 myVisionPotion.setEnabled(true);
             }
-        } else if ("FLED".equals(s)) {
+        } else if ("UPDATE MAP".equals(s)) {
             myMap.setText(myDungeon.getFloorString());
         } else if ("Can Save".equals(s)) {
             mySave.setEnabled(true);
@@ -755,6 +770,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 mySouth.setEnabled(false);
                 myWest.setEnabled(false);
             }
+        } else if ("HP CHANGE".equals(s)) {
+            myHeroHP.setText(theEvent.getNewValue().toString());
         }
     }
 }
