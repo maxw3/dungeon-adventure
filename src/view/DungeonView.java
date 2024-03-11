@@ -793,6 +793,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         } else if ("LEVEL UP".equals(s)) {
             myHeroMaxHP.setText(theEvent.getNewValue().toString());
             myHeroHP.setText(theEvent.getNewValue().toString());
+        } else if ("Room Content".equals(s)) {
+            myRoomContents.setText(theEvent.getNewValue().toString());
+        } else if ("Hero".equals(s)) {
+            myHero.setText(theEvent.getNewValue().toString());
         }
     }
 }
