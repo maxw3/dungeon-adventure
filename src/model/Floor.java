@@ -113,19 +113,20 @@ public final class Floor {
                 }
             }
         }
+        chosenRoom.emptyRoom();
         addPillar(chosenRoom);
         chosenRoom.addCharacter(MonsterFactory.createBoss(myFloorLevel));
         return startingRoom;
     }
 
     private void addPillar(final Room theRoom) {
-        if (myFloorLevel == 0) {
+        if (myFloorLevel == 1) {
             theRoom.addItem(new Pillar("Encapsulation"));
-        } else if (myFloorLevel == 1) {
-            theRoom.addItem(new Pillar("Polymorphism"));
         } else if (myFloorLevel == 2) {
-            theRoom.addItem(new Pillar("Inheritance"));
+            theRoom.addItem(new Pillar("Polymorphism"));
         } else if (myFloorLevel == 3) {
+            theRoom.addItem(new Pillar("Inheritance"));
+        } else if (myFloorLevel == 4) {
             theRoom.addItem(new Pillar("Abstraction"));
         }
     }
@@ -259,7 +260,7 @@ public final class Floor {
                         break;
                     }
                 }
-//                if (r.isExplored()) {
+                if (r.isVisible()) {
                     if (hasHero) {
                         sb.append('@');
                     } else if (hasMonster) {
@@ -269,9 +270,9 @@ public final class Floor {
                     } else {
                         sb.append(' ');
                     }
-//                } else {
-//                    sb.append('?');
-//                }
+                } else {
+                    sb.append('?');
+                }
             }
 
             if (myRooms[row][mySize - 1].canWalkEast()) {

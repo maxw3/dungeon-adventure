@@ -30,6 +30,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -571,6 +573,11 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
             }
         });
+
+        myVisionPotion.addActionListener(theEvent -> {
+            myChanges.firePropertyChange("SEE", false, true);
+            myMap.setText(myDungeon.getFloorString());
+        });
     }
 
     /**
@@ -592,12 +599,22 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     /**
      * Helper method that opens up the window to enter your balance.
      */
-    private void characterCreation() {
+    private void characterCreation() throws SQLException {
         JFrame creationWindow = new JFrame();
         String name = JOptionPane.showInputDialog(creationWindow, "Name:");
+        if (name == null || name.equals("")) {
+            invalidNamePane();
+        }
         String[] classes = {"Warrior", "Rogue", "Mage"};
-        int classChoice = JOptionPane.showOptionDialog(null, "Choose a class",
+        JFrame createWindow = new JFrame();
+        int classChoice = JOptionPane.showOptionDialog(createWindow, "Choose a class",
             "Character Creation",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null, classes, classes[0]);
+        createWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent theCloseEvent) {
+                myDungeon.setGameActive(false);
+            }
+        });
         try {
             myDungeon.createCharacter(name, classChoice);
             myName.setText(myDungeon.getHero().getCharName());
@@ -608,10 +625,16 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         }
         startGame();
     }
-    private void startGame() {
-        myStart.setEnabled(false);
-        myStartGame.setEnabled(false);
+    private void invalidNamePane() throws SQLException {
+        JFrame invalidBalance = new JFrame();
+        JOptionPane.showMessageDialog(invalidBalance, "Invalid Name", "Error", JOptionPane.WARNING_MESSAGE);
+        characterCreation();
+    }
+    private void startGame() throws SQLException {
+        myHPPotionAmount.setText("0");
+        myVisionPotionAmount.setText("0");
         myDungeon.setGameActive(true);
+        myDungeon.reset();
     }
     private void traverse (final Direction theDir){
         if(theDir == Direction.NORTH){
@@ -670,11 +693,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             }
         } else if ("Health Potion".equals(s)) {
             myHPPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
-            if(theEvent.getNewValue().equals(0)) {
-                myHPPotion.setEnabled(false);
-            } else {
-                myHPPotion.setEnabled(true);
-            }
+            myHPPotion.setEnabled(!theEvent.getNewValue().equals(0));
         } else if ("Vision Potion".equals(s)) {
             myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
             if(theEvent.getNewValue().equals(0)) {
@@ -684,86 +703,29 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             }
         } else if ("UPDATE MAP".equals(s)) {
             myMap.setText(myDungeon.getFloorString());
-        } else if ("Can Save".equals(s)) {
-            mySave.setEnabled(true);
-            mySaveGame.setEnabled(true);
+        } else if ("GAME STATE".equals(s)) {
+            mySave.setEnabled((boolean) theEvent.getNewValue());
+            mySaveGame.setEnabled((boolean) theEvent.getNewValue());
+            myStart.setEnabled((boolean) theEvent.getOldValue());
+            myStartGame.setEnabled((boolean) theEvent.getOldValue());
+            myNorth.setEnabled((boolean) theEvent.getNewValue());
+            myEast.setEnabled((boolean) theEvent.getNewValue());
+            mySouth.setEnabled((boolean) theEvent.getNewValue());
+            myWest.setEnabled((boolean) theEvent.getNewValue());
+            myHPPotion.setEnabled((boolean) theEvent.getNewValue());
+            myAttack.setEnabled((boolean) theEvent.getNewValue());
+            mySkill.setEnabled((boolean) theEvent.getNewValue());
+            myFlee.setEnabled((boolean) theEvent.getNewValue());
         } else if ("Can Load".equals(s)) {
             myLoad.setEnabled(true);
             myLoadGame.setEnabled(true);
-        } else if ("North".equals(s)) { //if hero went north
-            mySouth.setEnabled(true);
-            if (!myDungeon.getCurrentRoom().canWalkNorth()) {
-                myNorth.setEnabled(false);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkEast()) {
-                myEast.setEnabled(false);
-            } else {
-                myEast.setEnabled(true);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkWest()) {
-                myWest.setEnabled(false);
-            } else {
-                myWest.setEnabled(true);
-            }
-        } else if ("South".equals(s)) {
-            myNorth.setEnabled(true);
-            if (!myDungeon.getCurrentRoom().canWalkSouth()) {
-                mySouth.setEnabled(false);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkEast()) {
-                myEast.setEnabled(false);
-            } else {
-                myEast.setEnabled(true);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkWest()) {
-                myWest.setEnabled(false);
-            } else {
-                myWest.setEnabled(true);
-            }
-        } else if ("East".equals(s)) {
-            myWest.setEnabled(true);
-            if (!myDungeon.getCurrentRoom().canWalkEast()) {
-                myEast.setEnabled(false);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkSouth()) {
-                mySouth.setEnabled(false);
-            } else {
-                mySouth.setEnabled(true);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkNorth()) {
-                myNorth.setEnabled(false);
-            } else {
-                myNorth.setEnabled(true);
-            }
-        } else if ("West".equals(s)) {
-            myEast.setEnabled(true);
-            if (!myDungeon.getCurrentRoom().canWalkWest()) {
-                myWest.setEnabled(false);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkSouth()) {
-                mySouth.setEnabled(false);
-            } else {
-                mySouth.setEnabled(true);
-            }
-            if (!myDungeon.getCurrentRoom().canWalkNorth()) {
-                myNorth.setEnabled(false);
-            } else {
-                myNorth.setEnabled(true);
-            }
         } else if ("Dir".equals(s)) {
             if (theEvent.getNewValue().equals(true)) {
-                if (myDungeon.getCurrentRoom().canWalkNorth()) {
-                    myNorth.setEnabled(true);
-                }
-                if (myDungeon.getCurrentRoom().canWalkWest()) {
-                    myWest.setEnabled(true);
-                }
-                if (myDungeon.getCurrentRoom().canWalkSouth()) {
-                    mySouth.setEnabled(true);
-                }
-                if (myDungeon.getCurrentRoom().canWalkEast()) {
-                    myEast.setEnabled(true);
-                }
+                model.Room room = myDungeon.getCurrentRoom();
+                myNorth.setEnabled(room.canWalkNorth());
+                myEast.setEnabled(room.canWalkEast());
+                mySouth.setEnabled(room.canWalkSouth());
+                myWest.setEnabled(room.canWalkWest());
             } else {
                 myNorth.setEnabled(false);
                 myEast.setEnabled(false);
@@ -771,6 +733,9 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myWest.setEnabled(false);
             }
         } else if ("HP CHANGE".equals(s)) {
+            myHeroHP.setText(theEvent.getNewValue().toString());
+        } else if ("LEVEL UP".equals(s)) {
+            myHeroMaxHP.setText(theEvent.getNewValue().toString());
             myHeroHP.setText(theEvent.getNewValue().toString());
         }
     }

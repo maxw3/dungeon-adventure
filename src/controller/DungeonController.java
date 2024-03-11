@@ -10,7 +10,6 @@ import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Objects;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -29,7 +28,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
     private final DungeonLogic myDungeon;
     private Hero myHero;
-    private final Inventory myInventory;
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
     public static Connection CONNECTION;
     public static final Statement STATEMENT;
@@ -47,7 +45,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     public DungeonController() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
         myHero = myDungeon.getHero();
-        myInventory = myDungeon.getInventory();
     }
 
     public static void main(final String[] theArgs) {
@@ -128,29 +125,25 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         if (checkGameStatus()) {
             Monster enemy = myDungeon.getEnemy();
             if (myHero.getHP() > 0 && enemy.getHP() > 0) {
-                if (theChoice == 1) {
-                    String mResult = enemy.attack(myHero);
-                    String hResult = myHero.attack(enemy);
-                    myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
-                    myDungeon.sendMessage("You " + hResult + "\n");
-                } else if (theChoice == 2) {
-                    String mResult = enemy.attack(myHero);
-                    String hResult = myHero.skill(enemy);
-                    myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
-                    myDungeon.sendMessage("You " + hResult + "\n");
-
-                } else if (theChoice == 3) {
-                    boolean success = myDungeon.useItem(new HealthPotion());
-                    if (success) {
-                        String mResult = enemy.attack(myHero);
-                        myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
-                        myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
+                String mResult = enemy.attack(myHero);
+                myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
+                if (myHero.getHP() > 0) {
+                    if (theChoice == 1) {
+                        String hResult = myHero.attack(enemy);
+                        myDungeon.sendMessage("You " + hResult + "\n");
+                    } else if (theChoice == 2) {
+                        String hResult = myHero.skill(enemy);
+                        myDungeon.sendMessage("You " + hResult + "\n");
+                    } else if (theChoice == 3) {
+                        boolean success = myDungeon.useItem(new HealthPotion());
+                        if (success) {
+                            myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
+                            myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
+                        }
+                    } else if (theChoice == 4) {
+                        myDungeon.flee();
+                        myDungeon.sendMessage("You fled the encounter!\n");
                     }
-                } else if (theChoice == 4) {
-                    String mResult = enemy.attack(myHero);
-                    myDungeon.flee();
-                    myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
-                    myDungeon.sendMessage("You fled the encounter!\n");
                 }
             }
             if (myHero.getHP() <= 0) {
@@ -158,11 +151,16 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             } else if (enemy.getHP() <= 0) {
                 //get pillar or escape through exit if available
                 myDungeon.endCombat();
-                if (!myEnemy.getName().equals("Hydra")) {
+                if (!enemy.getName().equals("Hydra")) {
                     myDungeon.collect();
-                    myDungeon.getCurrentRoom().getCharacters().remove(myEnemy);
+                    myDungeon.getCurrentRoom().getCharacters().remove(myDungeon.getEnemy());
                 } else {
                     endGame(true);
+                }
+            } else {
+                String msg = enemy.skill(enemy);
+                if (!msg.isEmpty()) {
+                    myDungeon.sendMessage(msg);
                 }
             }
         }
@@ -176,6 +174,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
      *                  False means the Hero has died
      */
     public void endGame(final boolean theState) {
+        myDungeon.setGameActive(false);
         if (theState) { //beat the game
             JOptionPane.showMessageDialog(null, "Congratulations! You beat the game!");
             //show the stats window
@@ -236,6 +235,11 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             }
         } else if ("Hero".equals(s)) {
             myHero = myDungeon.getHero();
+        } else if ("SEE".equals(s)) {
+            boolean success = myDungeon.useItem(new VisionPotion());
+            if (success) {
+                myDungeon.sendMessage("You can see what's inside the adjacent rooms.\n");
+            }
         }
     }
 }

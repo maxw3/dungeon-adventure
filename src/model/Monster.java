@@ -18,8 +18,14 @@ public final class Monster extends AbstractDungeonCharacter {
     }
     @Override
     public String skill(final AbstractDungeonCharacter theTarget) {
-//        theTarget.healOrDamage((int) (myHP * myHealMultiplier));
-        return "";
+        if (Math.random() <= myHealRate) {
+            int healAmount = (int) (myHP * myHealMultiplier);
+            theTarget.healOrDamage(healAmount);
+            return myName + "healed " + healAmount + " HP!";
+        }
+        else {
+            return "";
+        }
     }
 
     @Override

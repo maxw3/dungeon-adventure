@@ -15,7 +15,6 @@ public final class Rogue extends Hero {
     public String skill(final AbstractDungeonCharacter theTarget) {
         setAtkSpd((int) (getAtkSpd() * 1.5));
         theTarget.setHitChance(getHitChance() - 20);
-System.out.println("Remember to set hit chance back after skill duration expires.");
 
         String result = attack(theTarget);
 
@@ -26,6 +25,6 @@ System.out.println("Remember to set hit chance back after skill duration expires
 
     @Override
     public String skillDescription() {
-        return "model.Rogue gets haste and is able to attack faster and dodge more.";
+        return super.getMyClass() + " gets haste and is able to attack faster and dodge more.";
     }
 }

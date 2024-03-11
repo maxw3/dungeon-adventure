@@ -15,6 +15,7 @@ public final class Room {
     private Room mySouthRoom;
     private Room myWestRoom;
     private boolean myExplored;
+    private boolean myVisible;
 
     private Room() {
         this(0, 0);
@@ -26,6 +27,7 @@ public final class Room {
         myRow = theRow;
         myCol = theCol;
         myExplored = false;
+        myVisible = false;
     }
 
     Room(final Room theNorthRoom, final Room theEastRoom, final Room theSouthRoom, final Room theWestRoom, final int theRow, final int theCol) {
@@ -45,12 +47,17 @@ public final class Room {
         return myItems;
     }
 
-    public final boolean isExplored() {
+    public boolean isVisible() {
+        return myVisible;
+    }
+    public boolean isExplored() {
         return myExplored;
     }
-
     public void setExplored(final boolean theState) {
         myExplored = theState;
+    }
+    public void setVisibilty(final boolean theState) {
+        myVisible = theState;
     }
     public void addCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.add(theCharacter);
