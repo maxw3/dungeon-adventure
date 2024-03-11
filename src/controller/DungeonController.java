@@ -10,6 +10,7 @@ import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -157,8 +158,12 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             } else if (enemy.getHP() <= 0) {
                 //get pillar or escape through exit if available
                 myDungeon.endCombat();
-                myDungeon.collect();
-                myDungeon.getCurrentRoom().getCharacters().remove(enemy);
+                if (!myEnemy.getName().equals("Hydra")) {
+                    myDungeon.collect();
+                    myDungeon.getCurrentRoom().getCharacters().remove(myEnemy);
+                } else {
+                    endGame(true);
+                }
             }
         }
     }
