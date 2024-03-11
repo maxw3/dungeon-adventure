@@ -94,6 +94,7 @@ public final class DungeonLogic implements Serializable {
         myCurrentRoom = startingRoom;
         reveal(myCurrentRoom);
         myChanges.firePropertyChange("Dir",null,true);
+        myChanges.firePropertyChange("HP CHANGE", null, myHero.getHP());
     }
 
     public void createCharacter(final String theName, final int theClass) throws SQLException {

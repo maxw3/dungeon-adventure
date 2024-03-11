@@ -164,9 +164,9 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             } else if (enemy.getHP() <= 0) {
                 //get pillar or escape through exit if available
                 myDungeon.endCombat();
-                if (!myEnemy.getName().equals("Hydra")) {
+                if (!myDungeon.getEnemy().getName().equals("Hydra")) {
                     myDungeon.collect();
-                    myDungeon.getCurrentRoom().getCharacters().remove(myEnemy);
+                    myDungeon.getCurrentRoom().getCharacters().remove(myDungeon.getEnemy());
                 } else {
                     endGame(true);
                 }
