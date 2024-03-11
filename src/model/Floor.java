@@ -242,6 +242,7 @@ public final class Floor {
                 boolean hasHero = false;
                 boolean hasMonster = false;
                 boolean hasItem = false;
+                Item pillar = null;
 
                 for (AbstractDungeonCharacter dc: r.getCharacters()) {
                     if (dc instanceof Hero) {
@@ -253,6 +254,10 @@ public final class Floor {
                 }
 
                 for (Item i: r.getItems()) {
+                    if (i instanceof Pillar){
+                        pillar = i;
+                        break;
+                    }
                     if (i instanceof Item) {
                         hasItem = true;
                         break;
@@ -261,6 +266,10 @@ public final class Floor {
 //                if (r.isExplored()) {
                     if (hasHero) {
                         sb.append('@');
+                    } else if (pillar != null && hasMonster){
+                        sb.append('\u0516');
+                    } else if (pillar != null){
+                        sb.append('P');
                     } else if (hasMonster) {
                         sb.append('M');
                     } else if (hasItem) {

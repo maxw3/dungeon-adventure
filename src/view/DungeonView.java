@@ -42,6 +42,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     /** Font for labels on the main frame */
     private static final Font FONT = new Font("Arial", Font.BOLD, 20);
 
+    private static final Font WIN_FONT = new Font("Consolas", Font.PLAIN, 32);
+
     private final PropertyChangeSupport myChanges
             = new PropertyChangeSupport(this);
   
@@ -100,7 +102,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myBorder = BorderFactory.createLineBorder(Color.DARK_GRAY,2);
 
         myMap = new JTextArea(myDungeon.getFloorString());
-        myMap.setFont(new Font("Consolas", Font.BOLD, 32));
+        myMap.setFont(WIN_FONT);
         myMap.setBackground(getBackground());
 
         myMessages = new JTextArea("Welcome to Dungeon Adventure!" + NEWLINE);
