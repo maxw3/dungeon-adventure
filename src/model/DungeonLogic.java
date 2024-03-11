@@ -51,6 +51,8 @@ public final class DungeonLogic implements Serializable {
     }
 
     public void load(final File theFile) throws IOException, ClassNotFoundException {
+        myCombatStatus = false;
+        endCombat();
         FileInputStream file = new FileInputStream(theFile);
         ObjectInputStream in = new ObjectInputStream(file);
         MY_INSTANCE = (DungeonLogic)in.readObject();
@@ -109,7 +111,7 @@ public final class DungeonLogic implements Serializable {
         } else if (theClass == 2) {
             myHero = new Mage(theName);
         } else {
-            throw new IllegalArgumentException("Invalid Class on Character Creation!");
+            setGameActive(false);
         }
         myFloor.getStartingRoom().addCharacter(myHero);
         myHeroCol = myFloor.getStartingRoom().getCol();
@@ -123,6 +125,9 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("GAME STATE", !theState, theState);
         if (theState) {
             myChanges.firePropertyChange("UPDATE MAP", false, true);
+            myChanges.firePropertyChange("GAME STATE", false, false);
+            myChanges.firePropertyChange("Health Potion",0,0);
+            myChanges.firePropertyChange("Vision Potion",0,0);
         }
     }
 
@@ -199,6 +204,8 @@ public final class DungeonLogic implements Serializable {
             myChanges.firePropertyChange("MESSAGE", null, myMessages);
             myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
             myChanges.firePropertyChange("Dir", false, true);
+        } else if (myCombatStatus) {
+            myCombatStatus = false;
         }
     }
 

@@ -71,38 +71,41 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
 
         // Sets the Content Pane of the frame to the Main Panel
         myFrame.setContentPane(mainPanel);
+        if (MY_INSTANCE.checkGameStatus()) {
+            // Disables "window exit" when clicking the X on the window
+            myFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        // Disables "window exit" when clicking the X on the window
-        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Window Listener
-        myFrame.addWindowListener(new WindowAdapter() {
-            /**
-             * Listener when user tries to close the window
-             * pops up an option panel that asks for confirmation
-             * on whether the user really wants to close the window
-             * If confirmed, closes the window
-             * Otherwise, do nothing.
-             *
-             * @param theCloseEvent the event to be processed
-             */
-            @Override
-            public void windowClosing(final WindowEvent theCloseEvent) {
-                final String[] exitOptions = {"Yes", "No"};
-                final int promptResult = JOptionPane.showOptionDialog(null,
-                    "Would you like to save progress before you exit?", "Save on Exit",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                    null, exitOptions, exitOptions[1]);
-                if (promptResult == JOptionPane.YES_OPTION)  {
-                    try {
-                        MY_INSTANCE.myDungeon.save();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+            // Window Listener
+            myFrame.addWindowListener(new WindowAdapter() {
+                /**
+                 * Listener when user tries to close the window
+                 * pops up an option panel that asks for confirmation
+                 * on whether the user really wants to close the window
+                 * If confirmed, closes the window
+                 * Otherwise, do nothing.
+                 *
+                 * @param theCloseEvent the event to be processed
+                 */
+                @Override
+                public void windowClosing(final WindowEvent theCloseEvent) {
+                    final String[] exitOptions = {"Yes", "No", "Cancel"};
+                    final int promptResult = JOptionPane.showOptionDialog(null,
+                        "Would you like to save progress before you exit?", "Save on Exit",
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
+                        null, exitOptions, exitOptions[0]);
+                    if (promptResult == 0) {
+                        try {
+                            MY_INSTANCE.myDungeon.save();
+                            System.exit(0);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (promptResult == 1) {
+                        System.exit(0);
                     }
                 }
-                System.exit(0);
-            }
-        });
+            });
+        }
 
         // Sets the size of the window
         myFrame.setSize(frameSize);
@@ -127,7 +130,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                         myDungeon.sendMessage("You " + hResult + "\n");
                     } else if (theChoice == 2) {
                         String hResult = myHero.skill(enemy);
-                        myDungeon.sendMessage("You " + hResult + "\n");
+                        myDungeon.sendMessage(hResult + "\n");
                     } else if (theChoice == 3) {
                         boolean success = myDungeon.useItem(new HealthPotion());
                         if (success) {
@@ -229,20 +232,15 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             boolean success = myDungeon.useItem(new VisionPotion());
             if (success) {
                 myDungeon.sendMessage("You can see what's inside the adjacent rooms.\n");
+            }
         } else if ("LOAD GAME".equals(s)) {
             try {
                 myDungeon.load((File)(theEvent.getNewValue()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
             myDungeon = model.DungeonLogic.getDungeonInstance();
             myDungeon.addPropertyChangeListener(this);
-        } else if ("USE ITEM".equals(s)) {
-            if (theEvent.getNewValue().equals("Vision Potion")) {
-                myDungeon.useItem(new VisionPotion());
-            }
         }
     }
 }

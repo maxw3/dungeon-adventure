@@ -20,11 +20,11 @@ public final class Rogue extends Hero {
 
         setAtkSpd((int) (getAtkSpd() * 0.667));
 
-        return result;
+        return skillDescription() + "\n" + "You deal " + result;
     }
 
     @Override
     public String skillDescription() {
-        return super.getMyClass() + " gets haste and is able to attack faster and dodge more.";
+        return "You gain haste and are able to attack faster and dodge more!";
     }
 }
