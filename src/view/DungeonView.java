@@ -82,6 +82,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private JButton mySkill;
     private JButton myFlee;
     private JLabel myName;
+    private JLabel myOppName;
     private JLabel myHPPotionAmount;
     private JLabel myVisionPotionAmount;
     private final JPanel myPanel;
@@ -228,21 +229,29 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myName.setFont(BUTTON_FONT);
         myHero = new JLabel("Hero.png");
         myHero.setBorder( BorderFactory.createLineBorder(Color.BLACK,2));
+        myOppName = new JLabel();
+        myOppName.setFont(BUTTON_FONT);
         myRoomContents = new JLabel("Monster/Item/Pit.png");
         myRoomContents.setBorder( BorderFactory.createLineBorder(Color.BLACK,2));
 
         JPanel hpPanel = setHPIndicator(myDungeon.getHero(), true);
         myOppHpPanel = setHPIndicator(getEnemy(), false);
         myOppHpPanel.setVisible(false);
+        myOppName.setVisible(false);
 
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new GridBagLayout());
         namePanel.add(myName);
         namePanel.setOpaque(false);
 
-        myRoomPanel.add(namePanel);
+        JPanel oppNamePanel = new JPanel();
+        oppNamePanel.setLayout(new GridBagLayout());
+        oppNamePanel.add(myOppName);
+        oppNamePanel.setOpaque(false);
+
+        myRoomPanel.add(namePanel, 0);
         myRoomPanel.add(new JLabel());
-        myRoomPanel.add(new JLabel());
+        myRoomPanel.add(oppNamePanel, 2);
 
         myRoomPanel.add(myHero, 3);
         myRoomPanel.add(new JLabel());
@@ -496,8 +505,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         mySouth.addActionListener(theEvent -> traverse(Direction.SOUTH));
         myWest.addActionListener(theEvent -> traverse(Direction.WEST));
 
-        myVisionPotion.addActionListener((theEvent -> {myChanges.firePropertyChange("USE ITEM", null, "Vision Potion");}));
-
         myStart.addActionListener(theEvent -> {
             try {
                 startConfirm();
@@ -526,8 +533,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 throw new RuntimeException(e);
             }
         }));
-        myLoadGame.addActionListener((theEvent -> {loadLogic();}));
-        myLoad.addActionListener((theEvent -> {loadLogic();}));
+        myLoadGame.addActionListener((theEvent -> loadLogic()));
+        myLoad.addActionListener((theEvent -> loadLogic()));
 
 
         //listener for exit game button
@@ -653,15 +660,19 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myDungeon.setGameActive(false);
             }
         });
-        try {
-            myDungeon.createCharacter(name, classChoice);
-            myName.setText(myDungeon.getHero().getCharName());
-            myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
-            myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (myDungeon.getGameActive()) {
+            try {
+                myDungeon.createCharacter(name, classChoice);
+                myName.setText(myDungeon.getHero().getCharName());
+                myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+                myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } catch (NullPointerException npe) {
+                myDungeon.setGameActive(false);
+            }
+            startGame();
         }
-        startGame();
     }
     private void invalidNamePane() throws SQLException {
         JFrame invalidBalance = new JFrame();
@@ -669,8 +680,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         characterCreation();
     }
     private void startGame() throws SQLException {
-        myHPPotionAmount.setText("0");
-        myVisionPotionAmount.setText("0");
         myDungeon.setGameActive(true);
         myDungeon.reset();
     }
@@ -708,9 +717,11 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myAttack.setEnabled(true);
                 mySkill.setEnabled(true);
                 myFlee.setEnabled(true);
-                myOppHpPanel.setVisible(true);
+                myOppName.setText(getEnemy().getName());
                 myOppHP.setText(String.valueOf(getEnemy().getHP()));
                 myOppMaxHP.setText(String.valueOf(getEnemy().getMaxHP()));
+                myOppHpPanel.setVisible(true);
+                myOppName.setVisible(true);
                 // Test code to make it obvious that combat has been entered.
                 Color color = Color.RED;
                 myFightPanel.setBackground(color);
@@ -727,6 +738,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myFlee.setEnabled(false);
                 mySave.setEnabled(true);
                 mySaveGame.setEnabled(true);
+                myOppHpPanel.setVisible(false);
+                myOppName.setVisible(false);
                 if (!myVisionPotionAmount.getText().equals("0")) {
                     myVisionPotion.setEnabled(true);
                 }
@@ -743,11 +756,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         } else if ("Vision Potion".equals(s)) {
             myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
             myMap.setText(myDungeon.getFloorString());
-            if(theEvent.getNewValue().equals(0)) {
-                myVisionPotion.setEnabled(false);
-            } else {
-                myVisionPotion.setEnabled(true);
-            }
+            myVisionPotion.setEnabled(!theEvent.getNewValue().equals(0));
         } else if ("UPDATE MAP".equals(s)) {
             myMap.setText(myDungeon.getFloorString());
         } else if ("GAME STATE".equals(s)) {

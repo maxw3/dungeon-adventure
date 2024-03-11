@@ -108,17 +108,17 @@ public final class SQLite {
             "AttackSpeed, HitChance, BlockChance, HealMultiplier, HealRate, " +
             "HPMultiplier, AttackMultiplier, HitChanceMultiplier, " +
             "BlockChanceMultiplier, HealRateMultiplier) " +
-            "VALUES ('Griffon', 900, 100, 1, 10, null, 0.1, 0.2, 1, 1, 1, null, null)";
+            "VALUES ('Griffon', 1200, 100, 1, 10, null, 0.1, 0.2, 1, 1, 1, null, null)";
         String ratKingQuery = "INSERT OR IGNORE INTO character (CharName, MaxHP, Attack, " +
             "AttackSpeed, HitChance, BlockChance, HealMultiplier, HealRate, " +
             "HPMultiplier, AttackMultiplier, HitChanceMultiplier, " +
             "BlockChanceMultiplier, HealRateMultiplier) " +
-            "VALUES ('Rat King', 1200, 20, 10, 20, null, 0, 0, 1, 1, 1, null, null)";
+            "VALUES ('Rat King', 2000, 20, 10, 20, null, 0, 0, 1, 1, 1, null, null)";
         String hydraQuery = "INSERT OR IGNORE INTO character (CharName, MaxHP, Attack, " +
             "AttackSpeed, HitChance, BlockChance, HealMultiplier, HealRate, " +
             "HPMultiplier, AttackMultiplier, HitChanceMultiplier, " +
             "BlockChanceMultiplier, HealRateMultiplier) " +
-            "VALUES ('Hydra', 1500, 75, 2, 20, null, 0.1, 0.8, 1, 1, 1, null, null)";
+            "VALUES ('Hydra', 2000, 75, 3, 20, null, 0.1, 0.8, 1, 1, 1, null, null)";
         String dummyQuery = "INSERT OR IGNORE INTO character (CharName, MaxHP, Attack, " +
             "AttackSpeed, HitChance, BlockChance, HealMultiplier, HealRate, " +
             "HPMultiplier, AttackMultiplier, HitChanceMultiplier, " +

@@ -21,11 +21,11 @@ public final class Warrior extends Hero {
         setAttack(getAttack() - 50);
         setHitChance(getHitChance() + 25);
 
-        return result;
+        return skillDescription() + " for " + result + "damage";
     }
 
     @Override
     public String skillDescription() {
-        return super.getMyClass() + " performs a giant haphazard swing at the monster";
+        return "You perform a giant haphazard swing at the monster";
     }
 }
