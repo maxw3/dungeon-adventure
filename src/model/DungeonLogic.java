@@ -75,26 +75,30 @@ public final class DungeonLogic implements Serializable {
     private void startGame() throws SQLException {
         myFloorLevel = 1;
         setGameActive(true);
-        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
-        myInventory = new Inventory();
-        final Room startingRoom = myFloor.getStartingRoom();
-        myCurrentRoom = startingRoom;
-        myLastRoom = startingRoom;
-        reveal(myCurrentRoom);
+        reset();
     }
 
     public void changeFloor() throws SQLException {
         myFloorLevel++;
+        myHero.levelUp();
+        sendMessage("You levelled up!");
+        myChanges.firePropertyChange("LEVEL UP", null,myHero.getMaxHP());
+        Inventory inv = myInventory;
+        reset();
+        myInventory = inv;
+    }
+    public void reset() throws SQLException {
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
         final Room startingRoom = myFloor.getStartingRoom();
-        myHero.levelUp();
         startingRoom.addCharacter(myHero);
         myHeroCol = startingRoom.getCol();
         myHeroRow = startingRoom.getRow();
         myCurrentRoom = startingRoom;
-        reveal(myCurrentRoom);
+        myLastRoom = myCurrentRoom;
+        explore(myCurrentRoom);
+        myInventory = new Inventory();
         myChanges.firePropertyChange("Dir",null,true);
-        myChanges.firePropertyChange("HP CHANGE", null, myHero.getHP());
+        myChanges.firePropertyChange("UPDATE MAP",null,true);
     }
 
     public void createCharacter(final String theName, final int theClass) throws SQLException {
@@ -116,8 +120,8 @@ public final class DungeonLogic implements Serializable {
 
     public void setGameActive(final boolean theState) {
         myGameActive = theState;
+        myChanges.firePropertyChange("GAME STATE", !theState, theState);
         if (theState) {
-            myChanges.firePropertyChange("Can Save", false, true);
             myChanges.firePropertyChange("UPDATE MAP", false, true);
         }
     }
@@ -149,17 +153,20 @@ public final class DungeonLogic implements Serializable {
 
     public Set<Room> getNeighbors(final Room theRoom) {
         final Set<Room> set = new HashSet<>();
-        if (theRoom.canWalkNorth()) {
-            set.add(theRoom.getNorth());
+        Room[][] rooms = myFloor.getRooms();
+        int row = theRoom.getRow();
+        int col = theRoom.getCol();
+        if (row > 0) {
+            set.add(rooms[row - 1][col]);
         }
-        if (theRoom.canWalkSouth()) {
-            set.add(theRoom.getSouth());
+        if (row < myFloor.getSize() - 1) {
+            set.add(rooms[row + 1][col]);
         }
-        if (theRoom.canWalkWest()) {
-            set.add(theRoom.getWest());
+        if (col > 0) {
+            set.add(rooms[row][col - 1]);
         }
-        if (theRoom.canWalkEast()) {
-            set.add(theRoom.getEast());
+        if (col < myFloor.getSize() - 1) {
+            set.add(rooms[row][col + 1]);
         }
         return set;
     }
@@ -186,19 +193,35 @@ public final class DungeonLogic implements Serializable {
     public void endCombat() {
         if (myGameActive && myCombatStatus) {
             myCombatStatus = false;
-            reveal(myCurrentRoom);
+            explore(myCurrentRoom);
             myMessages.append("You defeated the enemy!\n");
             trimMessage();
             myChanges.firePropertyChange("MESSAGE", null, myMessages);
             myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
+            myChanges.firePropertyChange("Dir", false, true);
         }
     }
 
-    public void reveal(final Room theRoom) {
+    public void explore(final Room theRoom) {
         if (theRoom == null) {
             throw new IllegalArgumentException("The Room is null.");
         }
         theRoom.setExplored(true);
+        theRoom.setVisibilty(true);
+    }
+    public void reveal(final Room theRoom) {
+        if (theRoom == null) {
+            throw new IllegalArgumentException("The Room is null.");
+        }
+        theRoom.setVisibilty(true);
+    }
+    public void expireVisPot() {
+        Set<Room> rooms = getNeighbors(myCurrentRoom);
+        for (Room r: rooms) {
+            if(!r.isExplored()) {
+                r.setVisibilty(false);
+            }
+        }
     }
 
     private boolean outOfBounds(final int thePosition) {
@@ -237,56 +260,60 @@ public final class DungeonLogic implements Serializable {
     public void moveUp() {
         if (myCurrentRoom.canWalkNorth() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
+            expireVisPot();
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getNorth().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getNorth();
             myHeroCol = myCurrentRoom.getCol();
             myHeroRow = myCurrentRoom.getRow();
-            reveal(myCurrentRoom);
+            explore(myCurrentRoom);
+            myChanges.firePropertyChange("Dir", null,true);
             applyEffects();
-            myChanges.firePropertyChange("North", null,true);
         }
     }
 
     public void moveRight() {
         if (myCurrentRoom.canWalkEast() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
+            expireVisPot();
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getEast().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getEast();
             myHeroCol = myCurrentRoom.getCol();
             myHeroRow = myCurrentRoom.getRow();
-            reveal(myCurrentRoom);
+            explore(myCurrentRoom);
+            myChanges.firePropertyChange("Dir", null,true);
             applyEffects();
-            myChanges.firePropertyChange("East", null,true);
         }
     }
 
     public void moveDown() {
         if (myCurrentRoom.canWalkSouth() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
+            expireVisPot();
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getSouth().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getSouth();
             myHeroCol = myCurrentRoom.getCol();
             myHeroRow = myCurrentRoom.getRow();
-            reveal(myCurrentRoom);
+            explore(myCurrentRoom);
+            myChanges.firePropertyChange("Dir", null,true);
             applyEffects();
-            myChanges.firePropertyChange("South", null,true);
         }
     }
 
     public void moveLeft() {
         if (myCurrentRoom.canWalkWest() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
+            expireVisPot();
             myCurrentRoom.removeCharacter(myHero);
             myCurrentRoom.getWest().addCharacter(myHero);
             myCurrentRoom = myCurrentRoom.getWest();
             myHeroCol = myCurrentRoom.getCol();
             myHeroRow = myCurrentRoom.getRow();
-            reveal(myCurrentRoom);
+            explore(myCurrentRoom);
+            myChanges.firePropertyChange("Dir", null,true);
             applyEffects();
-            myChanges.firePropertyChange("West", null,true);
         }
     }
 
@@ -368,7 +395,6 @@ public final class DungeonLogic implements Serializable {
         if (theMessage == null) {
             throw new NullPointerException("The message is null!");
         }
-
         myMessages.append(theMessage);
         trimMessage();
         myChanges.firePropertyChange("MESSAGE", null, myMessages);
