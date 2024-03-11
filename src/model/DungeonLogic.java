@@ -207,7 +207,7 @@ public final class DungeonLogic implements Serializable {
         myFloor.getStartingRoom().addCharacter(myHero);
         myHeroCol = myFloor.getStartingRoom().getCol();
         myHeroRow = myFloor.getStartingRoom().getRow();
-        myChanges.firePropertyChange("Hero",null,true);
+        myChanges.firePropertyChange("Hero",null,myHero.getMyClass() + ".png");
         myChanges.firePropertyChange("Dir",null,true);
     }
 
@@ -319,6 +319,7 @@ public final class DungeonLogic implements Serializable {
                     myMessages.append("You've encountered a ").append(c.getName()).append("!\n");
                     trimMessage();
                     myChanges.firePropertyChange("MESSAGE", null, myMessages);
+                    myChanges.firePropertyChange("Room Content", null, c.getName() + ".png");
                     break;
                 }
             }
@@ -341,6 +342,7 @@ public final class DungeonLogic implements Serializable {
             myChanges.firePropertyChange("MESSAGE", null, myMessages);
             myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
             myChanges.firePropertyChange("Dir", false, true);
+            myChanges.firePropertyChange("Room Content", null, "Dead " + myEnemy.getName() + ".png");
         } else if (myCombatStatus) {
             myCombatStatus = false;
         }
@@ -517,9 +519,12 @@ public final class DungeonLogic implements Serializable {
      */
     public void collect() {
         final List<Item> items = myCurrentRoom.getItems();
-
+        if(items.size() == 0) {
+            myChanges.firePropertyChange("Room Content", null, "Empty.png");
+        }
         for (int pos = 0; pos < items.size(); pos++) {
             final Item i = items.get(pos);
+            myChanges.firePropertyChange("Room Content", null, i.getName() + ".png");
             if (i.getType().equals("PIT")) {
                 final int oldHP = myHero.getHP();
                 final int damage = ((Pit)i).activate(myHero);
