@@ -2,14 +2,21 @@ package model;
 
 import java.util.Set;
 
+/**
+ * A consumable item that lets the user see the contents of the adjacent rooms
+ */
 public final class VisionPotion extends AbstractConsumable {
+    /**
+     * Default Constructor
+     */
     public VisionPotion() {
         super("Vision Potion");
     }
 
-    public VisionPotion(final String theName, final int theQuantity) {
-        super("Vision Potion", theQuantity);
-    }
+    /**
+     * increases vision of the hero making them able
+     * to see the contents of the adjacent rooms
+     */
     @Override
     public void triggerEffect() {
         super.triggerEffect();

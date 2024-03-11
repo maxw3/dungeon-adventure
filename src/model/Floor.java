@@ -9,24 +9,48 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * The floor of the dungeon
+ * contains the rooms of the floor, and how they connect with each other
+ */
 public final class Floor implements Serializable {
 
+    /**
+     * String to use as a line separator for new lines
+     */
     private final static String NEWLINE = System.lineSeparator();
+    /**
+     * random number generator
+     */
     private static final Random RAND = new Random();
 
+    /**
+     * the size of the floor
+     */
     private final int mySize;
 
+    /**
+     * The rooms of the floor
+     */
     private final Room[][] myRooms;
 
+    /**
+     * The level of the floor
+     */
     private final int myFloorLevel;
 
+    /**
+     * The entrance of the floor
+     */
     private final Room myStartingRoom;
 
-
-    Floor() throws SQLException {
-        this(1, 5);
-    }
-
+    /**
+     * Constructor
+     *
+     * @param theFloorLevel The level of the floor
+     * @param theSize   The length of the square floor
+     * @throws SQLException
+     */
     Floor(final int theFloorLevel, final int theSize) throws SQLException {
         myFloorLevel = theFloorLevel;
         mySize = theSize;
@@ -43,30 +67,30 @@ public final class Floor implements Serializable {
         myStartingRoom = startRoom;
     }
 
-    public void addCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
-        myRooms[theRoomY][theRoomX].addCharacter(theCharacter);
-    }
-
-    public void removeCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
-        myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
-    }
-
+    /**
+     * Getter for mySize
+     * @return the size
+     */
     public int getSize() { return mySize; }
 
+    /**
+     * Getter for myStartingRoom
+     * @return the Room
+     */
     public Room getStartingRoom() { return myStartingRoom; }
 
-    public Room getRoom(final int theRow, final int theCol) {
-        if (!outOfBounds(theCol) && !outOfBounds(theRow)) {
-            return myRooms[theRow][theCol];
-        } else {
-            throw new IllegalArgumentException("The position is out of bounds! " + theRow + " " + theCol);
-        }
-    }
-
+    /**
+     * Getter for myRooms
+     * @return the rooms of the floor
+     */
     Room[][] getRooms() {
         return Arrays.copyOf(myRooms, mySize);
     }
 
+    /**
+     * Helper method to fill myRooms with rooms
+     * @throws SQLException
+     */
     private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
             for (int col = 0; col < mySize; col++) {
@@ -85,6 +109,11 @@ public final class Floor implements Serializable {
 
     }
 
+    /**
+     * Helper method to connect the rooms in a maze like fashion
+     * @return  The entrance of the floor
+     * @throws SQLException
+     */
     private Room createMaze() throws SQLException {
         final Set<Room> adjacentToMaze = new HashSet<>();
         final Set<Room> roomsPartOfMaze = new HashSet<>();
@@ -120,6 +149,10 @@ public final class Floor implements Serializable {
         return startingRoom;
     }
 
+    /**
+     * Add a Pillar of OO to the Room
+     * @param theRoom the room
+     */
     private void addPillar(final Room theRoom) {
         if (myFloorLevel == 1) {
             theRoom.addItem(new Pillar("Encapsulation"));
@@ -132,6 +165,12 @@ public final class Floor implements Serializable {
         }
     }
 
+    /**
+     * Connect the rooms
+     * @param theRoom The room
+     * @param theAdjacentToMaze the neighboring rooms
+     * @param theRoomsPartOfMaze the rooms that are part of the floor
+     */
     private void addNeighbors(final Room theRoom, final Set<Room> theAdjacentToMaze, final Set<Room> theRoomsPartOfMaze) {
         Room neighbor;
         final int row = theRoom.getRow();
@@ -162,6 +201,11 @@ public final class Floor implements Serializable {
         }
     }
 
+    /**
+     * Add doors to the rooms to make them traversable
+     * @param theChosenRoom the room
+     * @param theDirection the direction of the door
+     */
     private void addDoor(final Room theChosenRoom, final Direction theDirection) {
         final int row = theChosenRoom.getRow();
         final int col = theChosenRoom.getCol();
@@ -186,6 +230,12 @@ public final class Floor implements Serializable {
 
     }
 
+    /**
+     * What are the valid neighbors of the room
+     * @param theRoom the room
+     * @param theRoomsPartOfMaze the rooms in the floor
+     * @return the valid naighbors
+     */
     private Set<Direction> neighborPartOfMaze(final Room theRoom, final Set<Room> theRoomsPartOfMaze) {
         final Set<Direction> validNeighbors = new HashSet<>();
         Room neighbor;
@@ -305,6 +355,11 @@ public final class Floor implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * helper method to check if pointer is out of bounds
+     * @param thePosition the index
+     * @return is it out of bounds
+     */
     private boolean outOfBounds(final int thePosition) {
         return thePosition < 0 || thePosition >= mySize;
     }

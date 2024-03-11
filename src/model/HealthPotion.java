@@ -1,13 +1,19 @@
 package model;
 
+/**
+ * A consumable item that restores health to the user
+ */
 public final class HealthPotion extends AbstractConsumable {
+    /**
+     * Constructor for Health Potion
+     */
     public HealthPotion() {
         super("Health Potion");
     }
 
-    public HealthPotion(final int theQuantity) {
-        super("Health Potion", theQuantity);
-    }
+    /**
+     * Use the Health Potion
+     */
     @Override
     public void triggerEffect() {
         super.triggerEffect();
