@@ -85,7 +85,7 @@ public final class Floor implements Serializable {
 
     }
 
-    private Room createMaze() {
+    private Room createMaze() throws SQLException {
         final Set<Room> adjacentToMaze = new HashSet<>();
         final Set<Room> roomsPartOfMaze = new HashSet<>();
         final int row = RAND.nextInt(mySize);
@@ -115,6 +115,7 @@ public final class Floor implements Serializable {
             }
         }
         addPillar(chosenRoom);
+        chosenRoom.addCharacter(MonsterFactory.createBoss(myFloorLevel));
         return startingRoom;
     }
 

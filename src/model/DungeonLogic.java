@@ -87,6 +87,7 @@ public final class DungeonLogic implements Serializable {
         myFloorLevel++;
         myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
         final Room startingRoom = myFloor.getStartingRoom();
+        myHero.levelUp();
         startingRoom.addCharacter(myHero);
         myHeroCol = startingRoom.getCol();
         myHeroRow = startingRoom.getRow();
@@ -188,7 +189,7 @@ public final class DungeonLogic implements Serializable {
             myMessages.append("You defeated the enemy!\n");
             trimMessage();
             myChanges.firePropertyChange("MESSAGE", null, myMessages);
-            myChanges.firePropertyChange("COMBAT STATUS", true, false);
+            myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
         }
     }
 
