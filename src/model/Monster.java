@@ -79,7 +79,7 @@ public final class Monster extends AbstractDungeonCharacter {
     @Override
     public void healOrDamage(final int theAmount) {
         super.healOrDamage(theAmount);
-        if (theAmount < 0 && !myName.equals("Rat King")  && getHP() < getMaxHP()) {
+        if (theAmount < 0 && !getName().equals("Rat King")  && getHP() < getMaxHP()) {
             setAtkSpd(((int) ((double)getHP() / (double)getMaxHP()) * 10) + 1);
         }
     }
