@@ -32,6 +32,7 @@ public final class DungeonLogic {
     private int myHeroCol;
     private Room myCurrentRoom;
     private Room myLastRoom;
+    private Monster myEnemy = new Monster("Skeleton");
 
     private DungeonLogic() throws SQLException {
         startGame();
@@ -91,6 +92,7 @@ public final class DungeonLogic {
         myGameActive = theState;
         if (theState) {
             myChanges.firePropertyChange("Can Save", false, true);
+            myChanges.firePropertyChange("UPDATE MAP", false, true);
         }
     }
 
@@ -113,6 +115,10 @@ public final class DungeonLogic {
 
     public Room getCurrentRoom() {
         return myCurrentRoom;
+    }
+
+    public Monster getEnemy() {
+        return myEnemy;
     }
 
     public Set<Room> getNeighbors(final Room theRoom) {
@@ -195,6 +201,13 @@ public final class DungeonLogic {
         myChanges.removePropertyChangeListener(theListener);
     }
 
+    public void setEnemy(final Monster theEnemy) {
+        if (theEnemy == null) {
+            throw new NullPointerException();
+        }
+
+        myEnemy = theEnemy;
+    }
     public void moveUp() {
         if (myCurrentRoom.canWalkNorth() && !myCombatStatus) {
             myLastRoom = myCurrentRoom;
@@ -266,11 +279,13 @@ public final class DungeonLogic {
         for (int pos = 0; pos < items.size(); pos++) {
             final Item i = items.get(pos);
             if (i.getType().equals("PIT")) {
+                final int oldHP = myHero.getHP();
                 final int damage = ((Pit)i).activate(myHero);
                 myCurrentRoom.removeItem(i);
                 myMessages.append("You activated a pit, and took ").append(damage).append(" damage! \n");
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
+                myChanges.firePropertyChange("HP CHANGE", oldHP, myHero.getHP());
             } else if (i.getType().equals("CONSUMABLE")) {
                 int before = myInventory.getCount((AbstractEquipment)i);
                 final AbstractConsumable consumable = (AbstractConsumable)i;
@@ -294,12 +309,13 @@ public final class DungeonLogic {
 
     public boolean useItem(final AbstractEquipment theItem) {
         int before = 0;
+        int oldHp = myHero.getHP();
         if (theItem.getType().equals("CONSUMABLE")) {
             before = getInventory().getCount(theItem);
         }
         boolean b = myInventory.useItem(theItem);
-        myHero.healOrDamage(myHero.getMaxHP()/2);
         myChanges.firePropertyChange(theItem.getName(), before, myInventory.getCount(theItem));
+        myChanges.firePropertyChange("HP CHANGE", oldHp, myHero.getHP());
         return b;
     }
 
@@ -312,7 +328,7 @@ public final class DungeonLogic {
             myHeroRow = myCurrentRoom.getRow();
             myCombatStatus = false;
             myChanges.firePropertyChange("COMBAT STATUS", true, false);
-            myChanges.firePropertyChange("FLED", false, true);
+            myChanges.firePropertyChange("UPDATE MAP", false, true);
         }
     }
     private void trimMessage() {
