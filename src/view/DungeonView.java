@@ -108,7 +108,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myMap.setBackground(getBackground());
 
         myMessages = new JTextArea("Welcome to Dungeon Adventure!" + NEWLINE);
-        myMessages.setPreferredSize(new Dimension(480,180));
+        myMessages.setPreferredSize(new Dimension(480,210));
         myMessages.setEditable(false);
 
         setMenuBar();
@@ -238,29 +238,31 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myOppHpPanel.setVisible(false);
         myOppName.setVisible(false);
 
-        JPanel namePanel = new JPanel();
-        namePanel.setLayout(new GridBagLayout());
-        namePanel.add(myName);
-        namePanel.setOpaque(false);
-
-        JPanel oppNamePanel = new JPanel();
-        oppNamePanel.setLayout(new GridBagLayout());
-        oppNamePanel.add(myOppName);
-        oppNamePanel.setOpaque(false);
+        JPanel namePanel = centeredPanel(myName);
+        JPanel oppNamePanel = centeredPanel(myOppName);
+        JPanel heroPanel = centeredPanel(myHero);
+        JPanel rCPanel = centeredPanel(myRoomContents);
 
         myRoomPanel.add(namePanel, 0);
         myRoomPanel.add(new JLabel());
         myRoomPanel.add(oppNamePanel, 2);
 
-        myRoomPanel.add(myHero, 3);
+        myRoomPanel.add(heroPanel, 3);
         myRoomPanel.add(new JLabel());
-        myRoomPanel.add(myRoomContents, 5);
+        myRoomPanel.add(rCPanel, 5);
 
         myRoomPanel.add(hpPanel,6);
         myRoomPanel.add(new JLabel());
         myRoomPanel.add(myOppHpPanel,8);
 
         myRoomPanel.setVisible(true);
+    }
+    private JPanel centeredPanel(final JLabel theLabel) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        panel.add(theLabel);
+        panel.setOpaque(false);
+        return panel;
     }
     private JPanel setHPIndicator(final model.AbstractDungeonCharacter theChar, final boolean theHero) {
         JPanel panel = new JPanel();
@@ -788,7 +790,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         } else if ("Hero".equals(s)) {
             myHero.setText(theEvent.getNewValue().toString());
-
         }
     }
 }
