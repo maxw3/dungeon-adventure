@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public final class Warrior extends Hero {
     /**
      * private constructor to avoid calls
-     * @throws SQLException
+     * @throws SQLException could not query warrior data
      */
     private Warrior() throws SQLException {
         this("");
@@ -20,7 +20,7 @@ public final class Warrior extends Hero {
     /**
      * Constructor
      * @param theName the name of the hero
-     * @throws SQLException
+     * @throws SQLException could not query warrior data
      */
     public Warrior(final String theName) throws SQLException {
         super(theName, "Warrior");
@@ -40,7 +40,7 @@ public final class Warrior extends Hero {
         setAttack(getAttack() - 50);
         setHitChance(getHitChance() + 25);
 
-        return skillDescription() + " for " + result + "damage";
+        return skillDescription() + " and " + result;
     }
 
     @Override

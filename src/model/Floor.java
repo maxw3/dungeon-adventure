@@ -49,7 +49,7 @@ public final class Floor implements Serializable {
      *
      * @param theFloorLevel The level of the floor
      * @param theSize   The length of the square floor
-     * @throws SQLException
+     * @throws SQLException could not query monster data
      */
     Floor(final int theFloorLevel, final int theSize) throws SQLException {
         myFloorLevel = theFloorLevel;
@@ -89,7 +89,7 @@ public final class Floor implements Serializable {
 
     /**
      * Helper method to fill myRooms with rooms
-     * @throws SQLException
+     * @throws SQLException could not query monster data
      */
     private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
@@ -112,7 +112,7 @@ public final class Floor implements Serializable {
     /**
      * Helper method to connect the rooms in a maze like fashion
      * @return  The entrance of the floor
-     * @throws SQLException
+     * @throws SQLException could not query monster data
      */
     private Room createMaze() throws SQLException {
         final Set<Room> adjacentToMaze = new HashSet<>();
@@ -360,7 +360,7 @@ public final class Floor implements Serializable {
      * @param thePosition the index
      * @return is it out of bounds
      */
-    private boolean outOfBounds(final int thePosition) {
-        return thePosition < 0 || thePosition >= mySize;
+    public boolean outOfBounds(final int thePosition) {
+        return thePosition >= 0 && thePosition < mySize;
     }
 }

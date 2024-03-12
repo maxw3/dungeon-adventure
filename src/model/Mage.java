@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public final class Mage extends Hero {
     /**
      * private constructor to avoid calls
-     * @throws SQLException
+     * @throws SQLException could not query mage data
      */
     private Mage() throws SQLException {
         this("");
@@ -21,7 +21,7 @@ public final class Mage extends Hero {
     /**
      * Constructor
      * @param theName the name of the hero
-     * @throws SQLException
+     * @throws SQLException could not query mage data
      */
     public Mage(String theName) throws SQLException {
         super(theName, "Mage");
