@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public final class Rogue extends Hero {
     /**
      * private constructor to avoid calls
-     * @throws SQLException
+     * @throws SQLException could not query rogue data
      */
     private Rogue() throws SQLException {
         this("");
@@ -20,7 +20,7 @@ public final class Rogue extends Hero {
     /**
      * Constructor
      * @param theName the name of the hero
-     * @throws SQLException
+     * @throws SQLException could not query rogue data
      */
     public Rogue(final String theName) throws SQLException {
         super(theName, "Rogue");
@@ -41,11 +41,11 @@ public final class Rogue extends Hero {
 
         setAtkSpd((int) (getAtkSpd() * 0.667));
 
-        return skillDescription() + "\n" + "You deal " + result;
+        return skillDescription() + "\n" + "You " + result;
     }
 
     @Override
     public String skillDescription() {
-        return "You gain haste and are able to attack faster and dodge more!";
+        return "You gain haste allowing you to attack faster and dodge more!";
     }
 }

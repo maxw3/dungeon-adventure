@@ -1,6 +1,5 @@
 package view;
 
-import enums.Direction;
 import controller.DungeonController;
 import model.DungeonLogic;
 
@@ -500,10 +499,22 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
      * Helper method that attaches listeners to everything.
      */
     private void addListeners() {
-        myNorth.addActionListener(theEvent -> traverse(Direction.NORTH));
-        myEast.addActionListener(theEvent -> traverse(Direction.EAST));
-        mySouth.addActionListener(theEvent -> traverse(Direction.SOUTH));
-        myWest.addActionListener(theEvent -> traverse(Direction.WEST));
+        myNorth.addActionListener(theEvent -> {
+            myDungeon.moveUp();
+            myMap.setText(myDungeon.getFloorString());
+        });
+        myEast.addActionListener(theEvent -> {
+            myDungeon.moveRight();
+            myMap.setText(myDungeon.getFloorString());
+        });
+        mySouth.addActionListener(theEvent -> {
+            myDungeon.moveDown();
+            myMap.setText(myDungeon.getFloorString());
+        });
+        myWest.addActionListener(theEvent -> {
+            myDungeon.moveLeft();
+            myMap.setText(myDungeon.getFloorString());
+        });
 
         myStart.addActionListener(theEvent -> {
             try {
@@ -569,8 +580,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         //listener for statistics button
         myStats.addActionListener(theEvent -> JOptionPane.showMessageDialog(null,"Hero stats: "
-            + NEWLINE + "Number of movement: "
-            + NEWLINE + "Current level: ", "Statistics", JOptionPane.PLAIN_MESSAGE));
+            + NEWLINE + myDungeon.getHero().toString() + "Number of movement: " + myDungeon.getSteps()
+            + NEWLINE + "Current level: " + myDungeon.getFloorLevel(), "Statistics", JOptionPane.PLAIN_MESSAGE));
 
         //listeners for attack actions
         myAttack.addActionListener(theEvent -> {
@@ -650,7 +661,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         if (name == null || name.equals("")) {
             invalidNamePane();
         }
-        String[] classes = {"Warrior", "Rogue", "Priestess"};
+        String[] classes = {"Warrior", "Rogue", "Mage"};
         JFrame createWindow = new JFrame();
         int classChoice = JOptionPane.showOptionDialog(createWindow, "Choose a class",
             "Character Creation",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null, classes, classes[0]);
@@ -671,7 +682,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             } catch (NullPointerException npe) {
                 myDungeon.setGameActive(false);
             }
-            startGame();
+            myDungeon.startGame();
         }
     }
     private void invalidNamePane() throws SQLException {
@@ -679,23 +690,20 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         JOptionPane.showMessageDialog(invalidBalance, "Invalid Name", "Error", JOptionPane.WARNING_MESSAGE);
         characterCreation();
     }
-    private void startGame() throws SQLException {
-        myDungeon.setGameActive(true);
-        myDungeon.reset();
-    }
-    private void traverse (final Direction theDir){
-        if(theDir == Direction.NORTH){
-            myDungeon.moveUp();
-        }else if(theDir == Direction.EAST){
-            myDungeon.moveRight();
-        }else if(theDir == Direction.SOUTH){
-            myDungeon.moveDown();
-        }else if(theDir == Direction.WEST){
-            myDungeon.moveLeft();
-        }
-        myMap.setText(myDungeon.getFloorString());
-    }
 
+    private void enableMovement() {
+        model.Room room = myDungeon.getCurrentRoom();
+        myNorth.setEnabled(room.canWalkNorth());
+        myEast.setEnabled(room.canWalkEast());
+        mySouth.setEnabled(room.canWalkSouth());
+        myWest.setEnabled(room.canWalkWest());
+    }
+    private void disableMovement() {
+        myNorth.setEnabled(false);
+        myEast.setEnabled(false);
+        mySouth.setEnabled(false);
+        myWest.setEnabled(false);
+    }
     /**
      * Property Change Listeners for all the property change fires.
      *
@@ -705,65 +713,49 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     @Override
     public void propertyChange(final PropertyChangeEvent theEvent) {
         final String s = theEvent.getPropertyName();
-        //update Inventory UI
-        //update map
-        //Hero hp falls to 0
-        //Monster hp falls to 0
         if ("MESSAGE".equals(s)) {
             String t = theEvent.getNewValue().toString();
             myMessages.setText(t);
         } else if ("COMBAT STATUS".equals(s)) {
-            if (theEvent.getNewValue().equals(true)) {
-                myAttack.setEnabled(true);
-                mySkill.setEnabled(true);
-                myFlee.setEnabled(true);
+            boolean inCombat = (boolean) theEvent.getNewValue();
+            Color color = Color.RED;
+            if (inCombat) {
                 myOppName.setText(getEnemy().getName());
                 myOppHP.setText(String.valueOf(getEnemy().getHP()));
                 myOppMaxHP.setText(String.valueOf(getEnemy().getMaxHP()));
-                myOppHpPanel.setVisible(true);
-                myOppName.setVisible(true);
-                // Test code to make it obvious that combat has been entered.
-                Color color = Color.RED;
-                myFightPanel.setBackground(color);
-                myNorth.setEnabled(false);
-                myEast.setEnabled(false);
-                mySouth.setEnabled(false);
-                myWest.setEnabled(false);
-                mySave.setEnabled(false);
-                mySaveGame.setEnabled(false);
-                myVisionPotion.setEnabled(false);
+                disableMovement();
             } else {
-                myAttack.setEnabled(false);
-                mySkill.setEnabled(false);
-                myFlee.setEnabled(false);
-                mySave.setEnabled(true);
-                mySaveGame.setEnabled(true);
-                myOppHpPanel.setVisible(false);
-                myOppName.setVisible(false);
-                if (!myVisionPotionAmount.getText().equals("0")) {
-                    myVisionPotion.setEnabled(true);
-                }
-                Color color = Color.LIGHT_GRAY.darker();
-                myFightPanel.setBackground(color);
-                myNorth.setEnabled(myDungeon.getCurrentRoom().canWalkNorth());
-                myEast.setEnabled(myDungeon.getCurrentRoom().canWalkEast());
-                mySouth.setEnabled(myDungeon.getCurrentRoom().canWalkSouth());
-                myWest.setEnabled(myDungeon.getCurrentRoom().canWalkWest());
+                color = Color.LIGHT_GRAY.darker();
+                enableMovement();
             }
+            myAttack.setEnabled(inCombat);
+            mySkill.setEnabled(inCombat);
+            myFlee.setEnabled(inCombat);
+            mySave.setEnabled(!inCombat);
+            mySaveGame.setEnabled(!inCombat);
+            if (!myVisionPotionAmount.getText().equals("0")) {
+                myVisionPotion.setEnabled(!inCombat);
+            }
+            myOppHpPanel.setVisible(inCombat);
+            myOppName.setVisible(inCombat);
+            myFightPanel.setBackground(color);
+
         } else if ("Health Potion".equals(s)) {
             myHPPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
             myHPPotion.setEnabled(!theEvent.getNewValue().equals(0));
+
         } else if ("Vision Potion".equals(s)) {
             myVisionPotionAmount.setText(String.valueOf(theEvent.getNewValue()));
             myMap.setText(myDungeon.getFloorString());
             myVisionPotion.setEnabled(!theEvent.getNewValue().equals(0));
+
         } else if ("UPDATE MAP".equals(s)) {
             myMap.setText(myDungeon.getFloorString());
+
         } else if ("GAME STATE".equals(s)) {
             mySave.setEnabled((boolean) theEvent.getNewValue());
             mySaveGame.setEnabled((boolean) theEvent.getNewValue());
             myStart.setEnabled((boolean) theEvent.getOldValue());
-            myStartGame.setEnabled((boolean) theEvent.getOldValue());
             myNorth.setEnabled((boolean) theEvent.getNewValue());
             myEast.setEnabled((boolean) theEvent.getNewValue());
             mySouth.setEnabled((boolean) theEvent.getNewValue());
@@ -772,31 +764,31 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myAttack.setEnabled((boolean) theEvent.getNewValue());
             mySkill.setEnabled((boolean) theEvent.getNewValue());
             myFlee.setEnabled((boolean) theEvent.getNewValue());
+
         } else if ("Can Load".equals(s)) {
             myLoad.setEnabled(true);
             myLoadGame.setEnabled(true);
+
         } else if ("Dir".equals(s)) {
-            if (theEvent.getNewValue().equals(true)) {
-                model.Room room = myDungeon.getCurrentRoom();
-                myNorth.setEnabled(room.canWalkNorth());
-                myEast.setEnabled(room.canWalkEast());
-                mySouth.setEnabled(room.canWalkSouth());
-                myWest.setEnabled(room.canWalkWest());
+            if ((boolean) theEvent.getNewValue()) {
+                enableMovement();
             } else {
-                myNorth.setEnabled(false);
-                myEast.setEnabled(false);
-                mySouth.setEnabled(false);
-                myWest.setEnabled(false);
+                disableMovement();
             }
+
         } else if ("HP CHANGE".equals(s)) {
             myHeroHP.setText(theEvent.getNewValue().toString());
+
         } else if ("LEVEL UP".equals(s)) {
             myHeroMaxHP.setText(theEvent.getNewValue().toString());
             myHeroHP.setText(theEvent.getNewValue().toString());
+
         } else if ("Room Content".equals(s)) {
             myRoomContents.setText(theEvent.getNewValue().toString());
+
         } else if ("Hero".equals(s)) {
             myHero.setText(theEvent.getNewValue().toString());
+
         }
     }
 }

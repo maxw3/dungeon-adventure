@@ -154,9 +154,9 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                     endGame(true);
                 }
             } else {
-                String msg = enemy.skill(enemy) + "\n";
+                String msg = enemy.skill(enemy);
                 if (!msg.isEmpty()) {
-                    myDungeon.sendMessage(msg);
+                    myDungeon.sendMessage(msg + "\n");
                 }
             }
         }
@@ -210,7 +210,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         } else if ("COMPLETED FLOOR".equals(s)) {
             // Prompt view to offer to save game
             try {
-                myDungeon.changeFloor();
+                myDungeon.nextFloor();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
