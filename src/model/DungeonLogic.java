@@ -210,6 +210,10 @@ public final class DungeonLogic implements Serializable {
         } else {
             setGameActive(false);
         }
+        if (DUNGEON_SIZE == 2) {
+            myHero.setMaxHP(1000000000);
+            myHero.healOrDamage(1000000000);
+        }
         myFloor.getStartingRoom().addCharacter(myHero);
         myHeroCol = myFloor.getStartingRoom().getCol();
         myHeroRow = myFloor.getStartingRoom().getRow();
