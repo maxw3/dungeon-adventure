@@ -3,34 +3,18 @@ package view;
 import controller.DungeonController;
 import model.DungeonLogic;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.swing.border.Border;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -226,7 +210,8 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         myName = new JLabel();
         myName.setFont(BUTTON_FONT);
-        myHero = new JLabel("Hero.png");
+
+        myHero = new JLabel("Hero Portrait");
         myHero.setBorder( BorderFactory.createLineBorder(Color.BLACK,2));
         myOppName = new JLabel();
         myOppName.setFont(BUTTON_FONT);
@@ -660,8 +645,12 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private void characterCreation() throws SQLException {
         JFrame creationWindow = new JFrame();
         String name = JOptionPane.showInputDialog(creationWindow, "Name:");
-        if (name == null || name.equals("")) {
+        if (name == null) {
+            myStart.setEnabled(true);
+            return;
+        } else if (name.equals("")) {
             invalidNamePane();
+            return;
         }
         String[] classes = {"Warrior", "Rogue", "Mage"};
         JFrame createWindow = new JFrame();
@@ -673,19 +662,32 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
                 myDungeon.setGameActive(false);
             }
         });
-        if (myDungeon.getGameActive()) {
+        try {
+            myDungeon.setGameActive(true);
+            myDungeon.createCharacter(name, classChoice);
+            myName.setText(myDungeon.getHero().getCharName());
+            myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+            myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
             try {
-                myDungeon.createCharacter(name, classChoice);
-                myName.setText(myDungeon.getHero().getCharName());
-                myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
-                myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } catch (NullPointerException npe) {
-                myDungeon.setGameActive(false);
+                BufferedImage hero = ImageIO.read(new File(myDungeon.getHero().getImage()));
+                Image temp = hero.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+                myHero = new JLabel(new ImageIcon(temp));
+                JPanel heroPanel = centeredPanel(myHero);
+                myRoomPanel.remove(3);
+                myRoomPanel.add(heroPanel, 3);
+            } catch (IOException exception) {
+                myHero = new JLabel("HERO IMAGE NOT FOUND");
+                JPanel heroPanel = centeredPanel(myHero);
+                myRoomPanel.remove(3);
+                myRoomPanel.add(heroPanel, 3);
             }
-            myDungeon.startGame();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (NullPointerException npe) {
+            myDungeon.setGameActive(false);
         }
+        myDungeon.startGame();
+        myDungeon.updateView();
     }
     private void invalidNamePane() throws SQLException {
         JFrame invalidBalance = new JFrame();
@@ -729,6 +731,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             } else {
                 color = Color.LIGHT_GRAY.darker();
                 enableMovement();
+                myRoomContents = new JLabel("No Monster Engaged!");
+                JPanel rcPanel = centeredPanel(myRoomContents);
+                myRoomPanel.remove(5);
+                myRoomPanel.add(rcPanel, 5);
             }
             myAttack.setEnabled(inCombat);
             mySkill.setEnabled(inCombat);
@@ -790,6 +796,20 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
 
         } else if ("Hero".equals(s)) {
             myHero.setText(theEvent.getNewValue().toString());
+        } else if ("IMAGE".equals(s)) {
+            try {
+                BufferedImage roomImage = ImageIO.read(new File((String) theEvent.getNewValue()));
+                Image temp = roomImage.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+                myRoomContents = new JLabel(new ImageIcon(temp));
+                JPanel rcPanel = centeredPanel(myRoomContents);
+                myRoomPanel.remove(5);
+                myRoomPanel.add(rcPanel, 5);
+            } catch (IOException exception) {
+                myRoomContents = new JLabel("IMAGE NOT FOUND");
+                JPanel rcPanel = centeredPanel(myRoomContents);
+                myRoomPanel.remove(5);
+                myRoomPanel.add(rcPanel, 5);
+            }
         }
     }
 }
