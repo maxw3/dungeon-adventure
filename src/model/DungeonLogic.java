@@ -161,8 +161,10 @@ public final class DungeonLogic implements Serializable {
         myFloorLevel = 1;
         myStepCount = 0;
         myInventory = new Inventory();
+        myCombatStatus = false;
         setGameActive(true);
         setNewFloor();
+        myMessages.delete(0, myMessages.length());
     }
 
     /**
@@ -434,6 +436,7 @@ public final class DungeonLogic implements Serializable {
         }
 
         myEnemy = theEnemy;
+        myChanges.firePropertyChange("IMAGE", null, theEnemy.getImage());
     }
 
     /**

@@ -12,6 +12,7 @@ public abstract class AbstractDungeonCharacter implements Serializable {
      * String that acts as a line separator for new lines
      */
     private static final String NEW_LINE = System.lineSeparator();
+
     /**
      * The name of the Character
      */
@@ -41,7 +42,7 @@ public abstract class AbstractDungeonCharacter implements Serializable {
      */
     private int myBlockChance;
 
-    //private final model.Dummy myDummy = new model.Dummy();
+    private String myImageName;
 
     /**
      * Constructor that accepts the name of the character
@@ -61,6 +62,7 @@ public abstract class AbstractDungeonCharacter implements Serializable {
         myAtkSpd = rs.getInt("AttackSpeed");
         myHitChance = rs.getInt("HitChance");
         myBlockChance = rs.getInt("BlockChance");
+        myImageName = rs.getString("Image");
     }
 
     /**
@@ -83,6 +85,7 @@ public abstract class AbstractDungeonCharacter implements Serializable {
         myHitChance = (int) (100 - rs.getInt("HitChance")
             / Math.pow(rs.getDouble("HitChanceMultiplier"), theFloor));
         myBlockChance = rs.getInt("BlockChance");
+        myImageName = rs.getString("Image");
     }
 
     /**
@@ -195,6 +198,15 @@ public abstract class AbstractDungeonCharacter implements Serializable {
         output.append(NEW_LINE);
 
         return output.toString();
+    }
+
+    /**
+     * Returns image path
+     *
+     * @return String of the character's image path
+     */
+    public final String getImage() {
+        return "resources\\" + myImageName;
     }
 
     /**
