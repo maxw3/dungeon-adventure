@@ -24,14 +24,41 @@ import view.DungeonView;
 
 public class DungeonController extends JPanel implements PropertyChangeListener {
 
+    /**
+     * The main frame of the program
+     */
     private static JFrame myFrame;
+    /**
+     * The instance of the Controller of the game to prevent duplicates
+     */
     private static final DungeonController MY_INSTANCE;
+    /**
+     * Toolkit of the program to obtain external information
+     */
     private static final Toolkit KIT = Toolkit.getDefaultToolkit();
+    /**
+     * What is the screen size of the screen of the user?
+     */
     private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
+    /**
+     * The Dungeon instance being used for the game
+     */
     private DungeonLogic myDungeon;
+    /**
+     * The playable character for the game
+     */
     private Hero myHero;
+    /**
+     * The database of the game
+     */
     public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
+    /**
+     * The connection of the database
+     */
     public static Connection CONNECTION;
+    /**
+     * The statement to send queries to the database
+     */
     public static final Statement STATEMENT;
     static {
         try {
@@ -44,16 +71,29 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         }
     }
 
+    /**
+     * Constructor of the Controller
+     * Initializes the dungeon and hero
+     */
     public DungeonController() {
         myDungeon = model.DungeonLogic.getDungeonInstance();
         myHero = myDungeon.getHero();
     }
 
+    /**
+     *  Start the game and tell view to show its contents
+     * @param theArgs the arguments used for file redirection
+     */
+
     public static void main(final String[] theArgs) {
         EventQueue.invokeLater(DungeonController::createAndShowGUI);
     }
 
-    public static void createAndShowGUI() {
+    /**
+     * The GUI for the game. initializes the frame and sets its properties
+     * Starts up View
+     */
+    private static void createAndShowGUI() {
 
         // Main Frame/Window
         myFrame = new JFrame("Dungeon Adventure");
@@ -118,6 +158,11 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         myFrame.setVisible(true);
     }
 
+    /**
+     * The combat gameplay of the game.
+     * Simulates 1 round of the fight
+     * @param theChoice What the hero does for the current round of the fight
+     */
     public void fight (final int theChoice) {
         if (checkGameStatus()) {
             Monster enemy = myDungeon.getEnemy();
@@ -180,12 +225,21 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         }
     }
 
+    /**
+     * Getter for status of the game
+     * @return Is there currently an active game?
+     */
     private boolean checkGameStatus() {
         if (!myDungeon.getGameActive()) {
             JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
         }
         return myDungeon.getGameActive();
     }
+
+    /**
+     * Getter for myFrame
+     * @return the Frame
+     */
     public static JFrame getFrame() {
         return myFrame;
     }
