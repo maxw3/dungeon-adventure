@@ -15,4 +15,8 @@ public interface Item {
      * @return What kind of item is this?
      */
     String getType();
+
+    default String getImage() {
+        return "resources\\" + getName() + ".png";
+    }
 }

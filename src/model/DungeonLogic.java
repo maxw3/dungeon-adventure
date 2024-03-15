@@ -491,6 +491,7 @@ public final class DungeonLogic implements Serializable {
      * trigger the room's events
      */
     private void applyEffects() {
+        myChanges.firePropertyChange("EMPTY", false, true);
         myStepCount++;
         expireVisPot();
         myLastRoom.removeCharacter(myHero);
@@ -525,6 +526,7 @@ public final class DungeonLogic implements Serializable {
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
                 myChanges.firePropertyChange("HP CHANGE", oldHP, myHero.getHP());
+                myChanges.firePropertyChange("IMAGE", null, i.getImage());
             } else if (i.getType().equals("CONSUMABLE")) {
                 int before = myInventory.getCount((AbstractEquipment)i);
                 final AbstractConsumable consumable = (AbstractConsumable)i;
@@ -534,6 +536,7 @@ public final class DungeonLogic implements Serializable {
                 myChanges.firePropertyChange(i.getName(), before, myInventory.getCount((AbstractEquipment)i));
                 trimMessage();
                 myChanges.firePropertyChange("MESSAGE", null, myMessages);
+                myChanges.firePropertyChange("IMAGE", null, i.getImage());
             } else if (i.getType().equals("PILLAR")) {
                 final Pillar pillar = (Pillar)i;
                 myInventory.addItem(pillar);

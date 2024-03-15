@@ -57,7 +57,7 @@ public final class Room implements Serializable {
     /**
      * private constructor to avoid calls
      */
-    private Room() {
+    Room() {
         this(0, 0);
     }
 

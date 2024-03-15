@@ -28,6 +28,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     private final static Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 20);
     /** Font for labels on the main frame */
     private static final Font FONT = new Font("Arial", Font.BOLD, 20);
+    public static final int PORTRAIT_SIZE = 90;
 
     private final PropertyChangeSupport myChanges
             = new PropertyChangeSupport(this);
@@ -670,16 +671,10 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
             try {
                 BufferedImage hero = ImageIO.read(new File(myDungeon.getHero().getImage()));
-                Image temp = hero.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-                myHero = new JLabel(new ImageIcon(temp));
-                JPanel heroPanel = centeredPanel(myHero);
-                myRoomPanel.remove(3);
-                myRoomPanel.add(heroPanel, 3);
+                Image temp = hero.getScaledInstance(PORTRAIT_SIZE, PORTRAIT_SIZE, Image.SCALE_SMOOTH);
+                updateRoomContents(myHero, new JLabel(new ImageIcon(temp)), 3);
             } catch (IOException exception) {
-                myHero = new JLabel("HERO IMAGE NOT FOUND");
-                JPanel heroPanel = centeredPanel(myHero);
-                myRoomPanel.remove(3);
-                myRoomPanel.add(heroPanel, 3);
+                updateRoomContents(myHero, new JLabel("HERO IMAGE NOT FOUND"), 3);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -731,10 +726,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             } else {
                 color = Color.LIGHT_GRAY.darker();
                 enableMovement();
-                myRoomContents = new JLabel("No Monster Engaged!");
-                JPanel rcPanel = centeredPanel(myRoomContents);
-                myRoomPanel.remove(5);
-                myRoomPanel.add(rcPanel, 5);
+                updateRoomContents(myRoomContents, new JLabel("Empty!"), 5);
             }
             myAttack.setEnabled(inCombat);
             mySkill.setEnabled(inCombat);
@@ -799,17 +791,20 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         } else if ("IMAGE".equals(s)) {
             try {
                 BufferedImage roomImage = ImageIO.read(new File((String) theEvent.getNewValue()));
-                Image temp = roomImage.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-                myRoomContents = new JLabel(new ImageIcon(temp));
-                JPanel rcPanel = centeredPanel(myRoomContents);
-                myRoomPanel.remove(5);
-                myRoomPanel.add(rcPanel, 5);
+                Image temp = roomImage.getScaledInstance(PORTRAIT_SIZE, PORTRAIT_SIZE, Image.SCALE_SMOOTH);
+                updateRoomContents(myRoomContents, new JLabel(new ImageIcon(temp)), 5);
             } catch (IOException exception) {
-                myRoomContents = new JLabel("IMAGE NOT FOUND");
-                JPanel rcPanel = centeredPanel(myRoomContents);
-                myRoomPanel.remove(5);
-                myRoomPanel.add(rcPanel, 5);
+                updateRoomContents(myRoomContents, new JLabel("IMAGE NOT FOUND"), 5);
             }
+        } else if ("EMPTY".equals(s)) {
+            updateRoomContents(myRoomContents, new JLabel("Empty!"), 5);
         }
+    }
+
+    private void updateRoomContents(JLabel myRoomContents, JLabel myRoomContents1, int index) {
+        myRoomContents = myRoomContents1;
+        JPanel rcPanel = centeredPanel(myRoomContents);
+        myRoomPanel.remove(index);
+        myRoomPanel.add(rcPanel, index);
     }
 }

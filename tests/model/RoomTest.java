@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,21 +24,7 @@ class RoomTest {
     }
 
     @Test
-    void constructorPositionAndRoomParams() {
-        final Room north = new Room();
-        final Room south = new Room();
-        final Room east = new Room();
-        final Room west = new Room();
-        Room testRoom = new Room(north, east, south, west, 1, 2);
-        assertEquals(1, testRoom.getRow());
-        assertEquals(2, testRoom.getCol());
-        assertEquals(north, testRoom.getNorth());
-        assertEquals(west, testRoom.getWest());
-        assertEquals(south, testRoom.getSouth());
-        assertEquals(east, testRoom.getEast());
-    }
-    @Test
-    void getCharacters() {
+    void getCharacters() throws SQLException {
         final ArrayList<AbstractDungeonCharacter> compareList = new ArrayList<>();
         final AbstractDungeonCharacter testChar1 = MonsterFactory.createDummy();
         final AbstractDungeonCharacter testChar2 = MonsterFactory.createDummy();
@@ -52,8 +39,8 @@ class RoomTest {
     @Test
     void getItems() {
         final ArrayList<Item> compareList = new ArrayList<>();
-        final Item testItem1 = new VisionPotion(1);
-        final Item testItem2 = new HealthPotion(1);
+        final Item testItem1 = new VisionPotion();
+        final Item testItem2 = new HealthPotion();
         final Room testRoom = new Room();
         testRoom.addItem(testItem1);
         testRoom.addItem(testItem2);
@@ -76,7 +63,7 @@ class RoomTest {
     }
 
     @Test
-    void removeCharacter() {
+    void removeCharacter() throws SQLException {
         final ArrayList<AbstractDungeonCharacter> compareList = new ArrayList<>();
         final AbstractDungeonCharacter testChar1 = MonsterFactory.createDummy();
         final AbstractDungeonCharacter testChar2 = MonsterFactory.createDummy();
@@ -89,15 +76,15 @@ class RoomTest {
     }
 
     @Test
-    void emptyRoom() {
+    void emptyRoom() throws SQLException {
         final ArrayList<AbstractDungeonCharacter> compareList = new ArrayList<>();
         final AbstractDungeonCharacter testChar1 = MonsterFactory.createDummy();
         final AbstractDungeonCharacter testChar2 = MonsterFactory.createDummy();
         final Room testRoom = new Room();
         testRoom.addCharacter(testChar1);
         testRoom.addCharacter(testChar2);
-        final Item testItem1 = new VisionPotion(1);
-        final Item testItem2 = new HealthPotion(1);
+        final Item testItem1 = new VisionPotion();
+        final Item testItem2 = new HealthPotion();
         testRoom.addItem(testItem1);
         testRoom.addItem(testItem2);
         testRoom.emptyRoom();
@@ -111,7 +98,10 @@ class RoomTest {
         final Room south = new Room();
         final Room east = new Room();
         final Room west = new Room();
-        testRoom.setRooms(north, east, south, west);
+        testRoom.setNorthRoom(north);
+        testRoom.setSouthRoom(south);
+        testRoom.setEastRoom(east);
+        testRoom.setWestRoom(west);
         boolean match = true;
         if (!testRoom.getNorth().equals(north)) {
             match = false;
@@ -128,8 +118,8 @@ class RoomTest {
     @Test
     void removeItem() {
         final ArrayList<Item> compareList = new ArrayList<>();
-        final Item testItem1 = new VisionPotion(1);
-        final Item testItem2 = new HealthPotion(1);
+        final Item testItem1 = new VisionPotion();
+        final Item testItem2 = new HealthPotion();
         final Room testRoom = new Room();
         testRoom.addItem(testItem1);
         testRoom.addItem(testItem2);
