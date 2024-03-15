@@ -68,16 +68,6 @@ public class Hero extends AbstractDungeonCharacter {
     }
 
     /**
-     * Setter for myPosition
-     * @param theRow the X-coord
-     * @param theColumn the Y-coord
-     */
-    public final void setPosition(final int theRow, final int theColumn) {
-        myPosition[0] = theRow;
-        myPosition[1] = theColumn;
-    }
-
-    /**
      * Level up the hero
      * @throws SQLException
      */

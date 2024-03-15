@@ -60,7 +60,7 @@ public final class Monster extends AbstractDungeonCharacter {
         if (Math.random() <= myHealRate) {
             int healAmount = (int) (getHP() * myHealMultiplier);
             theTarget.healOrDamage(healAmount);
-            return getName() + "healed " + healAmount + " HP!";
+            return getName() + " healed " + healAmount + " HP!";
         }
         else {
             return "";
@@ -79,8 +79,9 @@ public final class Monster extends AbstractDungeonCharacter {
     @Override
     public void healOrDamage(final int theAmount) {
         super.healOrDamage(theAmount);
-        if (theAmount < 0 && !getName().equals("Rat King")  && getHP() < getMaxHP()) {
-            setAtkSpd(((int) ((double)getHP() / (double)getMaxHP()) * 10) + 1);
+        if (theAmount < 0 && getName().equals("Rat King") && getHP() < getMaxHP()) {
+
+            setAtkSpd(((int) (((double)getHP() / (double)getMaxHP()) * 10)) + 1);
         }
     }
 }

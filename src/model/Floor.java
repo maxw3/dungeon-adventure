@@ -84,7 +84,7 @@ public final class Floor implements Serializable {
      * @return the rooms of the floor
      */
     Room[][] getRooms() {
-        return Arrays.copyOf(myRooms, mySize);
+        return myRooms;
     }
 
     /**
@@ -338,7 +338,7 @@ public final class Floor implements Serializable {
                 sb.append('*');
             }
 
-            sb.append('\n');
+            sb.append(NEWLINE);
 
 
         }
@@ -360,7 +360,7 @@ public final class Floor implements Serializable {
      * @param thePosition the index
      * @return is it out of bounds
      */
-    public boolean outOfBounds(final int thePosition) {
-        return thePosition >= 0 && thePosition < mySize;
+    /*Default*/ boolean outOfBounds(final int thePosition) {
+        return !(thePosition >= 0 && thePosition < mySize);
     }
 }
