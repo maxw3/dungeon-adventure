@@ -2,25 +2,27 @@ package model;
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class HealthPotionTest {
 
-    HealthPotion myTestPotion = new HealthPotion(2);
+    HealthPotion myTestPotion = new HealthPotion();
     @Test
     void testGetQuantity() {
-        assertEquals(2, myTestPotion.getQuantity());
+        assertEquals(1, myTestPotion.getQuantity());
     }
 
     @Test
     void testToString() {
-        assertEquals("2 Health Potion", myTestPotion.toString());
+        assertEquals("The Health Potion heals for 50% of the model.Hero's maximum Hit Points.", myTestPotion.toString());
     }
 
     @Test
-    void testSetQuantity() {
-        myTestPotion.setQuantity(1);
-        assertEquals(1, myTestPotion.getQuantity());
+    void testAdd() {
+        myTestPotion.add();
+        assertEquals(2, myTestPotion.getQuantity());
     }
 
     @Test
@@ -34,7 +36,12 @@ class HealthPotionTest {
     }
 
     @Test
-    void testTriggerEffect() {
-        // Does nothing currently.
+    void testTriggerEffect() throws SQLException {
+        DungeonLogic.getDungeonInstance().createCharacter("Test", 0);
+        Hero hero = DungeonLogic.getDungeonInstance().getHero();
+        hero.healOrDamage(-hero.getMaxHP() / 2);
+        myTestPotion.triggerEffect();
+        assertEquals(hero.getMaxHP(), hero.getHP());
+        assertEquals(0, myTestPotion.getQuantity());
     }
 }

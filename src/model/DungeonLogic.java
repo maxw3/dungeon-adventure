@@ -258,6 +258,13 @@ public final class DungeonLogic implements Serializable {
      * @return the instance
      */
     public static DungeonLogic getDungeonInstance() {
+        if (MY_INSTANCE == null) {
+            try {
+                MY_INSTANCE = new DungeonLogic();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return MY_INSTANCE;
     }
 

@@ -38,7 +38,7 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     /**
      * Getter for myQuantity
      *
-     * @return tthe amount of this items that's available
+     * @return the amount of this item that's available
      */
     public int getQuantity() {
         return myQuantity;
