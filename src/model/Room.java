@@ -137,9 +137,6 @@ public final class Room implements Serializable {
      */
     public void removeCharacter(final AbstractDungeonCharacter theCharacter) {
         myDungeonCharacters.remove(theCharacter);
-        if(theCharacter instanceof Hero) {
-            ((Hero) theCharacter).setPosition(myRow, myCol);
-        }
     }
 
     /**

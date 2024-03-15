@@ -361,6 +361,6 @@ public final class Floor implements Serializable {
      * @return is it out of bounds
      */
     /*Default*/ boolean outOfBounds(final int thePosition) {
-        return thePosition >= 0 && thePosition < mySize;
+        return !(thePosition >= 0 && thePosition < mySize);
     }
 }

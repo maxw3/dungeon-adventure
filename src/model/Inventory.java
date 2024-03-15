@@ -121,7 +121,7 @@ public final class Inventory implements Serializable {
             if (theItem.getType().equals("CONSUMABLE")) {
                 final AbstractConsumable oldConsumable = (AbstractConsumable) firstInstance;
                 oldConsumable.add();
-            }  else {
+            } else {
                 myConsumableItems.add(theItem);
             }
         } else if (theItem.getType().equals("PILLAR")) {

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class VisionPotionTest {
 
-    VisionPotion myTestPotion = new VisionPotion();
+    private final VisionPotion myTestPotion = new VisionPotion();
 
     @Test
     void testToString() {

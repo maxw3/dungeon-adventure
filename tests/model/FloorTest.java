@@ -74,15 +74,23 @@ class FloorTest {
     }
 
     @Test
-    void getSize() throws SQLException {
+    void testGetSize() throws SQLException {
         Floor testFloor = new Floor(1, 7);
         assertEquals(7, testFloor.getSize());
     }
 
     @Test
-    void getStartingRoom() throws SQLException {
+    void testGetStartingRoom() throws SQLException {
         Floor testFloor = new Floor(1, 1);
         final Room expectedRoom = testFloor.getRooms()[0][0];
         assertEquals(expectedRoom, testFloor.getStartingRoom());
+    }
+
+    @Test
+    void testOutOfBounds() throws SQLException {
+        Floor testFloor = new Floor(1, 1);
+        assertTrue(testFloor.outOfBounds(-1));
+        assertTrue(testFloor.outOfBounds(1));
+        assertFalse(testFloor.outOfBounds(0));
     }
 }

@@ -9,6 +9,9 @@ import java.sql.SQLException;
  * fast, and balanced
  */
 public final class Rogue extends Hero {
+
+    public static final String NEWLINE = System.lineSeparator();
+
     /**
      * private constructor to avoid calls
      * @throws SQLException could not query rogue data
@@ -41,7 +44,7 @@ public final class Rogue extends Hero {
 
         setAtkSpd((int) (getAtkSpd() * 0.667));
 
-        return skillDescription() + "\n" + "You " + result;
+        return skillDescription() + NEWLINE + "You " + result;
     }
 
     @Override

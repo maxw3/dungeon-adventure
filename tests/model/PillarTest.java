@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PillarTest {
-    Pillar myTestPillar = new Pillar("Abstraction");
+    private final Pillar myTestPillar = new Pillar("Abstraction");
     @Test
     void testGetName() {
        assertEquals("Abstraction", myTestPillar.getName());
@@ -18,6 +18,6 @@ class PillarTest {
 
     @Test
     void testToString() {
-        assertEquals("Abstraction", myTestPillar.getName());
+        assertEquals("Abstraction", myTestPillar.toString());
     }
 }
