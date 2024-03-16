@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import enums.ItemType;
@@ -8,6 +13,8 @@ import java.util.Random;
 /**
  * An item that's unobtainable for the hero
  * When encountering this for the first time, it harms the hero
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class Pit implements Item, Serializable {
     /**

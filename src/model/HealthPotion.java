@@ -1,7 +1,14 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 /**
  * A consumable item that restores health to the user
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class HealthPotion extends AbstractConsumable {
     /**

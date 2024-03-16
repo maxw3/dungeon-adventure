@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.sql.SQLException;
@@ -7,6 +12,8 @@ import java.sql.SQLException;
  * The special skill is that they can increase their attack speed temporarily
  * as well as partially blind the enemy to lower their hit chance
  * fast, and balanced
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class Rogue extends Hero {
 

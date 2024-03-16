@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.sql.SQLException;
@@ -5,6 +10,8 @@ import java.util.Random;
 
 /**
  * A Factory for monster generation
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class MonsterFactory {
     /**

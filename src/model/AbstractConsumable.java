@@ -1,9 +1,16 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import enums.ItemType;
 
 /**
  * Abstract class for consumable items
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public abstract class AbstractConsumable extends AbstractEquipment {
     /**

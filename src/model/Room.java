@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.io.Serializable;
@@ -9,6 +14,8 @@ import java.util.Objects;
  * stores data of a single room
  * if its cardinal edges are traversable or not
  * if there are any characters or items in the room
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class Room implements Serializable {
 

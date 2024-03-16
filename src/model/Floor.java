@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import enums.Direction;
@@ -12,6 +17,8 @@ import java.util.Set;
 /**
  * The floor of the dungeon
  * contains the rooms of the floor, and how they connect with each other
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class Floor implements Serializable {
 

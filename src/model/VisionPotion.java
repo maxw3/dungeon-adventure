@@ -1,9 +1,16 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.util.Set;
 
 /**
  * A consumable item that lets the user see the contents of the adjacent rooms
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class VisionPotion extends AbstractConsumable {
     /**

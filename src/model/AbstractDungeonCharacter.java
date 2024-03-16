@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.io.Serializable;
@@ -6,6 +11,8 @@ import java.sql.SQLException;
 
 /**
  * Abstract class for characters in the game
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public abstract class AbstractDungeonCharacter implements Serializable {
     /**

@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.io.Serializable;
@@ -5,6 +10,8 @@ import java.util.ArrayList;
 
 /**
  * The inventory that stores the items that the hero has to use or collect.
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class Inventory implements Serializable {
 

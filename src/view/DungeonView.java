@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package view;
 
 import controller.DungeonController;
@@ -860,7 +865,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             myDungeon = DungeonLogic.getDungeonInstance();
             myDungeon.updateView();
             myMap.setText(myDungeon.getFloorString());
-            System.out.println(myMap.getText());
             myName.setText(myDungeon.getHero().getCharName());
             myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
             myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));

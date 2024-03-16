@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.sql.SQLException;
@@ -7,6 +12,8 @@ import java.sql.SQLException;
  * The special skill is that they can attempt to do a great attack
  * at the risk of missing
  * Strong, and sturdy, but slow
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public final class Warrior extends Hero {
     /**

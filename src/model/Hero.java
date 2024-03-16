@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import java.sql.ResultSet;
@@ -5,6 +10,8 @@ import java.sql.SQLException;
 
 /**
  * The playable character controlled by the user
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public class Hero extends AbstractDungeonCharacter {
     /**

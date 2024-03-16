@@ -1,3 +1,8 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import enums.ItemType;
@@ -6,6 +11,8 @@ import java.io.Serializable;
 
 /**
  * Abstract class for non-consumable items
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
  */
 public abstract class AbstractEquipment implements Item, Serializable {
 
