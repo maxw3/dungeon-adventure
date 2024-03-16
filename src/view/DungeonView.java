@@ -463,7 +463,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
      *          in the format "current health / max health"
      */
     private JPanel setHPIndicator(final model.AbstractDungeonCharacter theChar, final boolean theHero) {
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
 
         String hp = "0";
@@ -604,7 +604,7 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
     /**
      * Helper method to set the Inventory panel
      */
-    private void setInventoryPanel(){
+    private void setInventoryPanel() {
         myInventoryPanel = new JPanel();
         myInventoryPanel.setBackground(myBackgroundColor);
 

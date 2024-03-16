@@ -54,13 +54,6 @@ public class Hero extends AbstractDungeonCharacter {
         return null;
     }
 
-    /**
-     * Getter for myClass
-     * @return the Class
-     */
-    protected final String getMyClass() {
-        return myClass;
-    }
 
     /**
      * Getter for myName
@@ -81,5 +74,13 @@ public class Hero extends AbstractDungeonCharacter {
         setAttack((int)(getAttack() * rs.getDouble("AttackMultiplier")));
         setHitChance((int)(getHitChance() * rs.getDouble("HitChanceMultiplier")));
         healOrDamage(getMaxHP());
+    }
+
+    /**
+     * Getter for myClass
+     * @return the Class
+     */
+    protected final String getMyClass() {
+        return myClass;
     }
 }
