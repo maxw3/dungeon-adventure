@@ -300,7 +300,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             }
             myDungeon = model.DungeonLogic.getDungeonInstance();
             myHero = myDungeon.getHero();
-            myDungeon.fixView();
         }
     }
 }

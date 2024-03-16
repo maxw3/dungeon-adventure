@@ -34,7 +34,9 @@ public final class DungeonLogic implements Serializable {
     /**
      * Property Change Support
      */
-    private PropertyChangeSupport myChanges;
+    private transient PropertyChangeSupport myChanges;
+
+    private PropertyChangeSupport myOldChanges;
 
     /**
      * The messages to print to the console
@@ -124,12 +126,22 @@ public final class DungeonLogic implements Serializable {
      * @throws ClassNotFoundException class not found
      */
     public void load(final File theFile) throws IOException, ClassNotFoundException, SQLException {
-        final PropertyChangeSupport oldChanges = myChanges;
-        final FileInputStream file = new FileInputStream(theFile);
-        final ObjectInputStream in = new ObjectInputStream(file);
-        MY_INSTANCE = (DungeonLogic)(in.readObject());
+        myCombatStatus = false;
+        endCombat();
+        myOldChanges = new PropertyChangeSupport(this);
+        for (PropertyChangeListener listener : myChanges.getPropertyChangeListeners()) {
+            myOldChanges.addPropertyChangeListener(listener);
+        }
+
+        FileInputStream file = new FileInputStream(theFile);
+        ObjectInputStream in = new ObjectInputStream(file);
+        MY_INSTANCE = (DungeonLogic)in.readObject();
         in.close();
         file.close();
+        MY_INSTANCE.fix(myOldChanges);
+    }
+
+    private void fix(final PropertyChangeSupport oldChanges) {
         myChanges = new PropertyChangeSupport(this);
         for (PropertyChangeListener listener : oldChanges.getPropertyChangeListeners()) {
             myChanges.addPropertyChangeListener(listener);
@@ -150,10 +162,6 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("UPDATE MAP", false, true);
         myChanges.firePropertyChange("MESSAGE", null, myMessages);
         myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
-    }
-
-    public void fixView() {
-        myChanges.firePropertyChange("RE-ADD LISTENERS", false, true);
     }
 
     /**
