@@ -22,13 +22,39 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import model.*;
-
+import model.AbstractDungeonCharacter;
+import model.DungeonLogic;
+import model.HealthPotion;
+import model.Hero;
+import model.Monster;
+import model.VisionPotion;
 import org.sqlite.SQLiteDataSource;
 import view.DungeonView;
 
 public class DungeonController extends JPanel implements PropertyChangeListener {
 
+    /**
+     * The database of the game
+     */
+    public static final SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
+    /**
+     * The connection of the database
+     */
+    public static final Connection CONNECTION;
+    /**
+     * The statement to send queries to the database
+     */
+    public static final Statement STATEMENT;
+    static {
+        try {
+            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
+            CONNECTION = DATA_SOURCE.getConnection();
+            STATEMENT = CONNECTION.createStatement();
+            MY_INSTANCE = new DungeonController();
+        } catch (final SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
     /**
      * The main frame of the program
      */
@@ -53,28 +79,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
      * The playable character for the game
      */
     private Hero myHero;
-    /**
-     * The database of the game
-     */
-    public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
-    /**
-     * The connection of the database
-     */
-    public static Connection CONNECTION;
-    /**
-     * The statement to send queries to the database
-     */
-    public static final Statement STATEMENT;
-    static {
-        try {
-            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
-            CONNECTION = DATA_SOURCE.getConnection();
-            STATEMENT = CONNECTION.createStatement();
-            MY_INSTANCE = new DungeonController();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Constructor of the Controller
@@ -170,19 +174,19 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
      */
     public void fight (final int theChoice) {
         if (checkGameStatus()) {
-            Monster enemy = myDungeon.getEnemy();
+            final Monster enemy = myDungeon.getEnemy();
             if (myHero.getHP() > 0 && enemy.getHP() > 0) {
-                String mResult = enemy.attack(myHero);
+                final String mResult = enemy.attack(myHero);
                 myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
                 if (myHero.getHP() > 0) {
                     if (theChoice == 1) {
-                        String hResult = myHero.attack(enemy);
+                        final String hResult = myHero.attack(enemy);
                         myDungeon.sendMessage("You " + hResult + "\n");
                     } else if (theChoice == 2) {
-                        String hResult = myHero.skill(enemy);
+                        final String hResult = myHero.skill(enemy);
                         myDungeon.sendMessage(hResult + "\n");
                     } else if (theChoice == 3) {
-                        boolean success = myDungeon.useItem(new HealthPotion());
+                        final boolean success = myDungeon.useItem(new HealthPotion());
                         if (success) {
                             myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
                             myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
@@ -270,7 +274,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             // Prompt view to offer to save game
             try {
                 myDungeon.nextFloor();
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 throw new RuntimeException(e);
             }
         } else if ("Action".equals(s)) {
@@ -282,7 +286,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                 }
             } else {
                 if ((int)(theEvent.getNewValue()) == 3) {
-                    boolean success = myDungeon.useItem(new HealthPotion());
+                    final boolean success = myDungeon.useItem(new HealthPotion());
                     if (success) {
                         myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
                     }
@@ -291,16 +295,14 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         } else if ("Hero".equals(s)) {
             myHero = myDungeon.getHero();
         } else if ("SEE".equals(s)) {
-            boolean success = myDungeon.useItem(new VisionPotion());
+            final boolean success = myDungeon.useItem(new VisionPotion());
             if (success) {
                 myDungeon.sendMessage("You can see what's inside the adjacent rooms.\n");
             }
         } else if ("LOAD GAME".equals(s)) {
             try {
                 myDungeon.load((File)(theEvent.getNewValue()));
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (SQLException e) {
+            } catch (final IOException | ClassNotFoundException | SQLException e) {
                 throw new RuntimeException(e);
             }
             myDungeon = model.DungeonLogic.getDungeonInstance();

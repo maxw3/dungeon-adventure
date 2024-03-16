@@ -7,7 +7,13 @@ package model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +31,11 @@ public final class DungeonLogic implements Serializable {
     /**
      * The instance of this Dungeon Logic
      */
-    public static DungeonLogic MY_INSTANCE;
+    private static DungeonLogic MY_INSTANCE;
     static {
         try {
             MY_INSTANCE = new DungeonLogic();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -117,9 +123,9 @@ public final class DungeonLogic implements Serializable {
      * @throws IOException file not found
      */
     public void save() throws IOException {
-        File f = new File("saves\\" + myHero.getCharName() + (++mySaveCount) + ".adv");
-        FileOutputStream file = new FileOutputStream(f);
-        ObjectOutputStream out = new ObjectOutputStream(file);
+        final File f = new File("saves\\" + myHero.getCharName() + (++mySaveCount) + ".adv");
+        final FileOutputStream file = new FileOutputStream(f);
+        final ObjectOutputStream out = new ObjectOutputStream(file);
         out.writeObject(this);
         out.close();
         file.close();
