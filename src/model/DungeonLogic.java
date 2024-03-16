@@ -41,6 +41,10 @@ public final class DungeonLogic implements Serializable {
     }
 
     /**
+     * Is the game currently active?
+     */
+    private static boolean myGameActive;
+    /**
      * The length of the cube shaped dungeon
      */
     private static final int DUNGEON_SIZE = 5;
@@ -67,10 +71,7 @@ public final class DungeonLogic implements Serializable {
      * The inventory of the hero
      */
     private Inventory myInventory;
-    /**
-     * Is the game currently active?
-     */
-    private static boolean myGameActive;
+
     /**
      * Is the hero currently in combat?
      */
@@ -154,13 +155,6 @@ public final class DungeonLogic implements Serializable {
         MY_INSTANCE.fix(myOldChanges);
     }
 
-    private void fix(final PropertyChangeSupport oldChanges) {
-        myChanges = new PropertyChangeSupport(this);
-        for (PropertyChangeListener listener : oldChanges.getPropertyChangeListeners()) {
-            myChanges.addPropertyChangeListener(listener);
-        }
-    }
-
     /**
      * refresh the screen
      */
@@ -205,23 +199,7 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("LEVEL UP", null,myHero.getMaxHP());
         setNewFloor();
     }
-    /**
-     * Creates a new floor for the Hero to explore
-     * @throws SQLException could not query hero data
-     */
-    private void setNewFloor() throws SQLException {
-        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
-        final Room startingRoom = myFloor.getStartingRoom();
-        startingRoom.addCharacter(myHero);
-        myHeroCol = startingRoom.getCol();
-        myHeroRow = startingRoom.getRow();
-        myCurrentRoom = startingRoom;
-        myLastRoom = myCurrentRoom;
-        explore(myCurrentRoom);
-        myChanges.firePropertyChange("COMBAT STATUS", true, false);
-        myChanges.firePropertyChange("Dir",null,true);
-        myChanges.firePropertyChange("UPDATE MAP",null,true);
-    }
+
 
     /**
      * Create the hero
@@ -520,25 +498,6 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
-    /**
-     * trigger the room's events
-     */
-    private void applyEffects() {
-        myChanges.firePropertyChange("EMPTY", false, true);
-        myStepCount++;
-        expireVisPot();
-        myLastRoom.removeCharacter(myHero);
-        myHeroCol = myCurrentRoom.getCol();
-        myHeroRow = myCurrentRoom.getRow();
-        explore(myCurrentRoom);
-        myChanges.firePropertyChange("Dir", null,true);
-        final boolean previous = myCombatStatus;
-        startCombat();
-        if (!myCombatStatus) {
-            collect();
-        }
-        myChanges.firePropertyChange("COMBAT STATUS", previous, myCombatStatus);
-    }
 
     /**
      * collect the items in the room into the inventory
@@ -616,14 +575,6 @@ public final class DungeonLogic implements Serializable {
         }
     }
 
-    /**
-     * format the message
-     */
-    private void trimMessage() {
-        if (myMessages.length() > 300) {
-            myMessages.delete(0, 50);
-        }
-    }
 
     /**
      * fire the message for the View to catch and use
@@ -636,5 +587,59 @@ public final class DungeonLogic implements Serializable {
         myMessages.append(theMessage);
         trimMessage();
         myChanges.firePropertyChange("MESSAGE", null, myMessages);
+    }
+
+    private void fix(final PropertyChangeSupport oldChanges) {
+        myChanges = new PropertyChangeSupport(this);
+        for (PropertyChangeListener listener : oldChanges.getPropertyChangeListeners()) {
+            myChanges.addPropertyChangeListener(listener);
+        }
+    }
+
+    /**
+     * format the message
+     */
+    private void trimMessage() {
+        if (myMessages.length() > 300) {
+            myMessages.delete(0, 50);
+        }
+    }
+
+    /**
+     * trigger the room's events
+     */
+    private void applyEffects() {
+        myChanges.firePropertyChange("EMPTY", false, true);
+        myStepCount++;
+        expireVisPot();
+        myLastRoom.removeCharacter(myHero);
+        myHeroCol = myCurrentRoom.getCol();
+        myHeroRow = myCurrentRoom.getRow();
+        explore(myCurrentRoom);
+        myChanges.firePropertyChange("Dir", null,true);
+        final boolean previous = myCombatStatus;
+        startCombat();
+        if (!myCombatStatus) {
+            collect();
+        }
+        myChanges.firePropertyChange("COMBAT STATUS", previous, myCombatStatus);
+    }
+
+    /**
+     * Creates a new floor for the Hero to explore
+     * @throws SQLException could not query hero data
+     */
+    private void setNewFloor() throws SQLException {
+        myFloor = new Floor(myFloorLevel, DUNGEON_SIZE);
+        final Room startingRoom = myFloor.getStartingRoom();
+        startingRoom.addCharacter(myHero);
+        myHeroCol = startingRoom.getCol();
+        myHeroRow = startingRoom.getRow();
+        myCurrentRoom = startingRoom;
+        myLastRoom = myCurrentRoom;
+        explore(myCurrentRoom);
+        myChanges.firePropertyChange("COMBAT STATUS", true, false);
+        myChanges.firePropertyChange("Dir",null,true);
+        myChanges.firePropertyChange("UPDATE MAP",null,true);
     }
 }

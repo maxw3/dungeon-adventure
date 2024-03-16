@@ -99,75 +99,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     }
 
     /**
-     * The GUI for the game. initializes the frame and sets its properties
-     * Starts up View
-     */
-    private static void createAndShowGUI() {
-
-        // Main Frame/Window
-        myFrame = new JFrame("Dungeon Adventure");
-
-        // Main Panel, Contains the Game
-        final DungeonView mainPanel = new DungeonView();
-        mainPanel.addPropertyChangeListener(MY_INSTANCE);
-
-        // Size of the Main Window
-        final Dimension frameSize = new Dimension(1280, 720);
-
-        // Adds property change listeners to the main panel
-        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
-        DungeonLogic.getDungeonInstance().addPropertyChangeListener(MY_INSTANCE);
-
-        // Sets the Content Pane of the frame to the Main Panel
-        myFrame.setContentPane(mainPanel);
-        if (MY_INSTANCE.checkGameStatus()) {
-            // Disables "window exit" when clicking the X on the window
-            myFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-            // Window Listener
-            myFrame.addWindowListener(new WindowAdapter() {
-                /**
-                 * Listener when user tries to close the window
-                 * pops up an option panel that asks for confirmation
-                 * on whether the user really wants to close the window
-                 * If confirmed, closes the window
-                 * Otherwise, do nothing.
-                 *
-                 * @param theCloseEvent the event to be processed
-                 */
-                @Override
-                public void windowClosing(final WindowEvent theCloseEvent) {
-                    final String[] exitOptions = {"Yes", "No", "Cancel"};
-                    final int promptResult = JOptionPane.showOptionDialog(null,
-                        "Would you like to save progress before you exit?", "Save on Exit",
-                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
-                        null, exitOptions, exitOptions[0]);
-                    if (promptResult == 0) {
-                        try {
-                            MY_INSTANCE.myDungeon.save();
-                            System.exit(0);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else if (promptResult == 1) {
-                        System.exit(0);
-                    }
-                }
-            });
-        }
-
-        // Sets the size of the window
-        myFrame.setSize(frameSize);
-
-        // Sets the location of the window
-        myFrame.setLocation(SCREEN_SIZE.width / 2 - myFrame.getWidth() / 2,
-            SCREEN_SIZE.height / 2 - myFrame.getHeight() / 2);
-
-        // Makes the main window visible
-        myFrame.setVisible(true);
-    }
-
-    /**
      * The combat gameplay of the game.
      * Simulates 1 round of the fight
      * @param theChoice What the hero does for the current round of the fight
@@ -235,17 +166,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     }
 
     /**
-     * Getter for status of the game
-     * @return Is there currently an active game?
-     */
-    private boolean checkGameStatus() {
-        if (!myDungeon.getGameActive()) {
-            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
-        }
-        return myDungeon.getGameActive();
-    }
-
-    /**
      * Getter for myFrame
      * @return the Frame
      */
@@ -308,5 +228,85 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             myDungeon = model.DungeonLogic.getDungeonInstance();
             myHero = myDungeon.getHero();
         }
+    }
+
+    /**
+     * Getter for status of the game
+     * @return Is there currently an active game?
+     */
+    private boolean checkGameStatus() {
+        if (!myDungeon.getGameActive()) {
+            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+        }
+        return myDungeon.getGameActive();
+    }
+
+    /**
+     * The GUI for the game. initializes the frame and sets its properties
+     * Starts up View
+     */
+    private static void createAndShowGUI() {
+
+        // Main Frame/Window
+        myFrame = new JFrame("Dungeon Adventure");
+
+        // Main Panel, Contains the Game
+        final DungeonView mainPanel = new DungeonView();
+        mainPanel.addPropertyChangeListener(MY_INSTANCE);
+
+        // Size of the Main Window
+        final Dimension frameSize = new Dimension(1280, 720);
+
+        // Adds property change listeners to the main panel
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(MY_INSTANCE);
+
+        // Sets the Content Pane of the frame to the Main Panel
+        myFrame.setContentPane(mainPanel);
+        if (MY_INSTANCE.checkGameStatus()) {
+            // Disables "window exit" when clicking the X on the window
+            myFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+            // Window Listener
+            myFrame.addWindowListener(new WindowAdapter() {
+                /**
+                 * Listener when user tries to close the window
+                 * pops up an option panel that asks for confirmation
+                 * on whether the user really wants to close the window
+                 * If confirmed, closes the window
+                 * Otherwise, do nothing.
+                 *
+                 * @param theCloseEvent the event to be processed
+                 */
+                @Override
+                public void windowClosing(final WindowEvent theCloseEvent) {
+                    final String[] exitOptions = {"Yes", "No", "Cancel"};
+                    final int promptResult = JOptionPane.showOptionDialog(null,
+                            "Would you like to save progress before you exit?", "Save on Exit",
+                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
+                            null, exitOptions, exitOptions[0]);
+                    if (promptResult == 0) {
+                        try {
+                            MY_INSTANCE.myDungeon.save();
+                            System.exit(0);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (promptResult == 1) {
+                        System.exit(0);
+                    }
+                }
+            });
+        }
+
+        // Sets the size of the window
+        myFrame.setSize(frameSize);
+
+        // Sets the location of the window
+        myFrame.setLocation(SCREEN_SIZE.width / 2 - myFrame.getWidth() / 2,
+                SCREEN_SIZE.height / 2 - myFrame.getHeight() / 2);
+
+        // Makes the main window visible
+        myFrame.setVisible(true);
     }
 }
