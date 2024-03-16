@@ -26,6 +26,7 @@ public final class Monster extends AbstractDungeonCharacter {
      * private constructor to avoid calls
      * @throws SQLException
      */
+    @SuppressWarnings("unused")
     private Monster() throws SQLException {
         this("", 0);
         throw new IllegalCallerException("Private Constructor Call on Monster");

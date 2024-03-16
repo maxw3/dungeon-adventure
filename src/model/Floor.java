@@ -9,7 +9,6 @@ import enums.Direction;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;

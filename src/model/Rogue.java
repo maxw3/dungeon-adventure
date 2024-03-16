@@ -23,6 +23,7 @@ public final class Rogue extends Hero {
      * private constructor to avoid calls
      * @throws SQLException could not query rogue data
      */
+    @SuppressWarnings("unused")
     private Rogue() throws SQLException {
         this("");
         throw new IllegalCallerException("Private Constructor Call on Rogue");

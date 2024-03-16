@@ -20,6 +20,7 @@ public final class Mage extends Hero {
      * private constructor to avoid calls
      * @throws SQLException could not query mage data
      */
+    @SuppressWarnings("unused")
     private Mage() throws SQLException {
         this("");
         throw new IllegalCallerException("Private Constructor Call on Mage");

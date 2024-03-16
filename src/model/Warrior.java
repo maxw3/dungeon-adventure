@@ -20,6 +20,7 @@ public final class Warrior extends Hero {
      * private constructor to avoid calls
      * @throws SQLException could not query warrior data
      */
+    @SuppressWarnings("unused")
     private Warrior() throws SQLException {
         this("");
         throw new IllegalCallerException("Private Constructor Call on Warrior");

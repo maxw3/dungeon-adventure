@@ -669,23 +669,23 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         myHelp.setMnemonic('h');
 
         myStartGame = new JMenuItem("Start New Game", KeyEvent.VK_G);
-        myStartGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
+        myStartGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK));
         mySaveGame = new JMenuItem("Save Game", KeyEvent.VK_S);
-        mySaveGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+        mySaveGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         mySaveGame.setEnabled(false);
         myLoadGame = new JMenuItem("Load Game", KeyEvent.VK_L);
-        myLoadGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
+        myLoadGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
         myExitGame = new JMenuItem("Exit Game", KeyEvent.VK_X);
-        myExitGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+        myExitGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
 
         myAbout = new JMenuItem("Backstory", KeyEvent.VK_B);
-        myAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_MASK));
+        myAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
         myRules = new JMenuItem("How to play", KeyEvent.VK_H);
-        myRules.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+        myRules.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK));
         myStats = new JMenuItem("Stats", KeyEvent.VK_T);
-        myStats.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
+        myStats.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK));
         myShortcuts = new JMenuItem("Shortcuts", KeyEvent.VK_C);
-        myShortcuts.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        myShortcuts.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
 
         myFile.add(myStartGame);
         myFile.add(mySaveGame);

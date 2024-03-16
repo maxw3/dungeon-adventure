@@ -6,8 +6,6 @@
 package model;
 import enums.ItemType;
 
-import java.io.Serializable;
-
 /**
  * Pillar class
  * equipment to collect throughout the dungeon
@@ -15,7 +13,7 @@ import java.io.Serializable;
  * @author Jordan, Max, Gabriel, Terence
  * @version Winter 2024
  */
-public final class Pillar extends AbstractEquipment implements Serializable {
+public final class Pillar extends AbstractEquipment {
     /**
      * The type of item this is
      */
