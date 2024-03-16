@@ -123,15 +123,17 @@ public final class DungeonLogic implements Serializable {
      * @throws IOException file not found
      * @throws ClassNotFoundException class not found
      */
-    public void load(final File theFile) throws IOException, ClassNotFoundException {
-        myCombatStatus = false;
-        endCombat();
-        FileInputStream file = new FileInputStream(theFile);
-        ObjectInputStream in = new ObjectInputStream(file);
-        MY_INSTANCE = (DungeonLogic)in.readObject();
+    public void load(final File theFile) throws IOException, ClassNotFoundException, SQLException {
+        final PropertyChangeSupport oldChanges = myChanges;
+        final FileInputStream file = new FileInputStream(theFile);
+        final ObjectInputStream in = new ObjectInputStream(file);
+        MY_INSTANCE = (DungeonLogic)(in.readObject());
         in.close();
         file.close();
         myChanges = new PropertyChangeSupport(this);
+        for (PropertyChangeListener listener : oldChanges.getPropertyChangeListeners()) {
+            myChanges.addPropertyChangeListener(listener);
+        }
     }
 
     /**
@@ -148,6 +150,10 @@ public final class DungeonLogic implements Serializable {
         myChanges.firePropertyChange("UPDATE MAP", false, true);
         myChanges.firePropertyChange("MESSAGE", null, myMessages);
         myChanges.firePropertyChange("COMBAT STATUS", !myCombatStatus, myCombatStatus);
+    }
+
+    public void fixView() {
+        myChanges.firePropertyChange("RE-ADD LISTENERS", false, true);
     }
 
     /**
@@ -334,8 +340,8 @@ public final class DungeonLogic implements Serializable {
      * Start combat with myEnemy
      */
     public void startCombat() {
-        if (myGameActive && !myCombatStatus && myFloor.outOfBounds(myHeroCol) &&
-            myFloor.outOfBounds(myHeroRow)) {
+        if (myGameActive && !myCombatStatus && !myFloor.outOfBounds(myHeroCol) &&
+            !myFloor.outOfBounds(myHeroRow)) {
             boolean isMonster = false;
             for (final AbstractDungeonCharacter c : myCurrentRoom.getCharacters()) {
                 if (c instanceof Monster) {
@@ -343,7 +349,6 @@ public final class DungeonLogic implements Serializable {
                     myMessages.append("You've encountered a ").append(c.getName()).append("!\n");
                     trimMessage();
                     myChanges.firePropertyChange("MESSAGE", null, myMessages);
-                    myChanges.firePropertyChange("Room Content", null, c.getName() + ".png");
                     break;
                 }
             }
@@ -519,12 +524,12 @@ public final class DungeonLogic implements Serializable {
      */
     public void collect() {
         final List<Item> items = myCurrentRoom.getItems();
-        if(items.size() == 0) {
-            myChanges.firePropertyChange("Room Content", null, "Empty.png");
-        }
+//        if(items.size() == 0) {
+//            myChanges.firePropertyChange("Room Content", null, "Empty.png");
+//        }
         for (int pos = 0; pos < items.size(); pos++) {
             final Item i = items.get(pos);
-            myChanges.firePropertyChange("Room Content", null, i.getName() + ".png");
+//            myChanges.firePropertyChange("Room Content", null, i.getName() + ".png");
             if (i.getType().equals("PIT")) {
                 final int oldHP = myHero.getHP();
                 final int damage = ((Pit)i).activate(myHero);

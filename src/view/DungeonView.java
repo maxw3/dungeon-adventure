@@ -857,9 +857,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         }
         if (saveGame.isFile()) {
             myChanges.firePropertyChange("LOAD GAME", null, saveGame);
-            myDungeon = DungeonLogic.getDungeonInstance();
-            myDungeon.addPropertyChangeListener(this);
-            myDungeon.updateView();
         }
     }
 
@@ -1033,10 +1030,6 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
         } else if ("LEVEL UP".equals(s)) {
             myHeroMaxHP.setText(theEvent.getNewValue().toString());
             myHeroHP.setText(theEvent.getNewValue().toString());
-
-        } else if ("Room Content".equals(s)) {
-            myRoomContents.setText(theEvent.getNewValue().toString());
-
         } else if ("Hero".equals(s)) {
             myHero.setText(theEvent.getNewValue().toString());
         } else if ("IMAGE".equals(s)) {
@@ -1049,6 +1042,23 @@ public final class DungeonView extends JPanel implements PropertyChangeListener 
             }
         } else if ("EMPTY".equals(s)) {
             updateRoomContents(myRoomContents, new JLabel("Empty!"), 5);
+        } else if ("RE-ADD LISTENERS".equals(s)) {
+            myDungeon = DungeonLogic.getDungeonInstance();
+            myDungeon.updateView();
+            myMap.setText(myDungeon.getFloorString());
+            System.out.println(myMap.getText());
+            myName.setText(myDungeon.getHero().getCharName());
+            myHeroHP.setText(String.valueOf(myDungeon.getHero().getHP()));
+            myHeroMaxHP.setText(String.valueOf(myDungeon.getHero().getMaxHP()));
+            try {
+                BufferedImage hero = ImageIO.read(new File(myDungeon.getHero().getImage()));
+                Image temp = hero.getScaledInstance(PORTRAIT_SIZE, PORTRAIT_SIZE, Image.SCALE_SMOOTH);
+                updateRoomContents(myHero, new JLabel(new ImageIcon(temp)), 3);
+            } catch (IOException exception) {
+                updateRoomContents(myHero, new JLabel("HERO IMAGE NOT FOUND"), 3);
+            }
+            updateRoomContents(myRoomContents, new JLabel("Empty!"), 5);
+            SwingUtilities.invokeLater(myPanel::repaint);
         }
     }
 

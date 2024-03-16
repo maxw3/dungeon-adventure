@@ -295,9 +295,12 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                 myDungeon.load((File)(theEvent.getNewValue()));
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
             myDungeon = model.DungeonLogic.getDungeonInstance();
-            myDungeon.addPropertyChangeListener(this);
+            myHero = myDungeon.getHero();
+            myDungeon.fixView();
         }
     }
 }
