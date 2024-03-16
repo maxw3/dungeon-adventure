@@ -1,13 +1,26 @@
 package model;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FloorTest {
 
-
+    private static final String NEWLINE = System.lineSeparator();
     @Test
-    void testFloorConstructor() {
+    void testFloorConstructor() throws SQLException {
+        Floor testFloor = new Floor(1, 5);
+        Room[][] rooms = testFloor.getRooms();
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 5; col++) {
+                assertNotNull(rooms[row][col]);
+            }
+        }
+        assertEquals(5, testFloor.getSize());
+    }
+    @Test
+    void testFloorConstructorCorrectness() throws SQLException {
         boolean correct = true;
         for (int attempts = 0; attempts < 10; attempts++) {
             Floor testFloor = new Floor(1, 7);
@@ -36,24 +49,6 @@ class FloorTest {
         }
         assertTrue(correct);
     }
-    @Test
-    void addCharacter() {
-        Floor testFloor = new Floor(1, 7);
-        Room[][] arrayOfRooms = testFloor.getRooms();
-        AbstractDungeonCharacter dummy = MonsterFactory.createDummy();
-        testFloor.addCharacter(3, 3, dummy);
-        assertTrue(arrayOfRooms[3][3].getCharacters().contains(dummy));
-    }
-
-    @Test
-    void removeCharacter() {
-        Floor testFloor = new Floor(1, 7);
-        Room[][] arrayOfRooms = testFloor.getRooms();
-        AbstractDungeonCharacter dummy = MonsterFactory.createDummy();
-        testFloor.addCharacter(3, 3, dummy);
-        testFloor.removeCharacter(3, 3, dummy);
-        assertFalse(arrayOfRooms[3][3].getCharacters().contains(dummy));
-    }
 
     /*
        I have some ideas for how we could test the toString, but none are easy to implement. First,
@@ -63,13 +58,39 @@ class FloorTest {
        but having that be anything besides private would be dangerous for the codebase. Any ideas are welcome.
      */
     @Test
-    void testToString() {
-        assertEquals("", new Floor(1, 7));
+    void testToString() throws SQLException {
+        Floor testFloor = new Floor(1, 2);
+        boolean doesMatch = false;
+        if (("*****" + NEWLINE + "*?|?*" + NEWLINE + "*-*-*" + NEWLINE + "*?*?*" + NEWLINE + "*****" + NEWLINE).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("*****" + NEWLINE + "*?|?*" + NEWLINE + "*-***" + NEWLINE + "*?|?*" + NEWLINE + "*****" + NEWLINE).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("*****" + NEWLINE + "*?*?*" + NEWLINE + "*-*-*" + NEWLINE + "*?|?*" + NEWLINE + "*****" + NEWLINE).equals(testFloor.toString())) {
+            doesMatch = true;
+        } else if (("*****" + NEWLINE + "*?|?*" + NEWLINE + "***-*" + NEWLINE + "*?|?*" + NEWLINE + "*****" + NEWLINE).equals(testFloor.toString())) {
+            doesMatch = true;
+        }
+        assertTrue(doesMatch);
     }
 
     @Test
-    void getSize() {
+    void testGetSize() throws SQLException {
         Floor testFloor = new Floor(1, 7);
         assertEquals(7, testFloor.getSize());
+    }
+
+    @Test
+    void testGetStartingRoom() throws SQLException {
+        Floor testFloor = new Floor(1, 1);
+        final Room expectedRoom = testFloor.getRooms()[0][0];
+        assertEquals(expectedRoom, testFloor.getStartingRoom());
+    }
+
+    @Test
+    void testOutOfBounds() throws SQLException {
+        Floor testFloor = new Floor(1, 1);
+        assertTrue(testFloor.outOfBounds(-1));
+        assertTrue(testFloor.outOfBounds(1));
+        assertFalse(testFloor.outOfBounds(0));
     }
 }

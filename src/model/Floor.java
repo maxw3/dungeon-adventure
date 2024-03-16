@@ -1,28 +1,63 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import enums.Direction;
 
-import java.util.Arrays;
+import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class Floor {
-    
-    private static final float DOOR_CHANCE = 0.5f;
+/**
+ * The floor of the dungeon
+ * contains the rooms of the floor, and how they connect with each other
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
+ */
+public final class Floor implements Serializable {
+
+    /**
+     * String to use as a line separator for new lines
+     */
+    private final static String NEWLINE = System.lineSeparator();
+    /**
+     * random number generator
+     */
     private static final Random RAND = new Random();
 
+    /**
+     * the size of the floor
+     */
     private final int mySize;
 
+    /**
+     * The rooms of the floor
+     */
     private final Room[][] myRooms;
 
+    /**
+     * The level of the floor
+     */
     private final int myFloorLevel;
 
-    Floor() {
-        this(1, 5);
-    }
+    /**
+     * The entrance of the floor
+     */
+    private final Room myStartingRoom;
 
-    Floor(final int theFloorLevel, final int theSize) {
+    /**
+     * Constructor
+     *
+     * @param theFloorLevel The level of the floor
+     * @param theSize   The length of the square floor
+     * @throws SQLException could not query monster data
+     */
+    Floor(final int theFloorLevel, final int theSize) throws SQLException {
         myFloorLevel = theFloorLevel;
         mySize = theSize;
         myRooms = new Room[mySize][mySize];
@@ -33,48 +68,141 @@ public class Floor {
             }
         }
         fillFloor();
-        createMaze();
+        final Room startRoom = createMaze();
+        startRoom.emptyRoom();
+        myStartingRoom = startRoom;
     }
 
-    public final void addCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
-        myRooms[theRoomY][theRoomX].addCharacter(theCharacter);
-    }
+    /**
+     * Getter for mySize
+     * @return the size
+     */
+    public int getSize() { return mySize; }
 
-    public final void removeCharacter(final int theRoomX, final int theRoomY, final AbstractDungeonCharacter theCharacter) {
-        myRooms[theRoomY][theRoomX].removeCharacter(theCharacter);
-    }
+    /**
+     * Getter for myStartingRoom
+     * @return the Room
+     */
+    public Room getStartingRoom() { return myStartingRoom; }
 
-    private void setRandomDoors() {
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+
         for (int row = 0; row < mySize; row++) {
-            for (int col = 0; col < mySize; col++) {
-                if (RAND.nextFloat() < DOOR_CHANCE && row - 1 >= 0) {
-                    myRooms[row][col].setNorthRoom(myRooms[row - 1][col]);
-                    myRooms[row - 1][col].setSouthRoom(myRooms[row][col]);
-                }
-                if (RAND.nextFloat() < DOOR_CHANCE && col - 1 >= 0) {
-                    myRooms[row][col].setWestRoom(myRooms[row][col - 1]);
-                    myRooms[row][col - 1].setEastRoom(myRooms[row][col]);
-                }
-                if (RAND.nextFloat() < DOOR_CHANCE && row + 1 < mySize) {
-                    myRooms[row][col].setSouthRoom(myRooms[row + 1][col]);
-                    myRooms[row + 1][col].setNorthRoom(myRooms[row][col]);
-                }
-                if (RAND.nextFloat() < DOOR_CHANCE && col + 1 < mySize) {
-                    myRooms[row][col].setEastRoom(myRooms[row][col + 1]);
-                    myRooms[row][col + 1].setWestRoom(myRooms[row][col]);
+            for (Room r: myRooms[row]) {
+                sb.append('*');
+                if (r.canWalkNorth()) {
+                    sb.append('-');
+                } else {
+                    sb.append('*');
                 }
             }
+
+            // Print top-right-most corner
+            sb.append('*').append(NEWLINE);
+
+            for (Room r: myRooms[row]) {
+                if (r.canWalkWest()) {
+                    sb.append('|');
+                } else {
+                    sb.append('*');
+                }
+
+                boolean hasHero = false;
+                boolean hasMonster = false;
+                boolean hasItem = false;
+                boolean hasPillar = false;
+
+                for (AbstractDungeonCharacter dc: r.getCharacters()) {
+                    if (dc instanceof Hero) {
+                        hasHero = true;
+                    }
+                    if (dc instanceof Monster) {
+                        hasMonster = true;
+                    }
+                }
+
+                for (Item i: r.getItems()) {
+                    if (i instanceof Pillar) {
+                        hasPillar = true;
+                        break;
+                    } else if (i instanceof Item) {
+                        hasItem = true;
+                        break;
+                    }
+                }
+                if (r.isVisible()) {
+                    if (hasPillar) {
+                        sb.append('B');
+                    } else if (hasHero) {
+                        sb.append('@');
+                    } else if (hasMonster) {
+                        sb.append('M');
+                    } else if (hasItem) {
+                        sb.append('\'');
+                    } else {
+                        sb.append(' ');
+                    }
+                } else {
+                    sb.append('?');
+                }
+            }
+
+            if (myRooms[row][mySize - 1].canWalkEast()) {
+                sb.append('|');
+            } else {
+                sb.append('*');
+            }
+
+            sb.append(NEWLINE);
+
+
         }
+        for (Room r: myRooms[mySize - 1]) {
+            sb.append('*');
+            if (r.canWalkSouth()) {
+                sb.append('-');
+            } else {
+                sb.append('*');
+            }
+        }
+        sb.append('*').append(NEWLINE);
+
+        return sb.toString();
     }
 
-    private void fillFloor() {
+    /**
+     * helper method to check if pointer is out of bounds
+     * @param thePosition the index
+     * @return true if out of bounds, false otherwise
+     */
+    /*Default*/ boolean outOfBounds(final int thePosition) {
+        return !(thePosition >= 0 && thePosition < mySize);
+    }
+
+    /**
+     * Getter for myRooms
+     * @return the rooms of the floor
+     */
+    Room[][] getRooms() {
+        return myRooms;
+    }
+
+    /**
+     * Helper method to fill myRooms with rooms
+     * @throws SQLException could not query monster data
+     */
+    private void fillFloor() throws SQLException {
         for (int row = 0; row < mySize; row++) {
             for (int col = 0; col < mySize; col++) {
                 final int choice = RAND.nextInt(100);
                 if (choice <= 30) {
                     myRooms[row][col].addCharacter(MonsterFactory.createMonster(myFloorLevel));
                 } else if (choice <= 70) {
-                    myRooms[row][col].addItem(new HealthPotion());
+                    int r = RAND.nextInt(2);
+                    AbstractConsumable[] select = new AbstractConsumable[] {new HealthPotion(), new VisionPotion()};
+                    myRooms[row][col].addItem(select[r]);
                 } else if (choice <= 80) {
                     myRooms[row][col].addItem(new Pit());
                 }
@@ -83,7 +211,12 @@ public class Floor {
 
     }
 
-    private Room createMaze() {
+    /**
+     * Helper method to connect the rooms in a maze like fashion
+     * @return  The entrance of the floor
+     * @throws SQLException could not query monster data
+     */
+    private Room createMaze() throws SQLException {
         final Set<Room> adjacentToMaze = new HashSet<>();
         final Set<Room> roomsPartOfMaze = new HashSet<>();
         final int row = RAND.nextInt(mySize);
@@ -112,22 +245,34 @@ public class Floor {
                 }
             }
         }
+        chosenRoom.emptyRoom();
         addPillar(chosenRoom);
+        chosenRoom.addCharacter(MonsterFactory.createBoss(myFloorLevel));
         return startingRoom;
     }
 
+    /**
+     * Add a Pillar of OO to the Room
+     * @param theRoom the room
+     */
     private void addPillar(final Room theRoom) {
-        if (myFloorLevel == 0) {
+        if (myFloorLevel == 1) {
             theRoom.addItem(new Pillar("Encapsulation"));
-        } else if (myFloorLevel == 1) {
-            theRoom.addItem(new Pillar("Polymorphism"));
         } else if (myFloorLevel == 2) {
-            theRoom.addItem(new Pillar("Inheritance"));
+            theRoom.addItem(new Pillar("Polymorphism"));
         } else if (myFloorLevel == 3) {
+            theRoom.addItem(new Pillar("Inheritance"));
+        } else if (myFloorLevel == 4) {
             theRoom.addItem(new Pillar("Abstraction"));
         }
     }
 
+    /**
+     * Connect the rooms
+     * @param theRoom The room
+     * @param theAdjacentToMaze the neighboring rooms
+     * @param theRoomsPartOfMaze the rooms that are part of the floor
+     */
     private void addNeighbors(final Room theRoom, final Set<Room> theAdjacentToMaze, final Set<Room> theRoomsPartOfMaze) {
         Room neighbor;
         final int row = theRoom.getRow();
@@ -158,6 +303,11 @@ public class Floor {
         }
     }
 
+    /**
+     * Add doors to the rooms to make them traversable
+     * @param theChosenRoom the room
+     * @param theDirection the direction of the door
+     */
     private void addDoor(final Room theChosenRoom, final Direction theDirection) {
         final int row = theChosenRoom.getRow();
         final int col = theChosenRoom.getCol();
@@ -182,6 +332,12 @@ public class Floor {
 
     }
 
+    /**
+     * What are the valid neighbors of the room
+     * @param theRoom the room
+     * @param theRoomsPartOfMaze the rooms in the floor
+     * @return the valid naighbors
+     */
     private Set<Direction> neighborPartOfMaze(final Room theRoom, final Set<Room> theRoomsPartOfMaze) {
         final Set<Direction> validNeighbors = new HashSet<>();
         Room neighbor;
@@ -212,73 +368,5 @@ public class Floor {
             }
         }
         return validNeighbors;
-    }
-
-    public final int getSize() {
-        return mySize;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-
-        for (int row = 0; row < mySize; row++) {
-            for (Room r: myRooms[row]) {
-                sb.append('*');
-                if (r.canWalkNorth()) {
-                    sb.append('-');
-                } else {
-                    sb.append('*');
-                }
-            }
-
-            // Print top-right-most corner
-            sb.append("*\n");
-
-            for (Room r: myRooms[row]) {
-                if (r.canWalkWest()) {
-                    sb.append('|');
-                } else {
-                    sb.append('*');
-                }
-                boolean hasHero = false;
-                for (AbstractDungeonCharacter dc: r.getCharacters()) {
-                    if (dc.getClass().getSimpleName().equals("model.Hero")) {
-                        hasHero = true;
-                        break;
-                    }
-                }
-                if (hasHero) {
-                    sb.append('@');
-                } else {
-                    sb.append(' ');
-                }
-            }
-
-            if (myRooms[row][mySize - 1].canWalkEast()) {
-                sb.append('|');
-            } else {
-                sb.append('*');
-            }
-
-            sb.append('\n');
-
-            
-        }
-        for (Room r: myRooms[mySize - 1]) {
-            sb.append('*');
-            if (r.canWalkSouth()) {
-                sb.append('-');
-            } else {
-                sb.append('*');
-            }
-        }
-        sb.append("*\n");
-
-        return sb.toString();
-    }
-
-    Room[][] getRooms() {
-        return Arrays.copyOf(myRooms, mySize);
     }
 }

@@ -1,11 +1,29 @@
+/*
+ *  Dungeon Adventure Project for TCSS 360
+ *  Winter 2024, Jordan, Terence, Max, and Gabriel
+ */
+
 package model;
 
 import enums.ItemType;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Pit implements Item {
+/**
+ * An item that's unobtainable for the hero
+ * When encountering this for the first time, it harms the hero
+ * @author Jordan, Max, Gabriel, Terence
+ * @version Winter 2024
+ */
+public final class Pit implements Item, Serializable {
+    /**
+     * random number generator
+     */
     private static final Random RANDOM = new Random();
+    /**
+     * the type of item this is
+     */
     private static final ItemType MY_TYPE = ItemType.PIT;
     @Override
     public String getName() {
@@ -17,7 +35,14 @@ public class Pit implements Item {
         return MY_TYPE.name();
     }
 
-    public void activate(final AbstractDungeonCharacter theCharacter) {
-        theCharacter.healOrDamage(-(RANDOM.nextInt(20) + 1));
+    /**
+     * hurts the hero
+     * @param theCharacter the Hero
+     * @return how much damage was dealt?
+     */
+    public int activate(final AbstractDungeonCharacter theCharacter) {
+        final int damage = -(RANDOM.nextInt(20) + 1);
+        theCharacter.healOrDamage(damage);
+        return damage;
     }
 }
