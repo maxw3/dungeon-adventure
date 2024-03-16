@@ -67,32 +67,6 @@ public final class Inventory implements Serializable {
         return output.toString();
     }
 
-    /**
-     * Does the hero have this pillar?
-     * @param thePillar the Pillar
-     * @return Does the hero have it?
-     */
-    private String pillarStatus(final AbstractEquipment thePillar){
-        if (thePillar == null){
-            return "X";
-        } else {
-            return "Obtained";
-        }
-    }
-
-    /**
-     * Does the inventory have any of this item?
-     * @param theName the item
-     * @return Are there any?
-     */
-    private AbstractEquipment containsItem(final String theName) {
-        for (final AbstractEquipment i : myConsumableItems) {
-            if (i.getName().equalsIgnoreCase(theName)) {
-                return i;
-            }
-        }
-        return null;
-    }
 
     /**
      * Getter for size of inventory
@@ -205,5 +179,32 @@ public final class Inventory implements Serializable {
             return ((AbstractConsumable)item).getQuantity();
         }
         return 0;
+    }
+
+    /**
+     * Does the hero have this pillar?
+     * @param thePillar the Pillar
+     * @return Does the hero have it?
+     */
+    private String pillarStatus(final AbstractEquipment thePillar){
+        if (thePillar == null){
+            return "X";
+        } else {
+            return "Obtained";
+        }
+    }
+
+    /**
+     * Does the inventory have any of this item?
+     * @param theName the item
+     * @return Are there any?
+     */
+    private AbstractEquipment containsItem(final String theName) {
+        for (final AbstractEquipment i : myConsumableItems) {
+            if (i.getName().equalsIgnoreCase(theName)) {
+                return i;
+            }
+        }
+        return null;
     }
 }

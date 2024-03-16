@@ -43,7 +43,7 @@ public final class Warrior extends Hero {
         setAttack(getAttack() + 50);
         setHitChance(getHitChance() - 25);
 
-        String result = attack(theTarget);
+        final String result = attack(theTarget);
 
         setAttack(getAttack() - 50);
         setHitChance(getHitChance() + 25);

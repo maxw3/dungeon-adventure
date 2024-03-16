@@ -79,7 +79,7 @@ public abstract class AbstractConsumable extends AbstractEquipment {
     /**
      * Increases amount by 1 by obtaining it.
      */
-    public final void add(){
+    public final void add() {
         myQuantity++;
     }
 }

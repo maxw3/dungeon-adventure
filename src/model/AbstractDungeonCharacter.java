@@ -59,8 +59,8 @@ public abstract class AbstractDungeonCharacter implements Serializable {
      * @throws SQLException
      */
     protected AbstractDungeonCharacter(final String theName) throws SQLException {
-        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
-        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
+        final String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        final ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
 
         myName = theName;
         myMaxHP = rs.getInt("MaxHP");
@@ -81,8 +81,8 @@ public abstract class AbstractDungeonCharacter implements Serializable {
      * @throws SQLException
      */
     protected AbstractDungeonCharacter(final String theName, final int theFloor) throws SQLException {
-        String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
-        ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
+        final String query = "SELECT * FROM character WHERE CharName = '" + theName + "'";
+        final ResultSet rs = controller.DungeonController.STATEMENT.executeQuery(query);
 
         myName = theName;
         myMaxHP = (int) (rs.getInt("MaxHP") * Math.pow(rs.getDouble("HPMultiplier"), theFloor));
@@ -119,7 +119,7 @@ public abstract class AbstractDungeonCharacter implements Serializable {
             if (roll <= getHitChance() && !theTarget.isBlocked()) {
                 hits++;
                 final double multiplier = Math.random() + 0.5;
-                int hitDamage = (int) (getAttack() * multiplier * -1);
+                final int hitDamage = (int) (getAttack() * multiplier * -1);
                 theTarget.healOrDamage(hitDamage);
                 damage += hitDamage;
             }
@@ -222,7 +222,7 @@ public abstract class AbstractDungeonCharacter implements Serializable {
      * @return Did the attack get blocked?
      */
     public final boolean isBlocked() {
-        int roll = (int)(Math.random() * 100);
+        final int roll = (int)(Math.random() * 100);
         return roll <= getBlockChance();
     }
 
@@ -230,37 +230,51 @@ public abstract class AbstractDungeonCharacter implements Serializable {
      * Getter for the Character's name
      * @return The Character's name
      */
-    public final String getName() { return myName; }
+    public final String getName() {
+        return myName;
+    }
     /**
      * Getter for the Character's Max HP
      * @return The Character's Max HP
      */
-    public final int getMaxHP() { return  myMaxHP;}
+    public final int getMaxHP() {
+        return  myMaxHP;
+    }
     /**
      * Getter for the Character's HP
      * @return The HP
      */
-    public final int getHP() { return myHP; }
+    public final int getHP() {
+        return myHP;
+    }
     /**
      * Getter for the Character's Block Chance
      * @return The Block Chance
      */
-    public final int getBlockChance() { return myBlockChance; }
+    public final int getBlockChance() {
+        return myBlockChance;
+    }
     /**
      * Getter for the Character's Attack Speed
      * @return The Attack Speed
      */
-    public final int getAtkSpd() { return myAtkSpd; }
+    public final int getAtkSpd() {
+        return myAtkSpd;
+    }
     /**
      * Getter for the Character's Hit Chance
      * @return The Hit Chance
      */
-    public final int getHitChance() { return myHitChance; }
+    public final int getHitChance() {
+        return myHitChance;
+    }
     /**
      * Getter for the Character's Attack
      * @return The Attack
      */
-    public final int getAttack() { return myAttack; }
+    public final int getAttack() {
+        return myAttack;
+    }
 
     /**
      * The description of the skill

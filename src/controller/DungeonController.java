@@ -22,13 +22,39 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import model.*;
-
+import model.AbstractDungeonCharacter;
+import model.DungeonLogic;
+import model.HealthPotion;
+import model.Hero;
+import model.Monster;
+import model.VisionPotion;
 import org.sqlite.SQLiteDataSource;
 import view.DungeonView;
 
 public class DungeonController extends JPanel implements PropertyChangeListener {
 
+    /**
+     * The database of the game
+     */
+    public static final SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
+    /**
+     * The connection of the database
+     */
+    public static final Connection CONNECTION;
+    /**
+     * The statement to send queries to the database
+     */
+    public static final Statement STATEMENT;
+    static {
+        try {
+            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
+            CONNECTION = DATA_SOURCE.getConnection();
+            STATEMENT = CONNECTION.createStatement();
+            MY_INSTANCE = new DungeonController();
+        } catch (final SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
     /**
      * The main frame of the program
      */
@@ -53,28 +79,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
      * The playable character for the game
      */
     private Hero myHero;
-    /**
-     * The database of the game
-     */
-    public static SQLiteDataSource DATA_SOURCE = new SQLiteDataSource();
-    /**
-     * The connection of the database
-     */
-    public static Connection CONNECTION;
-    /**
-     * The statement to send queries to the database
-     */
-    public static final Statement STATEMENT;
-    static {
-        try {
-            DATA_SOURCE.setUrl("jdbc:sqlite:dungeonData.sqlite");
-            CONNECTION = DATA_SOURCE.getConnection();
-            STATEMENT = CONNECTION.createStatement();
-            MY_INSTANCE = new DungeonController();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Constructor of the Controller
@@ -95,94 +99,25 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     }
 
     /**
-     * The GUI for the game. initializes the frame and sets its properties
-     * Starts up View
-     */
-    private static void createAndShowGUI() {
-
-        // Main Frame/Window
-        myFrame = new JFrame("Dungeon Adventure");
-
-        // Main Panel, Contains the Game
-        final DungeonView mainPanel = new DungeonView();
-        mainPanel.addPropertyChangeListener(MY_INSTANCE);
-
-        // Size of the Main Window
-        final Dimension frameSize = new Dimension(1280, 720);
-
-        // Adds property change listeners to the main panel
-        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
-        DungeonLogic.getDungeonInstance().addPropertyChangeListener(MY_INSTANCE);
-
-        // Sets the Content Pane of the frame to the Main Panel
-        myFrame.setContentPane(mainPanel);
-        if (MY_INSTANCE.checkGameStatus()) {
-            // Disables "window exit" when clicking the X on the window
-            myFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-            // Window Listener
-            myFrame.addWindowListener(new WindowAdapter() {
-                /**
-                 * Listener when user tries to close the window
-                 * pops up an option panel that asks for confirmation
-                 * on whether the user really wants to close the window
-                 * If confirmed, closes the window
-                 * Otherwise, do nothing.
-                 *
-                 * @param theCloseEvent the event to be processed
-                 */
-                @Override
-                public void windowClosing(final WindowEvent theCloseEvent) {
-                    final String[] exitOptions = {"Yes", "No", "Cancel"};
-                    final int promptResult = JOptionPane.showOptionDialog(null,
-                        "Would you like to save progress before you exit?", "Save on Exit",
-                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
-                        null, exitOptions, exitOptions[0]);
-                    if (promptResult == 0) {
-                        try {
-                            MY_INSTANCE.myDungeon.save();
-                            System.exit(0);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else if (promptResult == 1) {
-                        System.exit(0);
-                    }
-                }
-            });
-        }
-
-        // Sets the size of the window
-        myFrame.setSize(frameSize);
-
-        // Sets the location of the window
-        myFrame.setLocation(SCREEN_SIZE.width / 2 - myFrame.getWidth() / 2,
-            SCREEN_SIZE.height / 2 - myFrame.getHeight() / 2);
-
-        // Makes the main window visible
-        myFrame.setVisible(true);
-    }
-
-    /**
      * The combat gameplay of the game.
      * Simulates 1 round of the fight
      * @param theChoice What the hero does for the current round of the fight
      */
     public void fight (final int theChoice) {
         if (checkGameStatus()) {
-            Monster enemy = myDungeon.getEnemy();
+            final Monster enemy = myDungeon.getEnemy();
             if (myHero.getHP() > 0 && enemy.getHP() > 0) {
-                String mResult = enemy.attack(myHero);
+                final String mResult = enemy.attack(myHero);
                 myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
                 if (myHero.getHP() > 0) {
                     if (theChoice == 1) {
-                        String hResult = myHero.attack(enemy);
+                        final String hResult = myHero.attack(enemy);
                         myDungeon.sendMessage("You " + hResult + "\n");
                     } else if (theChoice == 2) {
-                        String hResult = myHero.skill(enemy);
+                        final String hResult = myHero.skill(enemy);
                         myDungeon.sendMessage(hResult + "\n");
                     } else if (theChoice == 3) {
-                        boolean success = myDungeon.useItem(new HealthPotion());
+                        final boolean success = myDungeon.useItem(new HealthPotion());
                         if (success) {
                             myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
                             myDungeon.sendMessage("The " + enemy.getName() + " " + mResult + "\n");
@@ -231,17 +166,6 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
     }
 
     /**
-     * Getter for status of the game
-     * @return Is there currently an active game?
-     */
-    private boolean checkGameStatus() {
-        if (!myDungeon.getGameActive()) {
-            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
-        }
-        return myDungeon.getGameActive();
-    }
-
-    /**
      * Getter for myFrame
      * @return the Frame
      */
@@ -270,7 +194,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
             // Prompt view to offer to save game
             try {
                 myDungeon.nextFloor();
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 throw new RuntimeException(e);
             }
         } else if ("Action".equals(s)) {
@@ -282,7 +206,7 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
                 }
             } else {
                 if ((int)(theEvent.getNewValue()) == 3) {
-                    boolean success = myDungeon.useItem(new HealthPotion());
+                    final boolean success = myDungeon.useItem(new HealthPotion());
                     if (success) {
                         myDungeon.sendMessage("You healed for up to " + myHero.getMaxHP() / 2 + "HP! \n");
                     }
@@ -291,20 +215,98 @@ public class DungeonController extends JPanel implements PropertyChangeListener 
         } else if ("Hero".equals(s)) {
             myHero = myDungeon.getHero();
         } else if ("SEE".equals(s)) {
-            boolean success = myDungeon.useItem(new VisionPotion());
+            final boolean success = myDungeon.useItem(new VisionPotion());
             if (success) {
                 myDungeon.sendMessage("You can see what's inside the adjacent rooms.\n");
             }
         } else if ("LOAD GAME".equals(s)) {
             try {
                 myDungeon.load((File)(theEvent.getNewValue()));
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (SQLException e) {
+            } catch (final IOException | ClassNotFoundException | SQLException e) {
                 throw new RuntimeException(e);
             }
             myDungeon = model.DungeonLogic.getDungeonInstance();
             myHero = myDungeon.getHero();
         }
+    }
+
+    /**
+     * Getter for status of the game
+     * @return Is there currently an active game?
+     */
+    private boolean checkGameStatus() {
+        if (!myDungeon.getGameActive()) {
+            JOptionPane.showMessageDialog(null, "You haven't started a new save yet!");
+        }
+        return myDungeon.getGameActive();
+    }
+
+    /**
+     * The GUI for the game. initializes the frame and sets its properties
+     * Starts up View
+     */
+    private static void createAndShowGUI() {
+
+        // Main Frame/Window
+        myFrame = new JFrame("Dungeon Adventure");
+
+        // Main Panel, Contains the Game
+        final DungeonView mainPanel = new DungeonView();
+        mainPanel.addPropertyChangeListener(MY_INSTANCE);
+
+        // Size of the Main Window
+        final Dimension frameSize = new Dimension(1280, 720);
+
+        // Adds property change listeners to the main panel
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(mainPanel);
+        DungeonLogic.getDungeonInstance().addPropertyChangeListener(MY_INSTANCE);
+
+        // Sets the Content Pane of the frame to the Main Panel
+        myFrame.setContentPane(mainPanel);
+        if (MY_INSTANCE.checkGameStatus()) {
+            // Disables "window exit" when clicking the X on the window
+            myFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+            // Window Listener
+            myFrame.addWindowListener(new WindowAdapter() {
+                /**
+                 * Listener when user tries to close the window
+                 * pops up an option panel that asks for confirmation
+                 * on whether the user really wants to close the window
+                 * If confirmed, closes the window
+                 * Otherwise, do nothing.
+                 *
+                 * @param theCloseEvent the event to be processed
+                 */
+                @Override
+                public void windowClosing(final WindowEvent theCloseEvent) {
+                    final String[] exitOptions = {"Yes", "No", "Cancel"};
+                    final int promptResult = JOptionPane.showOptionDialog(null,
+                            "Would you like to save progress before you exit?", "Save on Exit",
+                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
+                            null, exitOptions, exitOptions[0]);
+                    if (promptResult == 0) {
+                        try {
+                            MY_INSTANCE.myDungeon.save();
+                            System.exit(0);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (promptResult == 1) {
+                        System.exit(0);
+                    }
+                }
+            });
+        }
+
+        // Sets the size of the window
+        myFrame.setSize(frameSize);
+
+        // Sets the location of the window
+        myFrame.setLocation(SCREEN_SIZE.width / 2 - myFrame.getWidth() / 2,
+                SCREEN_SIZE.height / 2 - myFrame.getHeight() / 2);
+
+        // Makes the main window visible
+        myFrame.setVisible(true);
     }
 }
