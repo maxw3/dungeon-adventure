@@ -15,10 +15,6 @@ public class Hero extends AbstractDungeonCharacter {
      * name of the hero
      */
     private final String myCharName;
-    /**
-     * position of the hero in the floor
-     */
-    private int[] myPosition = new int[2];
 
     /**
      * Constructor

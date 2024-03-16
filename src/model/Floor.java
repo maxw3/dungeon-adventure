@@ -358,7 +358,7 @@ public final class Floor implements Serializable {
     /**
      * helper method to check if pointer is out of bounds
      * @param thePosition the index
-     * @return is it out of bounds
+     * @return true if out of bounds, false otherwise
      */
     /*Default*/ boolean outOfBounds(final int thePosition) {
         return !(thePosition >= 0 && thePosition < mySize);
